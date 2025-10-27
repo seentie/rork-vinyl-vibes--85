@@ -43,81 +43,123 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
   const loadSavedRecords = useCallback(async () => {
     try {
       const stored = await AsyncStorage.getItem('savedRecords');
-      if (stored && stored.trim() && stored !== 'undefined' && stored !== 'null') {
-        try {
-          const trimmedStored = stored.trim();
-          
-          // Check for common corruption patterns BEFORE attempting to parse
-          // This catches cases where objects were stringified incorrectly
-          if (trimmedStored.includes('object Object') || 
-              trimmedStored.includes('[object') || 
-              trimmedStored.includes('undefined') ||
-              trimmedStored === 'null' ||
-              trimmedStored === 'null]' ||
-              trimmedStored === '[null' ||
-              trimmedStored.includes('NaN') ||
-              trimmedStored.includes('Infinity') ||
-              trimmedStored.length < 2 ||
-              (!trimmedStored.startsWith('[') && !trimmedStored.startsWith('{'))) {
-            console.warn('Detected corrupted data pattern, clearing storage:', trimmedStored.substring(0, 50));
-            await AsyncStorage.removeItem('savedRecords');
-            setSavedRecords([]);
-            return;
-          }
-          
-          // Validate JSON structure before parsing
-          if (!((trimmedStored.startsWith('{') && trimmedStored.endsWith('}')) || 
-                (trimmedStored.startsWith('[') && trimmedStored.endsWith(']')))) {
-            console.warn('Invalid JSON structure detected, clearing corrupted data');
-            await AsyncStorage.removeItem('savedRecords');
-            setSavedRecords([]);
-            return;
-          }
-          
-          // Attempt to parse JSON
-          let parsed;
-          try {
-            parsed = JSON.parse(trimmedStored);
-          } catch (jsonError) {
-            console.warn('JSON parse failed, clearing corrupted data:', jsonError);
-            await AsyncStorage.removeItem('savedRecords');
-            setSavedRecords([]);
-            return;
-          }
-          
-          // Validate parsed data is an array
-          if (!Array.isArray(parsed)) {
-            console.warn('Parsed data is not an array, resetting to empty array');
-            await AsyncStorage.removeItem('savedRecords');
-            setSavedRecords([]);
-            return;
-          }
-          
-          // Validate each record has required properties
-          const validRecords = parsed.filter(record => 
-            record && 
-            typeof record === 'object' && 
-            typeof record.id === 'string' && 
-            typeof record.albumName === 'string' && 
-            typeof record.artistName === 'string'
-          );
-          
-          setSavedRecords(validRecords);
-          
-          // If we filtered out invalid records, save the cleaned data
-          if (validRecords.length !== parsed.length) {
-            await AsyncStorage.setItem('savedRecords', JSON.stringify(validRecords));
-          }
-        } catch (parseError) {
-          console.warn('Error processing saved records, clearing corrupted data:', parseError);
-          setSavedRecords([]);
+      
+      // If no data or clearly invalid, reset to empty array
+      if (!stored || stored.trim() === '' || stored === 'undefined' || stored === 'null') {
+        setSavedRecords([]);
+        return;
+      }
+      
+      try {
+        const trimmedStored = stored.trim();
+        
+        // Enhanced corruption detection BEFORE parsing
+        const corruptionPatterns = [
+          /object Object/i,
+          /\[object/i,
+          /^undefined/i,
+          /\bundefined\b/,
+          /^null$/,
+          /^null\]/,
+          /^\[null/,
+          /NaN/,
+          /Infinity/,
+          /^[^\[{]/,  // Doesn't start with [ or {
+          /[\]}]\s*[^\s]/,  // Characters after closing bracket
+          /[^\s]\s*[\[{]/,  // Characters before opening bracket
+        ];
+        
+        // Check for any corruption patterns
+        const isCorrupted = corruptionPatterns.some(pattern => pattern.test(trimmedStored));
+        
+        if (isCorrupted || trimmedStored.length < 2) {
+          console.warn('Detected corrupted data pattern, clearing storage');
           await AsyncStorage.removeItem('savedRecords');
+          setSavedRecords([]);
+          return;
         }
-      } else {
+        
+        // Validate JSON brackets are properly matched
+        const openBrackets = (trimmedStored.match(/[\[{]/g) || []).length;
+        const closeBrackets = (trimmedStored.match(/[\]}]/g) || []).length;
+        
+        if (openBrackets !== closeBrackets) {
+          console.warn('Mismatched brackets detected, clearing corrupted data');
+          await AsyncStorage.removeItem('savedRecords');
+          setSavedRecords([]);
+          return;
+        }
+        
+        // Validate proper JSON structure
+        if (!((trimmedStored.startsWith('{') && trimmedStored.endsWith('}')) || 
+              (trimmedStored.startsWith('[') && trimmedStored.endsWith(']')))) {
+          console.warn('Invalid JSON structure detected, clearing corrupted data');
+          await AsyncStorage.removeItem('savedRecords');
+          setSavedRecords([]);
+          return;
+        }
+        
+        // Attempt to parse JSON with extra safety
+        let parsed;
+        try {
+          parsed = JSON.parse(trimmedStored);
+        } catch (jsonError) {
+          console.warn('JSON parse failed, clearing corrupted data:', jsonError);
+          await AsyncStorage.removeItem('savedRecords');
+          setSavedRecords([]);
+          return;
+        }
+        
+        // Validate parsed data structure
+        if (parsed === null || parsed === undefined) {
+          console.warn('Parsed data is null/undefined');
+          await AsyncStorage.removeItem('savedRecords');
+          setSavedRecords([]);
+          return;
+        }
+        
+        if (!Array.isArray(parsed)) {
+          console.warn('Parsed data is not an array, resetting');
+          await AsyncStorage.removeItem('savedRecords');
+          setSavedRecords([]);
+          return;
+        }
+        
+        // Validate each record has required properties and proper types
+        const validRecords = parsed.filter(record => {
+          if (!record || typeof record !== 'object') return false;
+          if (typeof record.id !== 'string' || record.id.trim() === '') return false;
+          if (typeof record.albumName !== 'string' || record.albumName.trim() === '') return false;
+          if (typeof record.artistName !== 'string' || record.artistName.trim() === '') return false;
+          
+          // Validate optional fields if present
+          if (record.coverImage !== undefined && typeof record.coverImage !== 'string') return false;
+          if (record.songs !== undefined && !Array.isArray(record.songs)) return false;
+          if (record.songs && record.songs.some((s: any) => typeof s !== 'string')) return false;
+          
+          return true;
+        });
+        
+        if (validRecords.length === 0 && parsed.length > 0) {
+          console.warn('All records were invalid, clearing storage');
+          await AsyncStorage.removeItem('savedRecords');
+          setSavedRecords([]);
+          return;
+        }
+        
+        setSavedRecords(validRecords);
+        
+        // Save cleaned data if we filtered out invalid records
+        if (validRecords.length !== parsed.length && validRecords.length > 0) {
+          await AsyncStorage.setItem('savedRecords', JSON.stringify(validRecords));
+        }
+      } catch (parseError) {
+        console.warn('Error processing saved records, clearing corrupted data:', parseError);
+        await AsyncStorage.removeItem('savedRecords');
         setSavedRecords([]);
       }
     } catch (error) {
-      console.error('Error loading saved records:', error);
+      console.error('Critical error loading saved records:', error);
       setSavedRecords([]);
       try {
         await AsyncStorage.removeItem('savedRecords');
@@ -128,21 +170,51 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
   }, []);
 
   const saveSavedRecords = useCallback(async (records: SavedRecord[]) => {
+    // Validate input
     if (!Array.isArray(records)) {
       console.warn('Invalid records format, not saving');
       return;
     }
     
+    // Validate all records have required fields
+    const validRecords = records.filter(record => 
+      record && 
+      typeof record === 'object' &&
+      typeof record.id === 'string' && 
+      typeof record.albumName === 'string' && 
+      typeof record.artistName === 'string'
+    );
+    
+    if (validRecords.length !== records.length) {
+      console.warn(`Filtered out ${records.length - validRecords.length} invalid records`);
+    }
+    
     try {
-      const jsonString = JSON.stringify(records);
-      // Validate the JSON string can be parsed back
-      JSON.parse(jsonString);
+      const jsonString = JSON.stringify(validRecords);
+      
+      // Validate the JSON string is valid and can be parsed back
+      const testParse = JSON.parse(jsonString);
+      if (!Array.isArray(testParse)) {
+        throw new Error('Stringified data is not an array');
+      }
+      
+      // Additional validation: ensure no corruption patterns in stringified data
+      if (jsonString.includes('object Object') || 
+          jsonString.includes('[object') ||
+          jsonString.includes('undefined') ||
+          jsonString.includes('NaN') ||
+          jsonString.includes('Infinity')) {
+        throw new Error('Detected corruption in stringified data');
+      }
+      
       await AsyncStorage.setItem('savedRecords', jsonString);
-      setSavedRecords(records);
+      setSavedRecords(validRecords);
     } catch (error) {
       console.error('Error saving records:', error);
+      // If save fails, don't update state to keep consistency
       try {
         await AsyncStorage.removeItem('savedRecords');
+        setSavedRecords([]);
       } catch (removeError) {
         console.error('Error removing corrupted data:', removeError);
       }
