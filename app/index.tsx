@@ -178,6 +178,103 @@ export default function VinylPlayerScreen() {
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
 
+  // Spinning effect controlled by play state
+  useEffect(() => {
+    // Stop any existing animation
+    if (spinAnimation.current) {
+      spinAnimation.current.stop();
+    }
+    
+    // Only spin when playing and not stopped
+    if (isPlaying && !isStopped) {
+      // Calculate duration based on RPM - 45 RPM should be noticeably faster
+      const duration = rpm === 45 ? 1000 : 1818; // 45 RPM is much faster, 33 RPM is standard
+      
+      // Get current rotation value to continue from current position
+      // Get current rotation value to continue from current position
+      // const currentValue = (spinValue as any)._value || 0;
+      
+      // Create infinite spinning animation
+      const createSpinAnimation = () => {
+        // Reset to 0 for clean loop
+        spinValue.setValue(0);
+        
+        return Animated.loop(
+          Animated.timing(spinValue, {
+            toValue: 1,
+            duration: duration,
+            useNativeDriver: true,
+            easing: (t) => t, // Linear easing for consistent speed
+          }),
+          { iterations: -1, resetBeforeIteration: true }
+        );
+      };
+      
+      // Start the animation
+      spinAnimation.current = createSpinAnimation();
+      spinAnimation.current.start();
+    } else if (isStopped) {
+      // Reset rotation when stopped
+      spinValue.setValue(0);
+    }
+
+    return () => {
+      if (spinAnimation.current) {
+        spinAnimation.current.stop();
+      }
+    };
+  }, [rpm, isPlaying, isStopped, spinValue]);
+
+  // Handle play/pause/stop animations
+  useEffect(() => {
+    if (isPlaying && !isStopped) {
+      // Move tonearm to playing position
+      Animated.spring(tonearmAngle, {
+        toValue: -5,
+        useNativeDriver: true,
+        tension: 40,
+        friction: 8,
+      }).start();
+
+      // Move needle from current position towards center
+      const currentValue = (needlePosition as any)._value || 0;
+      needleAnimation.current = Animated.timing(needlePosition, {
+        toValue: 1,
+        duration: (1 - currentValue) * 180000, // Proportional duration
+        useNativeDriver: true,
+      });
+      needleAnimation.current.start();
+    } else {
+      // Pause needle movement but don't reset unless stopped
+      if (needleAnimation.current) {
+        needleAnimation.current.stop();
+      }
+      
+      if (isStopped) {
+        // Reset everything when stopped
+        Animated.parallel([
+          Animated.spring(tonearmAngle, {
+            toValue: -25,
+            useNativeDriver: true,
+            tension: 40,
+            friction: 8,
+          }),
+          Animated.timing(needlePosition, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      }
+    }
+
+    return () => {
+      if (needleAnimation.current) {
+        needleAnimation.current.stop();
+      }
+    };
+  }, [isPlaying, isStopped, tonearmAngle, needlePosition]);
+
   // Show loading screen while AsyncStorage initializes
   if (!isInitialized) {
     return (
@@ -635,103 +732,6 @@ export default function VinylPlayerScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
-
-  // Spinning effect controlled by play state
-  useEffect(() => {
-    // Stop any existing animation
-    if (spinAnimation.current) {
-      spinAnimation.current.stop();
-    }
-    
-    // Only spin when playing and not stopped
-    if (isPlaying && !isStopped) {
-      // Calculate duration based on RPM - 45 RPM should be noticeably faster
-      const duration = rpm === 45 ? 1000 : 1818; // 45 RPM is much faster, 33 RPM is standard
-      
-      // Get current rotation value to continue from current position
-      // Get current rotation value to continue from current position
-      // const currentValue = (spinValue as any)._value || 0;
-      
-      // Create infinite spinning animation
-      const createSpinAnimation = () => {
-        // Reset to 0 for clean loop
-        spinValue.setValue(0);
-        
-        return Animated.loop(
-          Animated.timing(spinValue, {
-            toValue: 1,
-            duration: duration,
-            useNativeDriver: true,
-            easing: (t) => t, // Linear easing for consistent speed
-          }),
-          { iterations: -1, resetBeforeIteration: true }
-        );
-      };
-      
-      // Start the animation
-      spinAnimation.current = createSpinAnimation();
-      spinAnimation.current.start();
-    } else if (isStopped) {
-      // Reset rotation when stopped
-      spinValue.setValue(0);
-    }
-
-    return () => {
-      if (spinAnimation.current) {
-        spinAnimation.current.stop();
-      }
-    };
-  }, [rpm, isPlaying, isStopped, spinValue]);
-
-  // Handle play/pause/stop animations
-  useEffect(() => {
-    if (isPlaying && !isStopped) {
-      // Move tonearm to playing position
-      Animated.spring(tonearmAngle, {
-        toValue: -5,
-        useNativeDriver: true,
-        tension: 40,
-        friction: 8,
-      }).start();
-
-      // Move needle from current position towards center
-      const currentValue = (needlePosition as any)._value || 0;
-      needleAnimation.current = Animated.timing(needlePosition, {
-        toValue: 1,
-        duration: (1 - currentValue) * 180000, // Proportional duration
-        useNativeDriver: true,
-      });
-      needleAnimation.current.start();
-    } else {
-      // Pause needle movement but don't reset unless stopped
-      if (needleAnimation.current) {
-        needleAnimation.current.stop();
-      }
-      
-      if (isStopped) {
-        // Reset everything when stopped
-        Animated.parallel([
-          Animated.spring(tonearmAngle, {
-            toValue: -25,
-            useNativeDriver: true,
-            tension: 40,
-            friction: 8,
-          }),
-          Animated.timing(needlePosition, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }
-    }
-
-    return () => {
-      if (needleAnimation.current) {
-        needleAnimation.current.stop();
-      }
-    };
-  }, [isPlaying, isStopped, tonearmAngle, needlePosition]);
 
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
