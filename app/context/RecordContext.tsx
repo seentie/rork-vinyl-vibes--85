@@ -34,6 +34,7 @@ const defaultTracks: Track[] = [
 ];
 
 export const [RecordProvider, useRecord] = createContextHook(() => {
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [selectedRecord, setSelectedRecord] = useState<SavedRecord | null>(null);
   const [currentSong, setCurrentSong] = useState<string>('Saturday Morning Forever');
   const [savedRecords, setSavedRecords] = useState<SavedRecord[]>([]);
@@ -42,11 +43,16 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
 
   const loadSavedRecords = useCallback(async () => {
     try {
+      console.log('[RecordContext] Loading saved records...');
+      setIsInitialized(false);
       const stored = await AsyncStorage.getItem('savedRecords');
+      console.log('[RecordContext] Raw stored data:', stored ? `${stored.substring(0, 100)}...` : 'null');
       
       // If no data or clearly invalid, reset to empty array
       if (!stored || stored.trim() === '' || stored === 'undefined' || stored === 'null') {
+        console.log('[RecordContext] No valid stored data, using empty array');
         setSavedRecords([]);
+        setIsInitialized(true);
         return;
       }
       
@@ -73,9 +79,11 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         const isCorrupted = corruptionPatterns.some(pattern => pattern.test(trimmedStored));
         
         if (isCorrupted || trimmedStored.length < 2) {
-          console.warn('Detected corrupted data pattern, clearing storage');
+          console.warn('[RecordContext] Detected corrupted data pattern, clearing storage');
+          console.warn('[RecordContext] Corrupted data sample:', trimmedStored.substring(0, 200));
           await AsyncStorage.removeItem('savedRecords');
           setSavedRecords([]);
+          setIsInitialized(true);
           return;
         }
         
@@ -87,6 +95,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('Mismatched brackets detected, clearing corrupted data');
           await AsyncStorage.removeItem('savedRecords');
           setSavedRecords([]);
+          setIsInitialized(true);
           return;
         }
         
@@ -96,6 +105,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('Invalid JSON structure detected, clearing corrupted data');
           await AsyncStorage.removeItem('savedRecords');
           setSavedRecords([]);
+          setIsInitialized(true);
           return;
         }
         
@@ -107,6 +117,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('JSON parse failed, clearing corrupted data:', jsonError);
           await AsyncStorage.removeItem('savedRecords');
           setSavedRecords([]);
+          setIsInitialized(true);
           return;
         }
         
@@ -115,6 +126,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('Parsed data is null/undefined');
           await AsyncStorage.removeItem('savedRecords');
           setSavedRecords([]);
+          setIsInitialized(true);
           return;
         }
         
@@ -122,6 +134,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('Parsed data is not an array, resetting');
           await AsyncStorage.removeItem('savedRecords');
           setSavedRecords([]);
+          setIsInitialized(true);
           return;
         }
         
@@ -144,10 +157,12 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('All records were invalid, clearing storage');
           await AsyncStorage.removeItem('savedRecords');
           setSavedRecords([]);
+          setIsInitialized(true);
           return;
         }
         
         setSavedRecords(validRecords);
+        setIsInitialized(true);
         
         // Save cleaned data if we filtered out invalid records
         if (validRecords.length !== parsed.length && validRecords.length > 0) {
@@ -157,10 +172,12 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         console.warn('Error processing saved records, clearing corrupted data:', parseError);
         await AsyncStorage.removeItem('savedRecords');
         setSavedRecords([]);
+        setIsInitialized(true);
       }
     } catch (error) {
       console.error('Critical error loading saved records:', error);
       setSavedRecords([]);
+      setIsInitialized(true);
       try {
         await AsyncStorage.removeItem('savedRecords');
       } catch (clearError) {
@@ -170,9 +187,11 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
   }, []);
 
   const saveSavedRecords = useCallback(async (records: SavedRecord[]) => {
+    console.log('[RecordContext] Saving records, count:', records?.length || 0);
+    
     // Validate input
     if (!Array.isArray(records)) {
-      console.warn('Invalid records format, not saving');
+      console.warn('[RecordContext] Invalid records format (not array), not saving');
       return;
     }
     
@@ -190,7 +209,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     }
     
     try {
+      console.log('[RecordContext] Stringifying', validRecords.length, 'valid records');
       const jsonString = JSON.stringify(validRecords);
+      console.log('[RecordContext] JSON string length:', jsonString.length);
       
       // Validate the JSON string is valid and can be parsed back
       const testParse = JSON.parse(jsonString);
@@ -207,10 +228,13 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         throw new Error('Detected corruption in stringified data');
       }
       
+      console.log('[RecordContext] Writing to AsyncStorage...');
       await AsyncStorage.setItem('savedRecords', jsonString);
+      console.log('[RecordContext] AsyncStorage write successful');
       setSavedRecords(validRecords);
     } catch (error) {
-      console.error('Error saving records:', error);
+      console.error('[RecordContext] CRITICAL: Error saving records:', error);
+      console.error('[RecordContext] Error details:', error instanceof Error ? error.message : 'Unknown error');
       // If save fails, don't update state to keep consistency
       try {
         await AsyncStorage.removeItem('savedRecords');
@@ -346,6 +370,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
   }, []);
 
   const contextValue = useMemo(() => ({
+    isInitialized,
     selectedRecord,
     currentSong,
     savedRecords,
@@ -364,6 +389,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     removeSongFromRecord,
     selectSongFromRecord,
   }), [
+    isInitialized,
     selectedRecord,
     currentSong,
     savedRecords,

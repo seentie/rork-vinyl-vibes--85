@@ -123,6 +123,7 @@ const decadeThemes = {
 };
 
 export default function VinylPlayerScreen() {
+  const { isInitialized } = useRecord();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isStopped, setIsStopped] = useState(true);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -176,6 +177,23 @@ export default function VinylPlayerScreen() {
   const [isEditingSong, setIsEditingSong] = useState(false);
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
+
+  // Show loading screen while AsyncStorage initializes
+  if (!isInitialized) {
+    return (
+      <LinearGradient
+        colors={theme.background as [string, string, ...string[]]}
+        style={styles.container}
+      >
+        <View style={[styles.loadingContainer, { paddingTop: insets.top }]}>
+          <View style={styles.loadingContent}>
+            <Text style={[styles.loadingTitle, { color: theme.accent }]}>VINYL VIBES</Text>
+            <Text style={[styles.loadingText, { color: theme.text }]}>Loading your collection...</Text>
+          </View>
+        </View>
+      </LinearGradient>
+    );
+  }
 
 
 
@@ -3271,5 +3289,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     minHeight: 100,
   },
-
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingContent: {
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingTitle: {
+    fontSize: 32,
+    fontWeight: '700' as const,
+    letterSpacing: 4,
+  },
+  loadingText: {
+    fontSize: 16,
+    opacity: 0.8,
+  },
 });
