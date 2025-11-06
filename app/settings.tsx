@@ -151,86 +151,63 @@ export default function SettingsScreen() {
             <Text style={styles.privacyText}>
               <Text style={styles.privacyHeader}>Privacy Policy</Text>
               {"\n\n"}
-              <Text style={styles.privacySubheader}>(Last Updated: January 2025)</Text>
+              <Text style={styles.privacySubheader}>Updated: November 2025</Text>
               {"\n\n"}
-              <Text style={styles.privacySubheader}>Overview</Text>
+              <Text style={styles.privacySubheader}>The Short Version</Text>
               {"\n\n"}
-              OLD SKOOL APPS ("we," "our," or "us") respects your privacy. This Privacy Policy explains how we collect, use, and protect your information when you use our mobile application.
+              We don't track you. We don't collect your data. We don't sell anything to anyone. You do you.
               {"\n\n"}
-              <Text style={styles.privacySubheader}>Information We Collect</Text>
+              <Text style={styles.privacySubheader}>The Slightly Longer Version</Text>
               {"\n\n"}
-              <Text style={styles.privacySubheader}>Information You Provide</Text>
+              Old Skool Apps believes your business is your business. Here's what that means:
               {"\n\n"}
-              • Account information (name, email address){"\n"}
-              • Profile information you choose to share{"\n"}
-              • Content you create or upload{"\n"}
-              • Communications with us
+              <Text style={styles.privacySubheader}>What We Don't Collect</Text>
               {"\n\n"}
-              <Text style={styles.privacySubheader}>Information Automatically Collected</Text>
+              • Personal information{"\n"}
+              • Usage data{"\n"}
+              • Location data{"\n"}
+              • Device information{"\n"}
+              • Cookies or tracking pixels{"\n"}
+              • Analytics{"\n"}
+              • Literally anything about you
               {"\n\n"}
-              • Device information (device type, operating system){"\n"}
-              • Usage data (how you interact with the app){"\n"}
-              • Log data (app crashes, performance metrics){"\n"}
-              • Location data (if you grant permission)
+              <Text style={styles.privacySubheader}>What We Don't Do</Text>
               {"\n\n"}
-              <Text style={styles.privacySubheader}>How We Use Your Information</Text>
+              • Track your activity{"\n"}
+              • Sell your data{"\n"}
+              • Share information with third parties{"\n"}
+              • Send you marketing emails (unless you explicitly sign up){"\n"}
+              • Connect to social media{"\n"}
+              • Use creepy ad networks
               {"\n\n"}
-              We use your information to:{"\n\n"}
-              • Provide and improve our app services{"\n"}
-              • Create and maintain your account{"\n"}
-              • Send important updates and notifications{"\n"}
-              • Respond to your questions and support requests{"\n"}
-              • Analyze app usage to improve user experience{"\n"}
-              • Ensure app security and prevent fraud
+              <Text style={styles.privacySubheader}>What Happens on Your Device Stays on Your Device</Text>
               {"\n\n"}
-              <Text style={styles.privacySubheader}>Information Sharing</Text>
+              All our apps store data locally on your device. Your journals, lists, birthdays, contacts, preferences—everything lives on your phone or tablet. Not our servers. Not the cloud (unless you choose to back up via your device's built-in backup features).
               {"\n\n"}
-              We do not sell your personal information. We may share your information only in these situations:{"\n\n"}
-              • With your consent - When you explicitly agree{"\n"}
-              • Service providers - Third parties who help us operate the app{"\n"}
-              • Legal requirements - When required by law or to protect rights and safety{"\n"}
-              • Business transfers - If our company is sold or merged
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Data Security</Text>
-              {"\n\n"}
-              We implement appropriate security measures to protect your information, including:{"\n\n"}
-              • Encryption of sensitive data{"\n"}
-              • Secure data transmission{"\n"}
-              • Regular security assessments{"\n"}
-              • Limited access to personal information
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Your Rights</Text>
-              {"\n\n"}
-              You have the right to:{"\n\n"}
-              • Access your personal information{"\n"}
-              • Correct inaccurate information{"\n"}
-              • Delete your account and data{"\n"}
-              • Opt out of marketing communications{"\n"}
-              • Request data portability (where applicable){"\n\n"}
-              To exercise these rights, contact us at {CONTACT_EMAIL}.
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Children's Privacy</Text>
-              {"\n\n"}
-              Our app is not intended for children under 13. We do not knowingly collect personal information from children under 13. If we discover we have collected such information, we will delete it promptly.
+              If you delete the app, your data goes with it. We never see it in the first place.
               {"\n\n"}
               <Text style={styles.privacySubheader}>Third-Party Services</Text>
               {"\n\n"}
-              Our app may contain links to third-party services or integrate with other platforms. This privacy policy does not apply to those services. Please review their privacy policies separately.
+              Some apps may use your device's built-in features (like photo library access or camera) but only when you give permission, and only to make the app work. We don't send that data anywhere.
               {"\n\n"}
               <Text style={styles.privacySubheader}>Changes to This Policy</Text>
               {"\n\n"}
-              We may update this Privacy Policy from time to time. We will notify you of significant changes by:{"\n\n"}
-              • Posting the updated policy in the app{"\n"}
-              • Sending you an email notification{"\n"}
-              • Displaying a notice when you next open the app
+              If we ever change this policy (spoiler: we probably won't), we'll update this page and the date at the top. But our philosophy stays the same: your data is yours.
               {"\n\n"}
-              <Text style={styles.privacySubheader}>Contact Us</Text>
+              <Text style={styles.privacySubheader}>Questions?</Text>
               {"\n\n"}
               If you have questions about this Privacy Policy or our privacy practices, please contact us at:{"\n\n"}
               Email: {CONTACT_EMAIL}{"\n"}
               Address: {CONTACT_ADDRESS}{"\n"}
-              Phone: {CONTACT_PHONE}{"\n\n"}
-              App version: {APP_VERSION}
+              Phone: {CONTACT_PHONE}
+              {"\n\n"}
+              We're real humans who do respond.
+              {"\n\n"}
+              <Text style={styles.privacyNote}>We're old skool about apps, and privacy too. You do you.</Text>
+              {"\n\n"}
+              <Text style={styles.privacySubheader}>Old Skool Apps</Text>
+              {"\n"}
+              <Text style={styles.privacyNote}>Where nostalgia meets function, and your privacy is actually yours.</Text>
             </Text>
           </View>
         </View>
@@ -327,6 +304,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600' as const,
     color: '#333',
+  },
+  privacyNote: {
+    fontStyle: 'italic',
+    color: '#666',
+    fontSize: 13,
   },
   instructionsText: {
     fontSize: 14,
