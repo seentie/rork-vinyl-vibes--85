@@ -8,6 +8,7 @@ import {
   Platform,
   Image,
   useWindowDimensions,
+  ScrollView,
 } from 'react-native';
 import {
   ArrowLeft,
@@ -133,10 +134,15 @@ export default function NowPlayingScreen() {
   return (
     <LinearGradient
       colors={['#000000', '#1a1a1a', '#000000']}
-      style={[styles.container, { paddingTop: insets.top }]}
+      style={styles.container}
     >
-      {/* Header */}
-      <View style={styles.header}>
+      <ScrollView
+        style={[styles.scrollView, { paddingTop: insets.top }]}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
         <TouchableOpacity 
           onPress={() => {
             if (Platform.OS !== 'web') {
@@ -282,21 +288,22 @@ export default function NowPlayingScreen() {
       
 
       
-      {/* Bottom ambient lights */}
-      <View style={styles.ambientLights}>
-        {[...Array(8)].map((_, i) => (
-          <Animated.View
-            key={`ambient-${i}`}
-            style={[
-              styles.ambientLight,
-              {
-                left: (i * (screenWidth / 7)) + 20,
-                opacity: lightOpacity,
-              },
-            ]}
-          />
-        ))}
-      </View>
+        {/* Bottom ambient lights */}
+        <View style={styles.ambientLights}>
+          {[...Array(8)].map((_, i) => (
+            <Animated.View
+              key={`ambient-${i}`}
+              style={[
+                styles.ambientLight,
+                {
+                  left: (i * (screenWidth / 7)) + 20,
+                  opacity: lightOpacity,
+                },
+              ]}
+            />
+          ))}
+        </View>
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -304,6 +311,12 @@ export default function NowPlayingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   header: {
     flexDirection: 'row',
@@ -425,10 +438,11 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   albumContainer: {
-    flex: 1,
+    minHeight: 400,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    paddingVertical: 20,
   },
   glowRing: {
     position: 'absolute',
@@ -495,7 +509,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
     marginTop: 40,
-    marginBottom: 80,
+    marginBottom: 40,
   },
   albumName: {
     fontSize: 28,
@@ -523,8 +537,8 @@ const styles = StyleSheet.create({
   },
 
   ambientLights: {
-    position: 'absolute',
-    bottom: 0,
+    position: 'relative',
+    marginTop: 40,
     left: 0,
     right: 0,
     height: 4,
