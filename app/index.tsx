@@ -291,8 +291,8 @@ export default function VinylPlayerScreen() {
 
 
   const addToCollection = async () => {
-    // Count user albums (excluding default)
-    const userAlbums = savedRecords.filter(r => r.id !== 'default-retro-renaissance');
+    // Count user albums (excluding display)
+    const userAlbums = savedRecords.filter(r => r.id !== 'display-retro-renaissance');
     if (userAlbums.length >= 20) {
       Alert.alert('Collection Full', 'You can save up to 20 additional albums (plus the default Retro Renaissance album).');
       return;
@@ -327,8 +327,8 @@ export default function VinylPlayerScreen() {
   };
 
   const addNewAlbum = async () => {
-    // Count user albums (excluding default)
-    const userAlbums = savedRecords.filter(r => r.id !== 'default-retro-renaissance');
+    // Count user albums (excluding display)
+    const userAlbums = savedRecords.filter(r => r.id !== 'display-retro-renaissance');
     if (userAlbums.length >= 20) {
       Alert.alert('Collection Full', 'You can save up to 20 additional albums (plus the default Retro Renaissance album).');
       return;
@@ -1841,7 +1841,7 @@ export default function VinylPlayerScreen() {
           <View style={styles.modalOverlay}>
             <View style={[styles.collectionModal, { backgroundColor: theme.background[0] }]}>
               <View style={styles.modalHeader}>
-                <Text style={[styles.modalTitle, { color: theme.text }]}>Record Collection ({savedRecords.filter(r => r.id !== 'default-retro-renaissance').length}/20 user albums)</Text>
+                <Text style={[styles.modalTitle, { color: theme.text }]}>Record Collection ({savedRecords.filter(r => r.id !== 'display-retro-renaissance').length}/20 user albums)</Text>
                 <TouchableOpacity onPress={() => setShowCollectionModal(false)}>
                   <X size={24} color={theme.text} />
                 </TouchableOpacity>
@@ -1867,7 +1867,7 @@ export default function VinylPlayerScreen() {
                         }, 300);
                       }}
                       style={[styles.addNewAlbumButton, { backgroundColor: theme.accent }]}
-                      disabled={savedRecords.filter(r => r.id !== 'default-retro-renaissance').length >= 20}
+                      disabled={savedRecords.filter(r => r.id !== 'display-retro-renaissance').length >= 20}
                     >
                       <Plus size={24} color="#FFFFFF" />
                       <Text style={styles.addNewAlbumButtonText}>Add New Album</Text>
@@ -1889,15 +1889,15 @@ export default function VinylPlayerScreen() {
                         }, 300);
                       }}
                       style={[styles.addNewAlbumButton, { backgroundColor: theme.accent, marginBottom: 24 }]}
-                      disabled={savedRecords.filter(r => r.id !== 'default-retro-renaissance').length >= 20}
+                      disabled={savedRecords.filter(r => r.id !== 'display-retro-renaissance').length >= 20}
                     >
                       <Plus size={24} color="#FFFFFF" />
                       <Text style={styles.addNewAlbumButtonText}>
-                        {savedRecords.filter(r => r.id !== 'default-retro-renaissance').length >= 20 ? 'Collection Full (20/20)' : 'Add New Album'}
+                        {savedRecords.filter(r => r.id !== 'display-retro-renaissance').length >= 20 ? 'Collection Full (20/20)' : 'Add New Album'}
                       </Text>
                     </TouchableOpacity>
                     {savedRecords.map((record) => {
-                      const isDefaultAlbum = record.id === 'default-retro-renaissance';
+                      const isDefaultAlbum = record.id === 'display-retro-renaissance';
                       return (
                       <TouchableOpacity
                         key={record.id}
@@ -1914,7 +1914,7 @@ export default function VinylPlayerScreen() {
                             </Text>
                             {isDefaultAlbum && (
                               <View style={{ backgroundColor: theme.accent, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                                <Text style={{ fontSize: 10, fontWeight: '700' as const, color: '#000' }}>DEFAULT</Text>
+                                <Text style={{ fontSize: 10, fontWeight: '700' as const, color: '#000' }}>DISPLAY</Text>
                               </View>
                             )}
                           </View>

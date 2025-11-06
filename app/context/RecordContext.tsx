@@ -34,7 +34,7 @@ const defaultTracks: Track[] = [
 ];
 
 const defaultAlbum: SavedRecord = {
-  id: 'default-retro-renaissance',
+  id: 'display-retro-renaissance',
   albumName: 'The Retro Renaissance',
   artistName: 'Old Skool Apps',
   dateAdded: new Date().toISOString(),
@@ -170,7 +170,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           return;
         }
         
-        // Ensure default album is always present
+        // Ensure display album is always present
         const hasDefaultAlbum = validRecords.some(r => r.id === defaultAlbum.id);
         const recordsWithDefault = hasDefaultAlbum ? validRecords : [defaultAlbum, ...validRecords];
         setSavedRecords(recordsWithDefault);
@@ -207,7 +207,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       return;
     }
     
-    // Ensure default album is always present
+    // Ensure display album is always present
     const hasDefaultAlbum = records.some(r => r.id === defaultAlbum.id);
     const recordsToSave = hasDefaultAlbum ? records : [defaultAlbum, ...records];
     
