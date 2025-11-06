@@ -40,7 +40,7 @@ import { z } from 'zod';
 
 const { width: screenWidth } = Dimensions.get('window');
 const RECORD_SIZE = screenWidth * 0.75;
-const TONEARM_LENGTH = RECORD_SIZE * 0.65;
+const TONEARM_LENGTH = RECORD_SIZE * 0.85;
 
 
 
