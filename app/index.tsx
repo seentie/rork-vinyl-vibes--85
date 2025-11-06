@@ -1547,7 +1547,7 @@ export default function VinylPlayerScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={[styles.brandText, { color: theme.accent }]}>TECHNICS</Text>
+          <Text style={[styles.brandText, { color: theme.accent }]}>VINYL VIBES &apos;85</Text>
           <View style={styles.headerRight}>
             <TouchableOpacity onPress={toggleRPM} style={[styles.rpmButton, { borderColor: theme.accent }]}>
               <Text style={[styles.rpmText, { color: theme.accent }]}>{rpm} RPM</Text>
