@@ -1552,12 +1552,6 @@ export default function VinylPlayerScreen() {
             <TouchableOpacity onPress={toggleRPM} style={[styles.rpmButton, { borderColor: theme.accent }]}>
               <Text style={[styles.rpmText, { color: theme.accent }]}>{rpm} RPM</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={() => router.push('/settings')} 
-              style={[styles.settingsButton, { borderColor: theme.accent }]}
-            >
-              <Settings size={20} color={theme.accent} />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -1900,6 +1894,14 @@ export default function VinylPlayerScreen() {
 
 
       </ScrollView>
+
+      {/* Floating Settings Button */}
+      <TouchableOpacity 
+        onPress={() => router.push('/settings')} 
+        style={[styles.floatingSettingsButton, { borderColor: theme.accent }]}
+      >
+        <Settings size={24} color={theme.accent} />
+      </TouchableOpacity>
 
         {/* Collection Modal */}
         <Modal
@@ -2595,6 +2597,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  floatingSettingsButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#1A1A1A',
+    padding: 16,
+    borderRadius: 30,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    zIndex: 1000,
+  },
   brandText: {
     fontSize: 24,
     fontWeight: '700' as const,
@@ -3235,7 +3252,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.05)',
     gap: 8,
   },
   songEditContainer: {
