@@ -1526,10 +1526,6 @@ const styles = StyleSheet.create({
   songEditContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.1)',
     marginBottom: 8,
     gap: 8,
   },
