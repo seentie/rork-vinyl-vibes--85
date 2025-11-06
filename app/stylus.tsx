@@ -25,7 +25,7 @@ import {
   List,
   Plus,
   Trash2,
-
+  ArrowRight,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -985,7 +985,7 @@ export default function StylusViewScreen() {
             style={[styles.controlButton, { borderColor: theme.accent }]}
             testID="next-button"
           >
-            <RotateCcw color={theme.accent} size={24} style={styles.flipIcon} />
+            <ArrowRight color={theme.accent} size={24} />
           </TouchableOpacity>
         </View>
 
@@ -1598,9 +1598,6 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 3,
-  },
-  flipIcon: {
-    transform: [{ scaleX: -1 }],
   },
   modalOverlay: {
     flex: 1,
