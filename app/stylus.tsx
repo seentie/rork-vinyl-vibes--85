@@ -278,7 +278,21 @@ export default function StylusViewScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
-    handleStop();
+    
+    // Stop animations
+    if (stylusAnimation.current) {
+      stylusAnimation.current.stop();
+    }
+    
+    // Reset stylus to starting position
+    Animated.timing(stylusPosition, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
+      // After reset animation completes, set to stopped state
+      handleStop();
+    });
   };
 
   const prevTrack = () => {
