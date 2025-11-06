@@ -26,7 +26,6 @@ import {
   Trash2,
   Settings,
   Eye,
-  Camera,
   ImageIcon,
   Music,
 } from 'lucide-react-native';
@@ -415,36 +414,13 @@ export default function VinylPlayerScreen() {
     if (Platform.OS !== 'web') {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to upload photos.');
+        Alert.alert('Permission Required', 'Sorry, we need photo album permissions to upload photos.');
         return;
       }
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setNewCoverImage(result.assets[0].uri);
-      if (Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-    }
-  };
-
-  const takePhoto = async () => {
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Sorry, we need camera permissions to take photos.');
-        return;
-      }
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -483,36 +459,13 @@ export default function VinylPlayerScreen() {
     if (Platform.OS !== 'web') {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to upload photos.');
+        Alert.alert('Permission Required', 'Sorry, we need photo album permissions to upload photos.');
         return;
       }
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setEditCoverImage(result.assets[0].uri);
-      if (Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-    }
-  };
-
-  const takeEditPhoto = async () => {
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Sorry, we need camera permissions to take photos.');
-        return;
-      }
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -530,36 +483,13 @@ export default function VinylPlayerScreen() {
     if (Platform.OS !== 'web') {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Sorry, we need camera roll permissions to upload photos.');
+        Alert.alert('Permission Required', 'Sorry, we need photo album permissions to upload photos.');
         return;
       }
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setNewEditCoverImage(result.assets[0].uri);
-      if (Platform.OS !== 'web') {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-    }
-  };
-
-  const takeNewEditPhoto = async () => {
-    if (Platform.OS !== 'web') {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Sorry, we need camera permissions to take photos.');
-        return;
-      }
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
@@ -2010,7 +1940,7 @@ export default function VinylPlayerScreen() {
                             onPress={() => openEditCoverModal(record)}
                             style={styles.coverEditButton}
                           >
-                            <Camera size={16} color={theme.accent} />
+                            <ImageIcon size={16} color={theme.accent} />
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={() => openEditAlbumModal(record)}
@@ -2107,22 +2037,12 @@ export default function VinylPlayerScreen() {
                     </View>
                   ) : (
                     <View style={styles.photoButtonsContainer}>
-                      {Platform.OS !== 'web' && (
-                        <TouchableOpacity 
-                          style={[styles.photoButton, { borderColor: theme.accent }]}
-                          onPress={takePhoto}
-                        >
-                          <Camera size={20} color={theme.accent} />
-                          <Text style={[styles.photoButtonText, { color: theme.accent }]}>Take Photo</Text>
-                        </TouchableOpacity>
-                      )}
-                      
                       <TouchableOpacity 
                         style={[styles.photoButton, { borderColor: theme.accent }]}
                         onPress={pickImage}
                       >
                         <ImageIcon size={20} color={theme.accent} />
-                        <Text style={[styles.photoButtonText, { color: theme.accent }]}>Choose Photo</Text>
+                        <Text style={[styles.photoButtonText, { color: theme.accent }]}>Choose from Album</Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -2196,22 +2116,12 @@ export default function VinylPlayerScreen() {
                   )}
                   
                   <View style={styles.photoButtonsContainer}>
-                    {Platform.OS !== 'web' && (
-                      <TouchableOpacity 
-                        style={[styles.photoButton, { borderColor: theme.accent }]}
-                        onPress={takeNewEditPhoto}
-                      >
-                        <Camera size={20} color={theme.accent} />
-                        <Text style={[styles.photoButtonText, { color: theme.accent }]}>Take Photo</Text>
-                      </TouchableOpacity>
-                    )}
-                    
                     <TouchableOpacity 
                       style={[styles.photoButton, { borderColor: theme.accent }]}
                       onPress={pickNewEditImage}
                     >
                       <ImageIcon size={20} color={theme.accent} />
-                      <Text style={[styles.photoButtonText, { color: theme.accent }]}>Choose Photo</Text>
+                      <Text style={[styles.photoButtonText, { color: theme.accent }]}>Choose from Album</Text>
                     </TouchableOpacity>
                     
                     {newEditCoverImage && (
@@ -2311,22 +2221,12 @@ export default function VinylPlayerScreen() {
                     </View>
                   ) : (
                     <View style={styles.photoButtonsContainer}>
-                      {Platform.OS !== 'web' && (
-                        <TouchableOpacity 
-                          style={[styles.photoButton, { borderColor: theme.accent }]}
-                          onPress={takeEditPhoto}
-                        >
-                          <Camera size={20} color={theme.accent} />
-                          <Text style={[styles.photoButtonText, { color: theme.accent }]}>Take Photo</Text>
-                        </TouchableOpacity>
-                      )}
-                      
                       <TouchableOpacity 
                         style={[styles.photoButton, { borderColor: theme.accent }]}
                         onPress={pickEditImage}
                       >
                         <ImageIcon size={20} color={theme.accent} />
-                        <Text style={[styles.photoButtonText, { color: theme.accent }]}>Choose Photo</Text>
+                        <Text style={[styles.photoButtonText, { color: theme.accent }]}>Choose from Album</Text>
                       </TouchableOpacity>
                     </View>
                   )}
