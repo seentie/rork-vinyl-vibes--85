@@ -222,9 +222,9 @@ export default function VinylPlayerScreen() {
   // Handle play/pause/stop animations
   useEffect(() => {
     if (isPlaying && !isStopped) {
-      // Move tonearm to playing position
+      // Move tonearm to playing position - more angled over the record
       Animated.spring(tonearmAngle, {
-        toValue: -5,
+        toValue: 0,
         useNativeDriver: true,
         tension: 40,
         friction: 8,
@@ -668,8 +668,8 @@ export default function VinylPlayerScreen() {
   });
 
   const tonearmRotation = tonearmAngle.interpolate({
-    inputRange: [-25, -10],
-    outputRange: ['-25deg', '-10deg'],
+    inputRange: [-25, 0],
+    outputRange: ['-25deg', '0deg'],
     extrapolate: 'clamp',
   });
 

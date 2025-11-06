@@ -277,21 +277,23 @@ export default function StylusViewScreen() {
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
     
-    // Stop animations
+    // Stop animations first
     if (stylusAnimation.current) {
       stylusAnimation.current.stop();
     }
     
-    // Reset stylus to starting position
+    // Lift stylus up and reset to starting position
+    setIsPlaying(false);
+    setIsStopped(true);
+    
     Animated.timing(stylusPosition, {
       toValue: 0,
       duration: 500,
       useNativeDriver: true,
     }).start(() => {
-      // After reset animation completes, set to stopped state
-      handleStop();
+      // After stylus returns to start, change track
+      setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
     });
   };
 
@@ -299,8 +301,24 @@ export default function StylusViewScreen() {
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
-    handleStop();
+    
+    // Stop animations first
+    if (stylusAnimation.current) {
+      stylusAnimation.current.stop();
+    }
+    
+    // Lift stylus up and reset to starting position
+    setIsPlaying(false);
+    setIsStopped(true);
+    
+    Animated.timing(stylusPosition, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
+      // After stylus returns to start, change track
+      setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
+    });
   };
 
 
