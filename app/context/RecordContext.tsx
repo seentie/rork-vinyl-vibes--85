@@ -33,6 +33,14 @@ const defaultTracks: Track[] = [
   { id: 8, title: 'Saturday Morning Forever', artist: 'Old Skool Apps', album: 'The Retro Renaissance', duration: '5:01', decade: '1990s' },
 ];
 
+const defaultAlbum: SavedRecord = {
+  id: 'default-retro-renaissance',
+  albumName: 'The Retro Renaissance',
+  artistName: 'Old Skool Apps',
+  dateAdded: new Date().toISOString(),
+  songs: ['Saturday Morning Forever'],
+};
+
 export const [RecordProvider, useRecord] = createContextHook(() => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [selectedRecord, setSelectedRecord] = useState<SavedRecord | null>(null);
@@ -48,10 +56,10 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       const stored = await AsyncStorage.getItem('savedRecords');
       console.log('[RecordContext] Raw stored data:', stored ? `${stored.substring(0, 100)}...` : 'null');
       
-      // If no data or clearly invalid, reset to empty array
+      // If no data or clearly invalid, reset to default album only
       if (!stored || stored.trim() === '' || stored === 'undefined' || stored === 'null') {
-        console.log('[RecordContext] No valid stored data, using empty array');
-        setSavedRecords([]);
+        console.log('[RecordContext] No valid stored data, using default album');
+        setSavedRecords([defaultAlbum]);
         setIsInitialized(true);
         return;
       }
@@ -82,7 +90,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('[RecordContext] Detected corrupted data pattern, clearing storage');
           console.warn('[RecordContext] Corrupted data sample:', trimmedStored.substring(0, 200));
           await AsyncStorage.removeItem('savedRecords');
-          setSavedRecords([]);
+          setSavedRecords([defaultAlbum]);
           setIsInitialized(true);
           return;
         }
@@ -94,7 +102,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (openBrackets !== closeBrackets) {
           console.warn('Mismatched brackets detected, clearing corrupted data');
           await AsyncStorage.removeItem('savedRecords');
-          setSavedRecords([]);
+          setSavedRecords([defaultAlbum]);
           setIsInitialized(true);
           return;
         }
@@ -104,7 +112,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
               (trimmedStored.startsWith('[') && trimmedStored.endsWith(']')))) {
           console.warn('Invalid JSON structure detected, clearing corrupted data');
           await AsyncStorage.removeItem('savedRecords');
-          setSavedRecords([]);
+          setSavedRecords([defaultAlbum]);
           setIsInitialized(true);
           return;
         }
@@ -116,7 +124,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         } catch (jsonError) {
           console.warn('JSON parse failed, clearing corrupted data:', jsonError);
           await AsyncStorage.removeItem('savedRecords');
-          setSavedRecords([]);
+          setSavedRecords([defaultAlbum]);
           setIsInitialized(true);
           return;
         }
@@ -125,7 +133,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (parsed === null || parsed === undefined) {
           console.warn('Parsed data is null/undefined');
           await AsyncStorage.removeItem('savedRecords');
-          setSavedRecords([]);
+          setSavedRecords([defaultAlbum]);
           setIsInitialized(true);
           return;
         }
@@ -133,7 +141,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (!Array.isArray(parsed)) {
           console.warn('Parsed data is not an array, resetting');
           await AsyncStorage.removeItem('savedRecords');
-          setSavedRecords([]);
+          setSavedRecords([defaultAlbum]);
           setIsInitialized(true);
           return;
         }
@@ -156,12 +164,15 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (validRecords.length === 0 && parsed.length > 0) {
           console.warn('All records were invalid, clearing storage');
           await AsyncStorage.removeItem('savedRecords');
-          setSavedRecords([]);
+          setSavedRecords([defaultAlbum]);
           setIsInitialized(true);
           return;
         }
         
-        setSavedRecords(validRecords);
+        // Ensure default album is always present
+        const hasDefaultAlbum = validRecords.some(r => r.id === defaultAlbum.id);
+        const recordsWithDefault = hasDefaultAlbum ? validRecords : [defaultAlbum, ...validRecords];
+        setSavedRecords(recordsWithDefault);
         setIsInitialized(true);
         
         // Save cleaned data if we filtered out invalid records
@@ -171,12 +182,12 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       } catch (parseError) {
         console.warn('Error processing saved records, clearing corrupted data:', parseError);
         await AsyncStorage.removeItem('savedRecords');
-        setSavedRecords([]);
+        setSavedRecords([defaultAlbum]);
         setIsInitialized(true);
       }
     } catch (error) {
       console.error('Critical error loading saved records:', error);
-      setSavedRecords([]);
+      setSavedRecords([defaultAlbum]);
       setIsInitialized(true);
       try {
         await AsyncStorage.removeItem('savedRecords');
@@ -195,8 +206,12 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       return;
     }
     
+    // Ensure default album is always present
+    const hasDefaultAlbum = records.some(r => r.id === defaultAlbum.id);
+    const recordsToSave = hasDefaultAlbum ? records : [defaultAlbum, ...records];
+    
     // Validate all records have required fields
-    const validRecords = records.filter(record => 
+    const validRecords = recordsToSave.filter(record => 
       record && 
       typeof record === 'object' &&
       typeof record.id === 'string' && 
@@ -204,8 +219,8 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       typeof record.artistName === 'string'
     );
     
-    if (validRecords.length !== records.length) {
-      console.warn(`Filtered out ${records.length - validRecords.length} invalid records`);
+    if (validRecords.length !== recordsToSave.length) {
+      console.warn(`Filtered out ${recordsToSave.length - validRecords.length} invalid records`);
     }
     
     try {
@@ -238,7 +253,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       // If save fails, don't update state to keep consistency
       try {
         await AsyncStorage.removeItem('savedRecords');
-        setSavedRecords([]);
+        setSavedRecords([defaultAlbum]);
       } catch (removeError) {
         console.error('Error removing corrupted data:', removeError);
       }
@@ -339,11 +354,11 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
   const clearAllData = useCallback(async () => {
     try {
       await AsyncStorage.removeItem('savedRecords');
-      setSavedRecords([]);
-      setSelectedRecord(null);
+      setSavedRecords([defaultAlbum]);
+      setSelectedRecord(defaultAlbum);
       setCurrentSong('Saturday Morning Forever');
       setTracks(defaultTracks);
-      console.log('All data cleared successfully');
+      console.log('All data cleared successfully, keeping default album');
     } catch (error) {
       console.error('Error clearing data:', error);
     }
@@ -353,11 +368,11 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     try {
       console.log('Clearing potentially corrupted data...');
       await AsyncStorage.removeItem('savedRecords');
-      setSavedRecords([]);
-      setSelectedRecord(null);
+      setSavedRecords([defaultAlbum]);
+      setSelectedRecord(defaultAlbum);
       setCurrentSong('Saturday Morning Forever');
       setTracks(defaultTracks);
-      console.log('Corrupted data cleared successfully');
+      console.log('Corrupted data cleared successfully, keeping default album');
       return true;
     } catch (error) {
       console.error('Error clearing corrupted data:', error);
