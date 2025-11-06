@@ -40,7 +40,7 @@ import { z } from 'zod';
 
 const { width: screenWidth } = Dimensions.get('window');
 const RECORD_SIZE = screenWidth * 0.75;
-const TONEARM_LENGTH = RECORD_SIZE * 0.95;
+const TONEARM_LENGTH = RECORD_SIZE * 1.15;
 
 
 
@@ -222,9 +222,9 @@ export default function VinylPlayerScreen() {
   // Handle play/pause/stop animations
   useEffect(() => {
     if (isPlaying && !isStopped) {
-      // Move tonearm to playing position - more angled over the record
+      // Move tonearm to playing position - positioned over the record
       Animated.spring(tonearmAngle, {
-        toValue: 0,
+        toValue: 15,
         useNativeDriver: true,
         tension: 40,
         friction: 8,
@@ -668,8 +668,8 @@ export default function VinylPlayerScreen() {
   });
 
   const tonearmRotation = tonearmAngle.interpolate({
-    inputRange: [-25, 0],
-    outputRange: ['-25deg', '0deg'],
+    inputRange: [-25, 15],
+    outputRange: ['-25deg', '15deg'],
     extrapolate: 'clamp',
   });
 
@@ -2628,7 +2628,7 @@ const styles = StyleSheet.create({
   groove: {
     position: 'absolute',
     borderRadius: 1000,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: '#1A1A1A',
   },
   label: {

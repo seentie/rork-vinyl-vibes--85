@@ -284,16 +284,26 @@ export default function StylusViewScreen() {
     }
     
     // Lift stylus up and reset to starting position
+    const wasPlaying = isPlaying;
     setIsPlaying(false);
     setIsStopped(true);
     
+    // Animate stylus lifting back to start
     Animated.timing(stylusPosition, {
       toValue: 0,
-      duration: 500,
+      duration: 800,
       useNativeDriver: true,
     }).start(() => {
       // After stylus returns to start, change track
       setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
+      
+      // If it was playing before, restart after a brief pause
+      if (wasPlaying) {
+        setTimeout(() => {
+          setIsStopped(false);
+          setIsPlaying(true);
+        }, 300);
+      }
     });
   };
 
@@ -308,16 +318,26 @@ export default function StylusViewScreen() {
     }
     
     // Lift stylus up and reset to starting position
+    const wasPlaying = isPlaying;
     setIsPlaying(false);
     setIsStopped(true);
     
+    // Animate stylus lifting back to start
     Animated.timing(stylusPosition, {
       toValue: 0,
-      duration: 500,
+      duration: 800,
       useNativeDriver: true,
     }).start(() => {
       // After stylus returns to start, change track
       setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
+      
+      // If it was playing before, restart after a brief pause
+      if (wasPlaying) {
+        setTimeout(() => {
+          setIsStopped(false);
+          setIsPlaying(true);
+        }, 300);
+      }
     });
   };
 
@@ -1458,8 +1478,8 @@ const styles = StyleSheet.create({
   groove: {
     position: 'absolute',
     borderRadius: 1000,
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
+    borderWidth: 1.5,
+    borderColor: '#1A1A1A',
   },
 
   label: {
