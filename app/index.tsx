@@ -2678,8 +2678,8 @@ const styles = StyleSheet.create({
   },
   tonearmBase: {
     position: 'absolute',
-    top: 20,
-    right: 20,
+    top: RECORD_SIZE * 0.15,
+    right: RECORD_SIZE * 0.05,
     width: 20,
     height: 20,
     backgroundColor: '#C0C0C0',
@@ -2693,9 +2693,9 @@ const styles = StyleSheet.create({
   },
   tonearm: {
     position: 'absolute',
-    width: TONEARM_LENGTH + 60,
+    width: TONEARM_LENGTH,
     height: 12,
-    left: -35,
+    left: -TONEARM_LENGTH + 20,
     top: 4,
     zIndex: 10,
   },
