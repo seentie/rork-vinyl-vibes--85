@@ -864,7 +864,19 @@ export default function StylusViewScreen() {
                 { transform: [{ rotate: spin }] },
               ]}
             >
-
+              {/* Record Grooves */}
+              {[...Array(8)].map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.groove,
+                    {
+                      width: STYLUS_SIZE - (i * 30),
+                      height: STYLUS_SIZE - (i * 30),
+                    },
+                  ]}
+                />
+              ))}
               
               {/* Record Label */}
               <View style={[styles.label, { backgroundColor: theme.accent }]}>
@@ -1403,6 +1415,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+  },
+  groove: {
+    position: 'absolute',
+    borderRadius: 1000,
+    borderWidth: 0.5,
+    borderColor: '#1A1A1A',
   },
 
   label: {
