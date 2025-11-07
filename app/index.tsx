@@ -40,7 +40,7 @@ import { z } from 'zod';
 
 const { width: screenWidth } = Dimensions.get('window');
 const RECORD_SIZE = screenWidth * 0.75;
-const TONEARM_LENGTH = RECORD_SIZE * 1.15;
+const TONEARM_LENGTH = RECORD_SIZE * 0.65;
 
 
 
@@ -2693,15 +2693,15 @@ const styles = StyleSheet.create({
   },
   tonearm: {
     position: 'absolute',
-    width: TONEARM_LENGTH * 0.85,
+    width: TONEARM_LENGTH,
     height: 12,
-    left: -TONEARM_LENGTH * 0.85 + 10,
+    left: -TONEARM_LENGTH + 10,
     top: 4,
     zIndex: 10,
   },
   tonearmShaft: {
     position: 'absolute',
-    width: TONEARM_LENGTH * 0.85,
+    width: TONEARM_LENGTH,
     height: 8,
     backgroundColor: '#C0C0C0',
     borderRadius: 4,
