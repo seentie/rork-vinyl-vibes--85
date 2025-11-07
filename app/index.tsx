@@ -200,11 +200,8 @@ export default function VinylPlayerScreen() {
       );
       
       spinAnimation.current.start();
-    } else if (isStopped) {
-      // Reset rotation when stopped
-      spinValue.setValue(0);
     } else {
-      // When paused, keep the current rotation value
+      // When paused or stopped, keep the current rotation value
       // No need to reset
     }
 
