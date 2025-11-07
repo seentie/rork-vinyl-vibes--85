@@ -1692,6 +1692,21 @@ export default function VinylPlayerScreen() {
               if (selectedRecord) {
                 selectRecord(selectedRecord);
               }
+              router.push('/close-up');
+            }}
+            testID="close-up-view-button"
+          >
+            <Eye size={20} color={theme.accent} />
+            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Close-Up</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.actionButton, { borderColor: theme.accent }]}
+            onPress={() => {
+              // Make sure current record info is synced before navigating
+              if (selectedRecord) {
+                selectRecord(selectedRecord);
+              }
               router.push('/now-playing');
             }}
             testID="now-playing-button"
