@@ -1682,7 +1682,7 @@ export default function VinylPlayerScreen() {
             testID="stylus-view-button"
           >
             <Eye size={20} color={theme.accent} />
-            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Side Angle</Text>
+            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Stylus View</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
