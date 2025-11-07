@@ -610,6 +610,11 @@ export default function VinylPlayerScreen() {
     setIsPlaying(false);
     setIsStopped(true);
     
+    // Stop animation and hold at current rotation
+    if (spinAnimation.current) {
+      spinAnimation.current.stop();
+    }
+    
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
@@ -620,11 +625,18 @@ export default function VinylPlayerScreen() {
     setIsPlaying(false);
     setIsStopped(true);
     
-    // Reset rotation to starting position
+    // Stop animation first
     if (spinAnimation.current) {
       spinAnimation.current.stop();
+      spinAnimation.current = null;
     }
-    spinValue.setValue(0);
+    
+    // Reset rotation to starting position with animation
+    Animated.timing(spinValue, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
