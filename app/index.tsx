@@ -13,7 +13,6 @@ import {
   KeyboardAvoidingView,
   Alert,
   Image,
-  PanResponder,
 } from 'react-native';
 import {
   Play,
@@ -133,8 +132,6 @@ export default function VinylPlayerScreen() {
   const [isGeneratingTheme, setIsGeneratingTheme] = useState(false);
   const [showYouPickModal, setShowYouPickModal] = useState(false);
   const [youPickDescription, setYouPickDescription] = useState('');
-  const [zoomScale, setZoomScale] = useState(1);
-  const zoomAnim = useRef(new Animated.Value(1)).current;
   const [recordName, setRecordName] = useState('The Retro Renaissance');
   const [artistName, setArtistName] = useState('Old Skool Apps');
   const [showEditModal, setShowEditModal] = useState(false);
@@ -169,75 +166,12 @@ export default function VinylPlayerScreen() {
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
-  const lastScale = useRef(1);
-  const lastDistance = useRef(0);
 
   const currentTrack = tracks[currentTrackIndex];
   const [tempCurrentSong, setTempCurrentSong] = useState(currentTrack?.title || '');
   const [isEditingSong, setIsEditingSong] = useState(false);
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
-
-  // Calculate distance between two touches
-  const getDistance = (touches: any[]) => {
-    if (touches.length < 2) return 0;
-    const [touch1, touch2] = touches;
-    const dx = touch1.pageX - touch2.pageX;
-    const dy = touch1.pageY - touch2.pageY;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
-  // Pan responder for pinch-to-zoom
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        // Only respond to pinch gestures (2 touches)
-        return evt.nativeEvent.touches.length === 2;
-      },
-      onPanResponderGrant: (evt) => {
-        if (evt.nativeEvent.touches.length === 2) {
-          lastDistance.current = getDistance(evt.nativeEvent.touches);
-        }
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        if (evt.nativeEvent.touches.length === 2) {
-          const currentDistance = getDistance(evt.nativeEvent.touches);
-          if (lastDistance.current > 0) {
-            const scale = currentDistance / lastDistance.current;
-            const newScale = Math.max(1, Math.min(3, lastScale.current * scale));
-            
-            zoomAnim.setValue(newScale);
-            setZoomScale(newScale);
-          }
-          lastDistance.current = currentDistance;
-        }
-      },
-      onPanResponderRelease: () => {
-        lastScale.current = zoomScale;
-        lastDistance.current = 0;
-        
-        if (Platform.OS !== 'web') {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        }
-      },
-    })
-  ).current;
-
-  // Reset zoom function
-  const resetZoom = () => {
-    Animated.spring(zoomAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      friction: 8,
-    }).start();
-    setZoomScale(1);
-    lastScale.current = 1;
-    
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
-  };
 
   // Spinning effect controlled by play state
   useEffect(() => {
@@ -1527,30 +1461,7 @@ export default function VinylPlayerScreen() {
         </ScrollView>
 
         <View style={styles.turntableContainer}>
-          {/* Zoom controls */}
-          {zoomScale > 1 && (
-            <TouchableOpacity 
-              style={[styles.resetZoomButton, { backgroundColor: theme.accent }]}
-              onPress={resetZoom}
-            >
-              <Text style={styles.resetZoomText}>Reset Zoom</Text>
-            </TouchableOpacity>
-          )}
-          
-          {/* Zoom instruction */}
-          {zoomScale === 1 && (
-            <View style={styles.zoomHint}>
-              <Text style={[styles.zoomHintText, { color: theme.text }]}>Pinch to zoom</Text>
-            </View>
-          )}
-          
-          {/* Turntable Base with zoom */}
-          <Animated.View 
-            style={[{
-              transform: [{ scale: zoomAnim }],
-            }]}
-            {...panResponder.panHandlers}
-          >
+          {/* Turntable Base */}
           <View style={styles.turntableBase}>
             {/* Platter */}
             <View style={styles.platterShadow}>
@@ -1614,7 +1525,6 @@ export default function VinylPlayerScreen() {
               </LinearGradient>
             </View>
           </View>
-          </Animated.View>
         </View>
 
         {/* Track Info */}
@@ -1773,21 +1683,6 @@ export default function VinylPlayerScreen() {
           >
             <Eye size={20} color={theme.accent} />
             <Text style={[styles.actionButtonText, { color: theme.accent }]}>Side Angle</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.actionButton, { borderColor: theme.accent }]}
-            onPress={() => {
-              // Make sure current record info is synced before navigating
-              if (selectedRecord) {
-                selectRecord(selectedRecord);
-              }
-              router.push('/close-up');
-            }}
-            testID="close-up-view-button"
-          >
-            <Eye size={20} color={theme.accent} />
-            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Close-Up</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -2596,40 +2491,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 20,
     marginBottom: 20,
-    position: 'relative',
-  },
-  resetZoomButton: {
-    position: 'absolute',
-    top: 10,
-    right: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    zIndex: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  resetZoomText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600' as const,
-  },
-  zoomHint: {
-    position: 'absolute',
-    top: 10,
-    alignSelf: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 12,
-    zIndex: 10,
-  },
-  zoomHintText: {
-    fontSize: 11,
-    opacity: 0.7,
   },
   turntableBase: {
     width: screenWidth * 0.9,
