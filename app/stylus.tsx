@@ -175,12 +175,15 @@ export default function StylusViewScreen() {
   }, [rpm, isPlaying, isStopped, spinValue]);
 
   // Handle stylus movement
+  // The stylus should take about 3 minutes per track/ridge on a real vinyl
+  // With 12 grooves, the total duration should be around 36 minutes for the full record
   useEffect(() => {
     if (stylusMovementEnabled && isPlaying && !isStopped) {
       const currentValue = (stylusPosition as any)._value || 0;
+      // 2160000ms = 36 minutes (3 minutes per ridge × 12 ridges)
       stylusAnimation.current = Animated.timing(stylusPosition, {
         toValue: 1,
-        duration: (1 - currentValue) * 180000,
+        duration: (1 - currentValue) * 2160000,
         useNativeDriver: true,
       });
       stylusAnimation.current.start();
