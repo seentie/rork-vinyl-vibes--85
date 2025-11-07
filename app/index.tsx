@@ -186,12 +186,13 @@ export default function VinylPlayerScreen() {
       // Real vinyl rotation timing for authentic feel
       const duration = rpm === 45 ? 1333 : 1818; // 45 RPM = 1.33s, 33 RPM = 1.82s per rotation
       
-      // Reset spin value and create smooth infinite rotation
-      spinValue.setValue(0);
+      // Get current value to continue from where it stopped
+      const currentValue = (spinValue as any)._value || 0;
       
+      // Create animation from current position
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: 1,
+          toValue: currentValue + 1,
           duration: duration,
           useNativeDriver: true,
           easing: (t) => t, // Linear easing for smooth consistent rotation
@@ -200,9 +201,9 @@ export default function VinylPlayerScreen() {
       );
       
       spinAnimation.current.start();
-    } else {
-      // When paused or stopped, keep the current rotation value
-      // No need to reset
+    } else if (isStopped) {
+      // When stopped, keep current position (don't reset to 0)
+      // The record stays where it stopped
     }
 
     return () => {
