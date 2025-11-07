@@ -186,13 +186,10 @@ export default function VinylPlayerScreen() {
       // Real vinyl rotation timing for authentic feel
       const duration = rpm === 45 ? 1333 : 1818; // 45 RPM = 1.33s, 33 RPM = 1.82s per rotation
       
-      // Get current value to continue from where it stopped
-      const currentValue = (spinValue as any)._value || 0;
-      
-      // Create animation from current position
+      // Create animation that loops continuously
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: currentValue + 1,
+          toValue: 1,
           duration: duration,
           useNativeDriver: true,
           easing: (t) => t, // Linear easing for smooth consistent rotation
@@ -201,9 +198,6 @@ export default function VinylPlayerScreen() {
       );
       
       spinAnimation.current.start();
-    } else if (isStopped) {
-      // When stopped, keep current position (don't reset to 0)
-      // The record stays where it stopped
     }
 
     return () => {
@@ -622,7 +616,19 @@ export default function VinylPlayerScreen() {
   };
 
   const resetNeedle = () => {
-    handleStop();
+    // Stop the record
+    setIsPlaying(false);
+    setIsStopped(true);
+    
+    // Reset rotation to starting position
+    if (spinAnimation.current) {
+      spinAnimation.current.stop();
+    }
+    spinValue.setValue(0);
+    
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
   };
 
   const saveRecordName = () => {
