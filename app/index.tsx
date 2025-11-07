@@ -40,7 +40,6 @@ import { z } from 'zod';
 
 const { width: screenWidth } = Dimensions.get('window');
 const RECORD_SIZE = screenWidth * 0.75;
-const TONEARM_LENGTH = RECORD_SIZE * 0.65;
 
 
 
@@ -165,10 +164,7 @@ export default function VinylPlayerScreen() {
   } = useRecord();
   
   const spinValue = useRef(new Animated.Value(0)).current;
-  const tonearmAngle = useRef(new Animated.Value(-25)).current;
-  const needlePosition = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
-  const needleAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
   const currentTrack = tracks[currentTrackIndex];
@@ -219,55 +215,7 @@ export default function VinylPlayerScreen() {
     };
   }, [rpm, isPlaying, isStopped, spinValue]);
 
-  // Handle play/pause/stop animations
-  useEffect(() => {
-    if (isPlaying && !isStopped) {
-      // Move tonearm to playing position - positioned over the record
-      Animated.spring(tonearmAngle, {
-        toValue: 15,
-        useNativeDriver: true,
-        tension: 40,
-        friction: 8,
-      }).start();
 
-      // Move needle from current position towards center
-      const currentValue = (needlePosition as any)._value || 0;
-      needleAnimation.current = Animated.timing(needlePosition, {
-        toValue: 1,
-        duration: (1 - currentValue) * 180000, // Proportional duration
-        useNativeDriver: true,
-      });
-      needleAnimation.current.start();
-    } else {
-      // Pause needle movement but don't reset unless stopped
-      if (needleAnimation.current) {
-        needleAnimation.current.stop();
-      }
-      
-      if (isStopped) {
-        // Reset everything when stopped
-        Animated.parallel([
-          Animated.spring(tonearmAngle, {
-            toValue: -25,
-            useNativeDriver: true,
-            tension: 40,
-            friction: 8,
-          }),
-          Animated.timing(needlePosition, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }
-    }
-
-    return () => {
-      if (needleAnimation.current) {
-        needleAnimation.current.stop();
-      }
-    };
-  }, [isPlaying, isStopped, tonearmAngle, needlePosition]);
 
   // Show loading screen while AsyncStorage initializes
   if (!isInitialized) {
@@ -664,36 +612,12 @@ export default function VinylPlayerScreen() {
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
-    extrapolate: 'clamp', // Clamp to prevent overflow
-  });
-
-  const tonearmRotation = tonearmAngle.interpolate({
-    inputRange: [-25, 15],
-    outputRange: ['-25deg', '15deg'],
-    extrapolate: 'clamp',
-  });
-
-  // Needle movement from edge to center
-  const needleTranslateX = needlePosition.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -RECORD_SIZE * 0.3], // Move towards center
-    extrapolate: 'clamp',
-  });
-
-  const needleTranslateY = needlePosition.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -RECORD_SIZE * 0.2], // More vertical movement
     extrapolate: 'clamp',
   });
 
   const handleStop = () => {
     setIsPlaying(false);
     setIsStopped(true);
-    
-    // Stop needle animation immediately
-    if (needleAnimation.current) {
-      needleAnimation.current.stop();
-    }
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -1600,26 +1524,6 @@ export default function VinylPlayerScreen() {
                 </Animated.View>
               </LinearGradient>
             </View>
-
-            {/* Tonearm Base */}
-            <View style={styles.tonearmBase}>
-              <Animated.View
-                style={[
-                  styles.tonearm,
-                  {
-                    transform: [
-                      { rotate: tonearmRotation },
-                      { translateX: needleTranslateX },
-                      { translateY: needleTranslateY },
-                    ],
-                  },
-                ]}
-              >
-                <View style={styles.tonearmShaft} />
-                <View style={styles.cartridge} />
-                <View style={styles.needle} />
-              </Animated.View>
-            </View>
           </View>
         </View>
 
@@ -1778,7 +1682,7 @@ export default function VinylPlayerScreen() {
             testID="stylus-view-button"
           >
             <Eye size={20} color={theme.accent} />
-            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Stylus View</Text>
+            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Side Angle</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -2675,68 +2579,6 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#0A0A0A',
-  },
-  tonearmBase: {
-    position: 'absolute',
-    top: RECORD_SIZE * 0.25,
-    right: RECORD_SIZE * 0.1,
-    width: 20,
-    height: 20,
-    backgroundColor: '#C0C0C0',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 10,
-    zIndex: 10,
-  },
-  tonearm: {
-    position: 'absolute',
-    width: TONEARM_LENGTH,
-    height: 12,
-    left: -TONEARM_LENGTH + 10,
-    top: 4,
-    zIndex: 10,
-  },
-  tonearmShaft: {
-    position: 'absolute',
-    width: TONEARM_LENGTH,
-    height: 8,
-    backgroundColor: '#C0C0C0',
-    borderRadius: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 8,
-  },
-  cartridge: {
-    position: 'absolute',
-    right: 5,
-    top: -2,
-    width: 25,
-    height: 12,
-    backgroundColor: '#808080',
-    borderRadius: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 7,
-  },
-  needle: {
-    position: 'absolute',
-    right: 0,
-    top: 10,
-    width: 2,
-    height: 20,
-    backgroundColor: '#606060',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 6,
   },
   trackInfo: {
     alignItems: 'center',
