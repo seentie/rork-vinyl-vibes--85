@@ -1677,27 +1677,12 @@ export default function VinylPlayerScreen() {
               if (selectedRecord) {
                 selectRecord(selectedRecord);
               }
-              router.push('/closeup');
-            }}
-            testID="closeup-view-button"
-          >
-            <Eye size={20} color={theme.accent} />
-            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Close Up</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.actionButton, { borderColor: theme.accent }]}
-            onPress={() => {
-              // Make sure current record info is synced before navigating
-              if (selectedRecord) {
-                selectRecord(selectedRecord);
-              }
               router.push('/stylus');
             }}
             testID="stylus-view-button"
           >
             <Eye size={20} color={theme.accent} />
-            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Stylus View</Text>
+            <Text style={[styles.actionButtonText, { color: theme.accent }]}>Side Angle</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
