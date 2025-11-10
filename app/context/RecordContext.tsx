@@ -33,14 +33,14 @@ const defaultTracks: Track[] = [
   { id: 8, title: 'Saturday Morning Forever', artist: 'Old Skool Apps', album: 'The Retro Renaissance', duration: '5:01', decade: '1990s' },
 ];
 
-const defaultAlbum: SavedRecord = {
+const getDefaultAlbum = (): SavedRecord => ({
   id: 'display-retro-renaissance',
   albumName: 'The Retro Renaissance',
   artistName: 'Old Skool Apps',
   dateAdded: new Date().toISOString(),
-  coverImage: 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/v8qqt2soyyvzn4zefv80e',
+  coverImage: 'https://rork.app/pa/86x71x3w7obulse8ldksv/z3mdjnbobr02s89j2gv6h',
   songs: ['Saturday Morning Forever'],
-};
+});
 
 export const [RecordProvider, useRecord] = createContextHook(() => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
@@ -60,7 +60,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       // If no data or clearly invalid, reset to default album only
       if (!stored || stored.trim() === '' || stored === 'undefined' || stored === 'null') {
         console.log('[RecordContext] No valid stored data, using default album');
+        const defaultAlbum = getDefaultAlbum();
         setSavedRecords([defaultAlbum]);
+        setSelectedRecord(defaultAlbum);
         setIsInitialized(true);
         return;
       }
@@ -91,7 +93,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           console.warn('[RecordContext] Detected corrupted data pattern, clearing storage');
           console.warn('[RecordContext] Corrupted data sample:', trimmedStored.substring(0, 200));
           await AsyncStorage.removeItem('savedRecords');
+          const defaultAlbum = getDefaultAlbum();
           setSavedRecords([defaultAlbum]);
+          setSelectedRecord(defaultAlbum);
           setIsInitialized(true);
           return;
         }
@@ -103,7 +107,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (openBrackets !== closeBrackets) {
           console.warn('Mismatched brackets detected, clearing corrupted data');
           await AsyncStorage.removeItem('savedRecords');
+          const defaultAlbum = getDefaultAlbum();
           setSavedRecords([defaultAlbum]);
+          setSelectedRecord(defaultAlbum);
           setIsInitialized(true);
           return;
         }
@@ -113,7 +119,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
               (trimmedStored.startsWith('[') && trimmedStored.endsWith(']')))) {
           console.warn('Invalid JSON structure detected, clearing corrupted data');
           await AsyncStorage.removeItem('savedRecords');
+          const defaultAlbum = getDefaultAlbum();
           setSavedRecords([defaultAlbum]);
+          setSelectedRecord(defaultAlbum);
           setIsInitialized(true);
           return;
         }
@@ -125,7 +133,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         } catch (jsonError) {
           console.warn('JSON parse failed, clearing corrupted data:', jsonError);
           await AsyncStorage.removeItem('savedRecords');
+          const defaultAlbum = getDefaultAlbum();
           setSavedRecords([defaultAlbum]);
+          setSelectedRecord(defaultAlbum);
           setIsInitialized(true);
           return;
         }
@@ -134,7 +144,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (parsed === null || parsed === undefined) {
           console.warn('Parsed data is null/undefined');
           await AsyncStorage.removeItem('savedRecords');
+          const defaultAlbum = getDefaultAlbum();
           setSavedRecords([defaultAlbum]);
+          setSelectedRecord(defaultAlbum);
           setIsInitialized(true);
           return;
         }
@@ -142,7 +154,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (!Array.isArray(parsed)) {
           console.warn('Parsed data is not an array, resetting');
           await AsyncStorage.removeItem('savedRecords');
+          const defaultAlbum = getDefaultAlbum();
           setSavedRecords([defaultAlbum]);
+          setSelectedRecord(defaultAlbum);
           setIsInitialized(true);
           return;
         }
@@ -165,14 +179,32 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
         if (validRecords.length === 0 && parsed.length > 0) {
           console.warn('All records were invalid, clearing storage');
           await AsyncStorage.removeItem('savedRecords');
+          const defaultAlbum = getDefaultAlbum();
           setSavedRecords([defaultAlbum]);
+          setSelectedRecord(defaultAlbum);
           setIsInitialized(true);
           return;
         }
         
         // Ensure display album is always present
+        const defaultAlbum = getDefaultAlbum();
         const hasDefaultAlbum = validRecords.some(r => r.id === defaultAlbum.id);
-        const recordsWithDefault = hasDefaultAlbum ? validRecords : [defaultAlbum, ...validRecords];
+        
+        // If display album exists in saved records, use that version (with user's cover image)
+        // Otherwise add the default album
+        let recordsWithDefault: SavedRecord[];
+        if (hasDefaultAlbum) {
+          recordsWithDefault = validRecords;
+          // Set the display album as selected if found
+          const displayAlbum = validRecords.find(r => r.id === defaultAlbum.id);
+          if (displayAlbum) {
+            setSelectedRecord(displayAlbum);
+          }
+        } else {
+          recordsWithDefault = [defaultAlbum, ...validRecords];
+          setSelectedRecord(defaultAlbum);
+        }
+        
         setSavedRecords(recordsWithDefault);
         setIsInitialized(true);
         
@@ -183,12 +215,16 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       } catch (parseError) {
         console.warn('Error processing saved records, clearing corrupted data:', parseError);
         await AsyncStorage.removeItem('savedRecords');
+        const defaultAlbum = getDefaultAlbum();
         setSavedRecords([defaultAlbum]);
+        setSelectedRecord(defaultAlbum);
         setIsInitialized(true);
       }
     } catch (error) {
       console.error('Critical error loading saved records:', error);
+      const defaultAlbum = getDefaultAlbum();
       setSavedRecords([defaultAlbum]);
+      setSelectedRecord(defaultAlbum);
       setIsInitialized(true);
       try {
         await AsyncStorage.removeItem('savedRecords');
@@ -208,6 +244,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     }
     
     // Ensure display album is always present
+    const defaultAlbum = getDefaultAlbum();
     const hasDefaultAlbum = records.some(r => r.id === defaultAlbum.id);
     const recordsToSave = hasDefaultAlbum ? records : [defaultAlbum, ...records];
     
@@ -254,7 +291,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       // If save fails, don't update state to keep consistency
       try {
         await AsyncStorage.removeItem('savedRecords');
+        const defaultAlbum = getDefaultAlbum();
         setSavedRecords([defaultAlbum]);
+        setSelectedRecord(defaultAlbum);
       } catch (removeError) {
         console.error('Error removing corrupted data:', removeError);
       }
@@ -355,6 +394,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
   const clearAllData = useCallback(async () => {
     try {
       await AsyncStorage.removeItem('savedRecords');
+      const defaultAlbum = getDefaultAlbum();
       setSavedRecords([defaultAlbum]);
       setSelectedRecord(defaultAlbum);
       setCurrentSong('Saturday Morning Forever');
@@ -369,6 +409,7 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     try {
       console.log('Clearing potentially corrupted data...');
       await AsyncStorage.removeItem('savedRecords');
+      const defaultAlbum = getDefaultAlbum();
       setSavedRecords([defaultAlbum]);
       setSelectedRecord(defaultAlbum);
       setCurrentSong('Saturday Morning Forever');
