@@ -2794,10 +2794,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
+    gap: 12,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold' as const,
+    flex: 1,
+    flexShrink: 1,
   },
   inputContainer: {
     marginBottom: 20,
