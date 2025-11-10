@@ -238,7 +238,6 @@ export default function StylusViewScreen() {
 
   const handleStop = () => {
     setIsPlaying(false);
-    setIsStopped(true);
     
     if (stylusAnimation.current) {
       stylusAnimation.current.stop();
@@ -286,26 +285,20 @@ export default function StylusViewScreen() {
       stylusAnimation.current.stop();
     }
     
-    // Lift stylus up and reset to starting position
-    const wasPlaying = isPlaying;
-    setIsPlaying(false);
-    setIsStopped(true);
+    // Get current stylus position to calculate next groove
+    const currentValue = (stylusPosition as any)._value || 0;
+    // Each groove is approximately 1/12 of the record
+    const nextGroovePosition = Math.min(currentValue + (1/12), 1);
     
-    // Animate stylus lifting back to start
+    // Move stylus to next groove
     Animated.timing(stylusPosition, {
-      toValue: 0,
-      duration: 800,
+      toValue: nextGroovePosition,
+      duration: 400,
       useNativeDriver: true,
     }).start(() => {
-      // After stylus returns to start, change track
-      setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
-      
-      // If it was playing before, restart after a brief pause
-      if (wasPlaying) {
-        setTimeout(() => {
-          setIsStopped(false);
-          setIsPlaying(true);
-        }, 300);
+      // If playing, resume playing from this position
+      if (isPlaying) {
+        // Resume will happen automatically from useEffect
       }
     });
   };
