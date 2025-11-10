@@ -35,7 +35,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useRecord, SavedRecord, Track } from './context/RecordContext';
-import { generateObject } from '@rork/toolkit-sdk';
+import { generateObject } from '@rork-ai/toolkit-sdk';
 import { z } from 'zod';
 
 const { width: screenWidth } = Dimensions.get('window');

@@ -38,7 +38,7 @@ const defaultAlbum: SavedRecord = {
   albumName: 'The Retro Renaissance',
   artistName: 'Old Skool Apps',
   dateAdded: new Date().toISOString(),
-  coverImage: 'https://rork.app/pa/86x71x3w7obulse8ldksv/retro_renaissance_album_cover',
+  coverImage: 'https://rork.app/pa/86x71x3w7obulse8ldksv/retro_renaissance_saved_cover',
   songs: ['Saturday Morning Forever'],
 };
 
