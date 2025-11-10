@@ -33,7 +33,7 @@ const defaultTracks: Track[] = [
   { id: 8, title: 'Saturday Morning Forever', artist: 'Old Skool Apps', album: 'The Retro Renaissance', duration: '5:01', decade: '1990s' },
 ];
 
-const DISPLAY_ALBUM_COVER = 'https://rork.app/pa/86x71x3w7obulse8ldksv/z3mdjnbobr02s89j2gv6h';
+const DISPLAY_ALBUM_COVER = 'https://pub-e001eb4506b145aa938b5d3badbff6a5.r2.dev/attachments/1kt3wo2lky8o391g4sek0';
 
 const getDefaultAlbum = (): SavedRecord => ({
   id: 'display-retro-renaissance',
