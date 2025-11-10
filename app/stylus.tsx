@@ -216,21 +216,9 @@ export default function StylusViewScreen() {
     extrapolate: 'clamp',
   });
 
-  const stylusTranslateX = stylusPosition.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -STYLUS_SIZE * 0.25],
-    extrapolate: 'clamp',
-  });
-
-  const stylusTranslateY = stylusPosition.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, STYLUS_SIZE * 0.25],
-    extrapolate: 'clamp',
-  });
-
   const stylusRotate = stylusPosition.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '5deg'],
+    outputRange: ['0deg', '25deg'],
     extrapolate: 'clamp',
   });
 
@@ -960,10 +948,9 @@ export default function StylusViewScreen() {
                 styles.stylusArm,
                 {
                   transform: [
-                    { translateX: stylusTranslateX },
-                    { translateY: stylusTranslateY },
                     { rotate: stylusRotate },
                   ],
+                  transformOrigin: 'top right',
                 },
               ]}
             >
@@ -1525,6 +1512,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 160,
     height: 80,
+    right: 0,
+    top: 0,
   },
   stylusBase: {
     position: 'absolute',
