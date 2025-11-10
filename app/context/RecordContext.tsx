@@ -33,12 +33,14 @@ const defaultTracks: Track[] = [
   { id: 8, title: 'Saturday Morning Forever', artist: 'Old Skool Apps', album: 'The Retro Renaissance', duration: '5:01', decade: '1990s' },
 ];
 
+const DISPLAY_ALBUM_COVER = 'https://rork.app/pa/86x71x3w7obulse8ldksv/z3mdjnbobr02s89j2gv6h';
+
 const getDefaultAlbum = (): SavedRecord => ({
   id: 'display-retro-renaissance',
   albumName: 'The Retro Renaissance',
   artistName: 'Old Skool Apps',
   dateAdded: new Date().toISOString(),
-  coverImage: 'https://rork.app/pa/86x71x3w7obulse8ldksv/z3mdjnbobr02s89j2gv6h',
+  coverImage: DISPLAY_ALBUM_COVER,
   songs: ['Saturday Morning Forever'],
 });
 
@@ -186,17 +188,21 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           return;
         }
         
-        // Ensure display album is always present
+        // Ensure display album is always present with permanent cover
         const defaultAlbum = getDefaultAlbum();
         const hasDefaultAlbum = validRecords.some(r => r.id === defaultAlbum.id);
         
-        // If display album exists in saved records, use that version (with user's cover image)
+        // If display album exists in saved records, ensure it has the permanent cover
         // Otherwise add the default album
         let recordsWithDefault: SavedRecord[];
         if (hasDefaultAlbum) {
-          recordsWithDefault = validRecords;
-          // Set the display album as selected if found
-          const displayAlbum = validRecords.find(r => r.id === defaultAlbum.id);
+          recordsWithDefault = validRecords.map(r => 
+            r.id === defaultAlbum.id 
+              ? { ...r, coverImage: DISPLAY_ALBUM_COVER } // Always restore the permanent cover
+              : r
+          );
+          // Set the display album as selected with permanent cover
+          const displayAlbum = recordsWithDefault.find(r => r.id === defaultAlbum.id);
           if (displayAlbum) {
             setSelectedRecord(displayAlbum);
           }
@@ -243,10 +249,16 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       return;
     }
     
-    // Ensure display album is always present
+    // Ensure display album is always present with permanent cover
     const defaultAlbum = getDefaultAlbum();
     const hasDefaultAlbum = records.some(r => r.id === defaultAlbum.id);
-    const recordsToSave = hasDefaultAlbum ? records : [defaultAlbum, ...records];
+    // Restore permanent cover for display album before saving
+    const recordsWithPermanentCover = records.map(r => 
+      r.id === defaultAlbum.id 
+        ? { ...r, coverImage: DISPLAY_ALBUM_COVER }
+        : r
+    );
+    const recordsToSave = hasDefaultAlbum ? recordsWithPermanentCover : [defaultAlbum, ...recordsWithPermanentCover];
     
     // Validate all records have required fields
     const validRecords = recordsToSave.filter(record => 
