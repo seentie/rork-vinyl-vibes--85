@@ -218,7 +218,7 @@ export default function StylusViewScreen() {
 
   const stylusRotate = stylusPosition.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '25deg'],
+    outputRange: ['0deg', '-25deg'],
     extrapolate: 'clamp',
   });
 
