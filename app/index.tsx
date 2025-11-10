@@ -1703,9 +1703,14 @@ export default function VinylPlayerScreen() {
           <TouchableOpacity 
             style={[styles.actionButton, { borderColor: theme.accent }]}
             onPress={() => {
-              // Make sure current record info is synced before navigating
-              if (selectedRecord) {
-                selectRecord(selectedRecord);
+              // Ensure the selected record is properly set before navigating
+              const currentRecord = savedRecords.find(r => 
+                r.albumName === recordName && r.artistName === artistName
+              ) || selectedRecord;
+              
+              if (currentRecord) {
+                console.log('[NowPlaying Navigation] Selecting record:', currentRecord.albumName, 'Cover:', currentRecord.coverImage);
+                selectRecord(currentRecord);
               }
               router.push('/now-playing');
             }}
