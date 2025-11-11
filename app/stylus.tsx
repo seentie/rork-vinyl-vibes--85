@@ -140,31 +140,39 @@ export default function StylusViewScreen() {
 
   // Spinning effect controlled by play state
   useEffect(() => {
-    if (spinAnimation.current) {
-      spinAnimation.current.stop();
-    }
-    
     if (isPlaying && !isStopped) {
       const duration = rpm === 45 ? 1000 : 1818;
       
-      const createSpinAnimation = () => {
-        spinValue.setValue(0);
-        
-        return Animated.loop(
-          Animated.timing(spinValue, {
-            toValue: 1,
-            duration: duration,
-            useNativeDriver: true,
-            easing: (t) => t,
-          }),
-          { iterations: -1, resetBeforeIteration: true }
-        );
-      };
+      // Stop any existing animation first
+      if (spinAnimation.current) {
+        spinAnimation.current.stop();
+      }
       
-      spinAnimation.current = createSpinAnimation();
-      spinAnimation.current.start();
-    } else if (isStopped) {
+      // Reset to 0 to ensure clean start
       spinValue.setValue(0);
+      
+      // Create and start new loop animation
+      spinAnimation.current = Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: duration,
+          useNativeDriver: true,
+          easing: (t) => t,
+        }),
+        { iterations: -1 }
+      );
+      
+      spinAnimation.current.start();
+    } else {
+      // Stop animation when paused
+      if (spinAnimation.current) {
+        spinAnimation.current.stop();
+      }
+      
+      // Reset to start position when fully stopped
+      if (isStopped) {
+        spinValue.setValue(0);
+      }
     }
 
     return () => {
