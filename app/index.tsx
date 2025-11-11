@@ -628,8 +628,9 @@ export default function VinylPlayerScreen() {
     }
     
     // Snap to the nearest clean rotation to prevent visual distortion
+    // The spinValue is 0-1 scale, not 0-360
     const currentValue = (spinValue as any)._value || 0;
-    const normalizedValue = Math.round(currentValue) % 360;
+    const normalizedValue = Math.floor(currentValue);
     spinValue.setValue(normalizedValue);
     
     if (Platform.OS !== 'web') {
