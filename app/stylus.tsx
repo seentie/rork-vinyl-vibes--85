@@ -148,21 +148,19 @@ export default function StylusViewScreen() {
         spinAnimation.current.stop();
       }
       
-      // Only reset to 0 when transitioning from stopped state
-      // Don't reset when changing RPM during playback
+      // Reset to 0 when fully stopped, otherwise keep current position
       if (isStopped) {
         spinValue.setValue(0);
       }
       
-      // Create and start new loop animation
+      // Create loop animation
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
           toValue: 1,
           duration: duration,
           useNativeDriver: true,
           easing: (t) => t,
-        }),
-        { iterations: -1 }
+        })
       );
       
       spinAnimation.current.start();
@@ -224,7 +222,6 @@ export default function StylusViewScreen() {
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
-    extrapolate: 'clamp',
   });
 
   const stylusRotate = stylusPosition.interpolate({
