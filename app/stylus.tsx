@@ -246,6 +246,15 @@ export default function StylusViewScreen() {
       stylusAnimation.current.stop();
     }
     
+    // Animate back to 0 rotation to avoid visual distortion
+    const currentValue = (spinValue as any)._value || 0;
+    
+    Animated.timing(spinValue, {
+      toValue: Math.floor(currentValue),
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
