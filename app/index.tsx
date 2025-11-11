@@ -175,34 +175,46 @@ export default function VinylPlayerScreen() {
 
   // Spinning effect controlled by play state
   useEffect(() => {
-    // Stop any existing animation
+    // Stop any existing animation first
     if (spinAnimation.current) {
       spinAnimation.current.stop();
+      spinAnimation.current = null;
     }
     
-    // Only spin when playing and not stopped
     if (isPlaying && !isStopped) {
-      // Calculate duration based on RPM - 45 RPM should be noticeably faster
-      // Real vinyl rotation timing for authentic feel
-      const duration = rpm === 45 ? 1333 : 1818; // 45 RPM = 1.33s, 33 RPM = 1.82s per rotation
+      const duration = rpm === 45 ? 1333 : 1818;
       
-      // Create animation that loops continuously
+      // Get current rotation value (0-1)
+      const currentValue = (spinValue as any)._value || 0;
+      
+      // Calculate how far we are into the current rotation
+      // Keep the rotation continuous by starting from current position
+      const normalizedValue = currentValue % 1;
+      
+      // Set the starting position to current normalized value
+      spinValue.setValue(normalizedValue);
+      
+      // Create loop animation from current position
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: 1,
-          duration: duration,
+          toValue: normalizedValue + 1000, // Large number to keep spinning
+          duration: duration * 1000, // Multiply duration to match large toValue
           useNativeDriver: true,
-          easing: (t) => t, // Linear easing for smooth consistent rotation
-        }),
-        { iterations: -1 } // Infinite loop
+          easing: (t) => t,
+        })
       );
       
       spinAnimation.current.start();
+    } else if (isStopped) {
+      // When fully stopped, keep current rotation to avoid visual distortion
+      // No need to animate back to 0
     }
+    // If just paused (not stopped), keep current position
 
     return () => {
       if (spinAnimation.current) {
         spinAnimation.current.stop();
+        spinAnimation.current = null;
       }
     };
   }, [rpm, isPlaying, isStopped, spinValue]);
@@ -610,10 +622,13 @@ export default function VinylPlayerScreen() {
     setIsPlaying(false);
     setIsStopped(true);
     
-    // Stop animation and hold at current rotation
     if (spinAnimation.current) {
       spinAnimation.current.stop();
+      spinAnimation.current = null;
     }
+    
+    // Keep the current rotation position - no animation needed
+    // The record stays at its current angle which looks natural
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -1392,11 +1407,6 @@ export default function VinylPlayerScreen() {
   const toggleRPM = () => {
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    
-    // Stop current animation before changing speed
-    if (spinAnimation.current) {
-      spinAnimation.current.stop();
     }
     
     // Cycle through 33 -> 45 -> 33
