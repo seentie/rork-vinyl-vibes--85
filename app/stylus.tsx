@@ -171,12 +171,8 @@ export default function StylusViewScreen() {
       
       spinAnimation.current.start();
     } else if (isStopped) {
-      // When fully stopped, smoothly return to start position
-      Animated.timing(spinValue, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      // When fully stopped, keep current rotation to avoid visual distortion
+      // No need to animate back to 0
     }
     // If just paused (not stopped), keep current position
 
@@ -240,6 +236,11 @@ export default function StylusViewScreen() {
   const handleStop = () => {
     setIsPlaying(false);
     setIsStopped(true);
+    
+    if (spinAnimation.current) {
+      spinAnimation.current.stop();
+      spinAnimation.current = null;
+    }
     
     if (stylusAnimation.current) {
       stylusAnimation.current.stop();
