@@ -141,7 +141,7 @@ export default function StylusViewScreen() {
   // Spinning effect controlled by play state
   useEffect(() => {
     if (isPlaying && !isStopped) {
-      const duration = rpm === 45 ? 1000 : 1818;
+      const duration = rpm === 45 ? 1333 : 1818;
       
       // Stop any existing animation first
       if (spinAnimation.current) {
