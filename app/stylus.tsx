@@ -262,10 +262,6 @@ export default function StylusViewScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     
-    if (spinAnimation.current) {
-      spinAnimation.current.stop();
-    }
-    
     setRpm(current => current === 33 ? 45 : 33);
   };
 
