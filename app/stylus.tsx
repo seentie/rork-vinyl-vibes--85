@@ -140,45 +140,50 @@ export default function StylusViewScreen() {
 
   // Spinning effect controlled by play state
   useEffect(() => {
+    // Stop any existing animation first
+    if (spinAnimation.current) {
+      spinAnimation.current.stop();
+      spinAnimation.current = null;
+    }
+    
     if (isPlaying && !isStopped) {
       const duration = rpm === 45 ? 1333 : 1818;
       
-      // Stop any existing animation first
-      if (spinAnimation.current) {
-        spinAnimation.current.stop();
-      }
+      // Get current rotation value (0-1)
+      const currentValue = (spinValue as any)._value || 0;
       
-      // Reset to 0 when fully stopped, otherwise keep current position
-      if (isStopped) {
-        spinValue.setValue(0);
-      }
+      // Calculate how far we are into the current rotation
+      // Keep the rotation continuous by starting from current position
+      const normalizedValue = currentValue % 1;
       
-      // Create loop animation
+      // Set the starting position to current normalized value
+      spinValue.setValue(normalizedValue);
+      
+      // Create loop animation from current position
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: 1,
-          duration: duration,
+          toValue: normalizedValue + 1000, // Large number to keep spinning
+          duration: duration * 1000, // Multiply duration to match large toValue
           useNativeDriver: true,
           easing: (t) => t,
         })
       );
       
       spinAnimation.current.start();
-    } else {
-      // Stop animation when paused
-      if (spinAnimation.current) {
-        spinAnimation.current.stop();
-      }
-      
-      // Reset to start position when fully stopped
-      if (isStopped) {
-        spinValue.setValue(0);
-      }
+    } else if (isStopped) {
+      // When fully stopped, smoothly return to start position
+      Animated.timing(spinValue, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
     }
+    // If just paused (not stopped), keep current position
 
     return () => {
       if (spinAnimation.current) {
         spinAnimation.current.stop();
+        spinAnimation.current = null;
       }
     };
   }, [rpm, isPlaying, isStopped, spinValue]);
@@ -234,6 +239,7 @@ export default function StylusViewScreen() {
 
   const handleStop = () => {
     setIsPlaying(false);
+    setIsStopped(true);
     
     if (stylusAnimation.current) {
       stylusAnimation.current.stop();
