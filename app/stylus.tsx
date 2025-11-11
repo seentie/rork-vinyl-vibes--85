@@ -148,8 +148,11 @@ export default function StylusViewScreen() {
         spinAnimation.current.stop();
       }
       
-      // Reset to 0 to ensure clean start
-      spinValue.setValue(0);
+      // Only reset to 0 when transitioning from stopped state
+      // Don't reset when changing RPM during playback
+      if (isStopped) {
+        spinValue.setValue(0);
+      }
       
       // Create and start new loop animation
       spinAnimation.current = Animated.loop(
