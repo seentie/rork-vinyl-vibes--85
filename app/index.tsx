@@ -627,8 +627,17 @@ export default function VinylPlayerScreen() {
       spinAnimation.current = null;
     }
     
-    // Keep the current rotation exactly as is - no snapping
-    // This prevents any visual distortion
+    // Smoothly animate to nearest clean rotation (0 degrees)
+    // to avoid visual distortion at the edges
+    const currentValue = (spinValue as any)._value || 0;
+    const normalizedValue = currentValue % 1;
+    
+    // Animate to 0 to reset the record position cleanly
+    Animated.timing(spinValue, {
+      toValue: Math.floor(currentValue),
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
