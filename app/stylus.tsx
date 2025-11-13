@@ -246,8 +246,11 @@ export default function StylusViewScreen() {
       stylusAnimation.current.stop();
     }
     
-    // Keep the current rotation position - no animation needed
-    // The record stays at its current angle which looks natural
+    // Normalize the rotation to prevent visual distortion
+    // Get current value and snap to nearest complete rotation
+    const currentValue = (spinValue as any)._value || 0;
+    const normalizedValue = Math.round(currentValue);
+    spinValue.setValue(normalizedValue);
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

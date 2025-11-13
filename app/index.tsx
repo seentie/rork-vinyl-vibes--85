@@ -627,8 +627,11 @@ export default function VinylPlayerScreen() {
       spinAnimation.current = null;
     }
     
-    // Keep the record at its current position - no animation needed
-    // This prevents backwards spinning and visual distortion
+    // Normalize the rotation to prevent visual distortion
+    // Get current value and snap to nearest complete rotation
+    const currentValue = (spinValue as any)._value || 0;
+    const normalizedValue = Math.round(currentValue);
+    spinValue.setValue(normalizedValue);
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
