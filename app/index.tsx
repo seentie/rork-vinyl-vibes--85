@@ -1516,22 +1516,23 @@ export default function VinylPlayerScreen() {
                     />
                   ))}
                   
-                  {/* Record Label */}
-                  <View style={[styles.label, { backgroundColor: theme.accent }]}>
-                    <Text 
-                      style={styles.labelTitle} 
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
-                    >
-                      {recordName}
-                    </Text>
-                    <Text 
-                      style={styles.labelArtist}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {artistName}
-                    </Text>
+                  {/* Record Label - Only render when initialized */}
+                  {isInitialized && (
+                    <View style={[styles.label, { backgroundColor: theme.accent }]}>
+                      <Text 
+                        style={styles.labelTitle} 
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                      >
+                        {recordName}
+                      </Text>
+                      <Text 
+                        style={styles.labelArtist}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {artistName}
+                      </Text>
                     {isStopped && (
                       <TouchableOpacity 
                         style={styles.editLabelButton}
@@ -1545,8 +1546,9 @@ export default function VinylPlayerScreen() {
                         <Edit2 size={10} color="#1A0E08" />
                       </TouchableOpacity>
                     )}
-                    <View style={styles.centerHole} />
-                  </View>
+                      <View style={styles.centerHole} />
+                    </View>
+                  )}
                 </Animated.View>
               </LinearGradient>
             </View>
