@@ -129,12 +129,9 @@ export default function StylusViewScreen() {
   const stylusAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
-  // Ensure spin value is always 0 when stopped on mount
+  // Component mount effect - only runs once
   useEffect(() => {
-    if (isStopped) {
-      spinValue.setValue(0);
-      stylusPosition.setValue(0);
-    }
+    // Don't reset values on mount
   }, []);
 
   const currentTrack = tracks[currentTrackIndex] || tracks[0];
@@ -178,12 +175,8 @@ export default function StylusViewScreen() {
       );
       
       spinAnimation.current.start();
-    } else if (isStopped) {
-      // When stopped, always reset to 0 to prevent distortion
-      spinValue.setValue(0);
-      stylusPosition.setValue(0);
     }
-    // If just paused (not stopped), keep current position
+    // If paused or stopped, keep current position - don't reset
 
     return () => {
       if (spinAnimation.current) {
@@ -243,9 +236,6 @@ export default function StylusViewScreen() {
 
 
   const handleStop = () => {
-    setIsPlaying(false);
-    setIsStopped(true);
-    
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
@@ -255,8 +245,11 @@ export default function StylusViewScreen() {
       stylusAnimation.current.stop();
     }
     
-    // Keep the current rotation position exactly where it is to prevent any visual distortion
-    // Do not normalize or round the value - just leave it as-is
+    // Keep the current rotation and stylus position exactly where they are
+    // Don't modify spinValue or stylusPosition
+    
+    setIsPlaying(false);
+    setIsStopped(true);
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -1556,7 +1549,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 24,
-    width: 110,
+    width: 140,
     height: 6,
     backgroundColor: '#B5B5B5',
     borderRadius: 3,
@@ -1569,7 +1562,7 @@ const styles = StyleSheet.create({
   stylusHead: {
     position: 'absolute',
     top: 5,
-    right: 134,
+    right: 164,
     width: 22,
     height: 14,
     backgroundColor: '#909090',
@@ -1583,7 +1576,7 @@ const styles = StyleSheet.create({
   stylusNeedle: {
     position: 'absolute',
     top: 19,
-    right: 140,
+    right: 170,
     width: 2,
     height: 14,
     backgroundColor: '#606060',

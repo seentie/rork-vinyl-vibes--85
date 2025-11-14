@@ -209,7 +209,7 @@ export default function VinylPlayerScreen() {
     };
   }, [rpm, isPlaying, isStopped, spinValue]);
 
-  // Ensure spin is always 0 when stopped - no animation
+  // When stopped is set, stop animation but keep position
   useEffect(() => {
     if (isStopped) {
       // Stop any animations first
@@ -217,10 +217,8 @@ export default function VinylPlayerScreen() {
         spinAnimation.current.stop();
         spinAnimation.current = null;
       }
-      // Force immediate reset to 0
-      spinValue.setValue(0);
     }
-  }, [isStopped, spinValue]);
+  }, [isStopped]);
 
 
 
@@ -616,8 +614,8 @@ export default function VinylPlayerScreen() {
     }
   };
 
-  // Force spin to be exactly 0 when stopped to prevent any visual distortion
-  const spin = isStopped ? '0deg' : spinValue.interpolate({
+  // Always use interpolation, never force to 0deg
+  const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
@@ -628,8 +626,7 @@ export default function VinylPlayerScreen() {
       spinAnimation.current = null;
     }
     
-    // Reset spin immediately to 0 before updating state
-    spinValue.setValue(0);
+    // Don't reset spin value - keep it where it is
     
     setIsPlaying(false);
     setIsStopped(true);
@@ -655,7 +652,10 @@ export default function VinylPlayerScreen() {
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      // After animation completes, set to exactly 0
+      spinValue.setValue(0);
+    });
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
