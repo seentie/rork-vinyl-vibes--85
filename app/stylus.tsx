@@ -129,9 +129,10 @@ export default function StylusViewScreen() {
   const stylusAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
-  // Component mount effect - only runs once
+  // Ensure values are initialized to exactly 0 on mount
   useEffect(() => {
-    // Don't reset values on mount
+    spinValue.setValue(0);
+    stylusPosition.setValue(0);
   }, []);
 
   const currentTrack = tracks[currentTrackIndex] || tracks[0];
@@ -225,6 +226,7 @@ export default function StylusViewScreen() {
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
+    extrapolate: 'extend',
   });
 
   const stylusRotate = stylusPosition.interpolate({

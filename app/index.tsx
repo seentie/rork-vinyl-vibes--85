@@ -163,10 +163,14 @@ export default function VinylPlayerScreen() {
     setTracks 
   } = useRecord();
   
-  // Initialize spinValue at 0 - this happens immediately, before any render
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
+  
+  // Ensure spinValue is initialized to exactly 0 on mount
+  useEffect(() => {
+    spinValue.setValue(0);
+  }, []);
 
   const currentTrack = tracks[currentTrackIndex];
   const [tempCurrentSong, setTempCurrentSong] = useState(currentTrack?.title || '');
@@ -614,10 +618,10 @@ export default function VinylPlayerScreen() {
     }
   };
 
-  // Always use interpolation, never force to 0deg
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
+    extrapolate: 'extend',
   });
 
   const handleStop = () => {
