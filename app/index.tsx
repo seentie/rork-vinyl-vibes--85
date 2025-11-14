@@ -2549,6 +2549,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    overflow: 'hidden',
   },
   groove: {
     position: 'absolute',
@@ -2569,6 +2570,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     padding: 10,
     position: 'relative',
+    overflow: 'hidden',
   },
 
   labelTitle: {
