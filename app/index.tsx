@@ -2510,7 +2510,7 @@ const styles = StyleSheet.create({
   turntableBase: {
     width: RECORD_SIZE + 40,
     height: RECORD_SIZE + 40,
-    backgroundColor: '#C0C0C0',
+    backgroundColor: '#3A3A3A',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -2519,7 +2519,8 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 15,
     borderWidth: 4,
-    borderColor: '#A8A8A8',
+    borderColor: '#2A2A2A',
+    borderRadius: 16,
   },
   recordContainer: {
     width: RECORD_SIZE,
