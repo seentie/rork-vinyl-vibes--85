@@ -1505,59 +1505,62 @@ export default function VinylPlayerScreen() {
 
         {/* Record Container */}
         <View style={styles.turntableContainer}>
-          <View style={styles.recordContainer}>
-            <Animated.View
-              style={[
-                styles.record,
-                { transform: [{ rotate: spin }] },
-              ]}
-            >
-              {/* Record Grooves */}
-              {[...Array(12)].map((_, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.groove,
-                    {
-                      width: RECORD_SIZE - (i * 20),
-                      height: RECORD_SIZE - (i * 20),
-                    },
-                  ]}
-                />
-              ))}
-              
-              {/* Record Label */}
-              <View style={[styles.label, { backgroundColor: theme.accent }]}>
-                <Text 
-                  style={styles.labelTitle} 
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                >
-                  {recordName}
-                </Text>
-                <Text 
-                  style={styles.labelArtist}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {artistName}
-                </Text>
-                {isStopped && (
-                  <TouchableOpacity 
-                    style={styles.editLabelButton}
-                    onPress={() => {
-                      setTempRecordName(recordName);
-                      setTempArtistName(artistName);
-                      setTempCurrentSong(currentTrack?.title || '');
-                      setShowEditModal(true);
-                    }}
+          {/* Turntable Base */}
+          <View style={styles.turntableBase}>
+            <View style={styles.recordContainer}>
+              <Animated.View
+                style={[
+                  styles.record,
+                  { transform: [{ rotate: spin }] },
+                ]}
+              >
+                {/* Record Grooves */}
+                {[...Array(12)].map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.groove,
+                      {
+                        width: RECORD_SIZE - (i * 20),
+                        height: RECORD_SIZE - (i * 20),
+                      },
+                    ]}
+                  />
+                ))}
+                
+                {/* Record Label */}
+                <View style={[styles.label, { backgroundColor: theme.accent }]}>
+                  <Text 
+                    style={styles.labelTitle} 
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
                   >
-                    <Edit2 size={10} color="#1A0E08" />
-                  </TouchableOpacity>
-                )}
-                <View style={styles.centerHole} />
-              </View>
-            </Animated.View>
+                    {recordName}
+                  </Text>
+                  <Text 
+                    style={styles.labelArtist}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {artistName}
+                  </Text>
+                  {isStopped && (
+                    <TouchableOpacity 
+                      style={styles.editLabelButton}
+                      onPress={() => {
+                        setTempRecordName(recordName);
+                        setTempArtistName(artistName);
+                        setTempCurrentSong(currentTrack?.title || '');
+                        setShowEditModal(true);
+                      }}
+                    >
+                      <Edit2 size={10} color="#1A0E08" />
+                    </TouchableOpacity>
+                  )}
+                  <View style={styles.centerHole} />
+                </View>
+              </Animated.View>
+            </View>
           </View>
         </View>
 
@@ -2530,6 +2533,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 20,
     marginBottom: 20,
+  },
+  turntableBase: {
+    width: RECORD_SIZE + 40,
+    height: RECORD_SIZE + 40,
+    borderRadius: (RECORD_SIZE + 40) / 2,
+    backgroundColor: '#2A2A2A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 2,
+    borderColor: '#1A1A1A',
   },
   recordContainer: {
     width: RECORD_SIZE,
