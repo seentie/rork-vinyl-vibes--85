@@ -167,13 +167,9 @@ export default function VinylPlayerScreen() {
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
-  // Initialize spin value ONCE on mount to 0 and never reset it
-  const hasInitialized = useRef(false);
+  // Initialize once on mount - use same pattern as stylus view
   useEffect(() => {
-    if (!hasInitialized.current) {
-      spinValue.setValue(0);
-      hasInitialized.current = true;
-    }
+    spinValue.setValue(0);
   }, []);
 
 
@@ -184,9 +180,9 @@ export default function VinylPlayerScreen() {
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
 
-  // Spinning effect controlled by play state
+  // Spinning effect - use exact same pattern as stylus view
   useEffect(() => {
-    // Stop any existing animation
+    // Stop any existing animation first
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
@@ -195,15 +191,21 @@ export default function VinylPlayerScreen() {
     if (isPlaying && !isStopped) {
       const duration = rpm === 45 ? 1333 : 1818;
       
-      // Get the EXACT current value without any modifications
+      // Get current rotation value (0-1)
       const currentValue = (spinValue as any)._value || 0;
       
-      // Start loop from EXACTLY where we are now
-      // Use a very large toValue to allow continuous spinning
+      // Calculate how far we are into the current rotation
+      // Keep the rotation continuous by starting from current position
+      const normalizedValue = currentValue % 1;
+      
+      // Set the starting position to current normalized value
+      spinValue.setValue(normalizedValue);
+      
+      // Create loop animation from current position
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: currentValue + 10000, // Large value for continuous rotation
-          duration: duration * 10000, // Scale duration to match
+          toValue: normalizedValue + 1000, // Large number to keep spinning
+          duration: duration * 1000, // Multiply duration to match large toValue
           useNativeDriver: true,
           easing: (t) => t, // Linear
         })
@@ -211,7 +213,7 @@ export default function VinylPlayerScreen() {
       
       spinAnimation.current.start();
     }
-    // When stopped or paused, animation is stopped but value stays put
+    // If paused or stopped, keep current position - don't reset
 
     return () => {
       if (spinAnimation.current) {
@@ -219,7 +221,7 @@ export default function VinylPlayerScreen() {
         spinAnimation.current = null;
       }
     };
-  }, [rpm, isPlaying, isStopped]);
+  }, [rpm, isPlaying, isStopped, spinValue]);
 
 
 
@@ -624,13 +626,14 @@ export default function VinylPlayerScreen() {
   });
 
   const handleStop = () => {
-    // Stop animation immediately
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
     }
     
-    // Keep current rotation exactly where it is - no resets
+    // Keep the current rotation and stylus position exactly where they are
+    // Don't modify spinValue
+    
     setIsPlaying(false);
     setIsStopped(true);
     
