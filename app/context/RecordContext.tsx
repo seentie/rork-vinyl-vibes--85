@@ -249,6 +249,12 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
       return;
     }
     
+    // Additional safety check: ensure records is not a corrupted value
+    if (records === null || records === undefined) {
+      console.warn('[RecordContext] Records is null or undefined, not saving');
+      return;
+    }
+    
     // Ensure display album is always present with permanent cover
     const defaultAlbum = getDefaultAlbum();
     const hasDefaultAlbum = records.some(r => r.id === defaultAlbum.id);
@@ -275,8 +281,20 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     
     try {
       console.log('[RecordContext] Stringifying', validRecords.length, 'valid records');
-      const jsonString = JSON.stringify(validRecords);
+      
+      // Extra safety: deep clone to ensure no circular references or invalid objects
+      const safeRecords = validRecords.map(record => ({
+        id: String(record.id || ''),
+        albumName: String(record.albumName || ''),
+        artistName: String(record.artistName || ''),
+        dateAdded: String(record.dateAdded || new Date().toISOString()),
+        coverImage: record.coverImage ? String(record.coverImage) : undefined,
+        songs: Array.isArray(record.songs) ? record.songs.map(s => String(s)) : undefined,
+      }));
+      
+      const jsonString = JSON.stringify(safeRecords);
       console.log('[RecordContext] JSON string length:', jsonString.length);
+      console.log('[RecordContext] JSON string preview:', jsonString.substring(0, 100));
       
       // Validate the JSON string is valid and can be parsed back
       const testParse = JSON.parse(jsonString);
@@ -290,13 +308,14 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
           jsonString.includes('undefined') ||
           jsonString.includes('NaN') ||
           jsonString.includes('Infinity')) {
+        console.error('[RecordContext] Detected corruption pattern in JSON:', jsonString.substring(0, 200));
         throw new Error('Detected corruption in stringified data');
       }
       
       console.log('[RecordContext] Writing to AsyncStorage...');
       await AsyncStorage.setItem('savedRecords', jsonString);
       console.log('[RecordContext] AsyncStorage write successful');
-      setSavedRecords(validRecords);
+      setSavedRecords(safeRecords);
     } catch (error) {
       console.error('[RecordContext] CRITICAL: Error saving records:', error);
       console.error('[RecordContext] Error details:', error instanceof Error ? error.message : 'Unknown error');
