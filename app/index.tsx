@@ -2575,7 +2575,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A0A',
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden',
   },
   groove: {
     position: 'absolute',
@@ -2595,6 +2594,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     padding: 10,
+    overflow: 'hidden',
   },
 
   labelTitle: {
