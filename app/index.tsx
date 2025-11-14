@@ -2550,14 +2550,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     overflow: 'hidden',
-    transform: [{ translateZ: 0 }],
   },
   groove: {
     position: 'absolute',
     borderRadius: 1000,
     borderWidth: 1,
     borderColor: '#1A1A1A',
-    transform: [{ translateZ: 0 }],
   },
   label: {
     width: RECORD_SIZE * 0.35,
@@ -2573,7 +2571,6 @@ const styles = StyleSheet.create({
     padding: 10,
     position: 'relative',
     overflow: 'hidden',
-    transform: [{ translateZ: 0 }],
   },
 
   labelTitle: {
