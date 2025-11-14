@@ -168,7 +168,8 @@ export default function VinylPlayerScreen() {
   // Initialize spin value to 0 on mount to prevent visual distortion
   useEffect(() => {
     spinValue.setValue(0);
-  }, []);
+    console.log('[Init] Spin value initialized to 0');
+  }, [spinValue]);
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
@@ -2613,11 +2614,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   centerHole: {
-    position: 'absolute',
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: '#0A0A0A',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     marginTop: -4,
