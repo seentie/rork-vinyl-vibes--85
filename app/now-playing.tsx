@@ -301,11 +301,7 @@ export default function NowPlayingScreen() {
         <Text style={styles.artistName} numberOfLines={1}>
           {selectedRecord.artistName}
         </Text>
-        {currentSong && (
-          <Text style={styles.songName} numberOfLines={1}>
-            ♪ {currentSong}
-          </Text>
-        )}
+
         
         {/* Play/Pause Button */}
         <TouchableOpacity 
