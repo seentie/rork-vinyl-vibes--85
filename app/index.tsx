@@ -617,7 +617,7 @@ export default function VinylPlayerScreen() {
   };
 
   // Force spin to be exactly 0 when stopped to prevent any visual distortion
-  const spin = spinValue.interpolate({
+  const spin = isStopped ? '0deg' : spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
