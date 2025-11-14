@@ -623,7 +623,7 @@ export default function VinylPlayerScreen() {
   };
 
   // Force spin to be exactly 0 when stopped to prevent any visual distortion
-  const spin = isStopped ? '0deg' : spinValue.interpolate({
+  const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
@@ -1509,7 +1509,7 @@ export default function VinylPlayerScreen() {
                   style={[
                     styles.record,
                     {
-                      transform: [{ rotate: spin }]
+                      transform: [{ rotate: isStopped ? '0deg' : spin }]
                     },
                   ]}
                 >
