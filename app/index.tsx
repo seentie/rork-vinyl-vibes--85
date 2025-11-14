@@ -167,9 +167,13 @@ export default function VinylPlayerScreen() {
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
   
-  // Ensure spinValue is initialized to exactly 0 on mount
+  // Ensure spinValue is initialized to exactly 0 on mount and only once
+  const isInitialMount = useRef(true);
   useEffect(() => {
-    spinValue.setValue(0);
+    if (isInitialMount.current) {
+      spinValue.setValue(0);
+      isInitialMount.current = false;
+    }
   }, []);
 
   const currentTrack = tracks[currentTrackIndex];
@@ -221,16 +225,7 @@ export default function VinylPlayerScreen() {
     };
   }, [rpm, isPlaying, isStopped, spinValue]);
 
-  // When stopped is set, stop animation but keep position
-  useEffect(() => {
-    if (isStopped) {
-      // Stop any animations first
-      if (spinAnimation.current) {
-        spinAnimation.current.stop();
-        spinAnimation.current = null;
-      }
-    }
-  }, [isStopped]);
+
 
 
 
@@ -633,12 +628,19 @@ export default function VinylPlayerScreen() {
   });
 
   const handleStop = () => {
+    // Stop animation immediately
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
     }
     
-    // Keep the current position exactly as is - don't modify spinValue
+    // Get the current animated value and normalize it
+    const currentValue = (spinValue as any)._value || 0;
+    const normalizedValue = currentValue % 1;
+    
+    // Set the spinValue to the normalized position (0-1 range)
+    // This prevents jumps and keeps the rotation smooth
+    spinValue.setValue(normalizedValue);
     
     setIsPlaying(false);
     setIsStopped(true);
