@@ -167,9 +167,13 @@ export default function VinylPlayerScreen() {
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
-  // Ensure spinValue is initialized to exactly 0 on mount
+  // Initialize spin value ONCE on mount to 0 and never reset it
+  const hasInitialized = useRef(false);
   useEffect(() => {
-    spinValue.setValue(0);
+    if (!hasInitialized.current) {
+      spinValue.setValue(0);
+      hasInitialized.current = true;
+    }
   }, []);
 
 
@@ -182,7 +186,7 @@ export default function VinylPlayerScreen() {
 
   // Spinning effect controlled by play state
   useEffect(() => {
-    // Stop any existing animation first
+    // Stop any existing animation
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
@@ -191,23 +195,23 @@ export default function VinylPlayerScreen() {
     if (isPlaying && !isStopped) {
       const duration = rpm === 45 ? 1333 : 1818;
       
-      // Get current rotation value
+      // Get the EXACT current value without any modifications
       const currentValue = (spinValue as any)._value || 0;
       
-      // Create loop animation from current position WITHOUT modifying spinValue
-      // This prevents visual jumps
+      // Start loop from EXACTLY where we are now
+      // Use a very large toValue to allow continuous spinning
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: currentValue + 1000, // Continue from current position
-          duration: duration * 1000,
+          toValue: currentValue + 10000, // Large value for continuous rotation
+          duration: duration * 10000, // Scale duration to match
           useNativeDriver: true,
-          easing: (t) => t, // Linear easing for smooth rotation
+          easing: (t) => t, // Linear
         })
       );
       
       spinAnimation.current.start();
     }
-    // If paused or stopped, keep current position - don't reset or modify
+    // When stopped or paused, animation is stopped but value stays put
 
     return () => {
       if (spinAnimation.current) {
@@ -215,7 +219,7 @@ export default function VinylPlayerScreen() {
         spinAnimation.current = null;
       }
     };
-  }, [rpm, isPlaying, isStopped, spinValue]);
+  }, [rpm, isPlaying, isStopped]);
 
 
 
@@ -646,15 +650,23 @@ export default function VinylPlayerScreen() {
       spinAnimation.current = null;
     }
     
-    // Reset rotation to starting position with animation
-    Animated.timing(spinValue, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      // After animation completes, set to exactly 0
-      spinValue.setValue(0);
-    });
+    // Get current value and find the nearest full rotation
+    const currentValue = (spinValue as any)._value || 0;
+    const nearestRotation = Math.round(currentValue);
+    
+    // Smoothly rotate to the nearest full rotation, then to 0
+    Animated.sequence([
+      Animated.timing(spinValue, {
+        toValue: nearestRotation,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(spinValue, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      })
+    ]).start();
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
