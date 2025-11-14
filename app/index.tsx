@@ -167,10 +167,7 @@ export default function VinylPlayerScreen() {
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
-  // Ensure values are initialized to exactly 0 on mount to prevent distortion
-  useEffect(() => {
-    spinValue.setValue(0);
-  }, []);
+
 
   const currentTrack = tracks[currentTrackIndex];
   const [tempCurrentSong, setTempCurrentSong] = useState(currentTrack?.title || '');
@@ -189,11 +186,21 @@ export default function VinylPlayerScreen() {
     if (isPlaying && !isStopped) {
       const duration = rpm === 45 ? 1333 : 1818;
       
-      // Create infinite loop animation that continues smoothly
+      // Get current rotation value (0-1)
+      const currentValue = (spinValue as any)._value || 0;
+      
+      // Calculate how far we are into the current rotation
+      // Keep the rotation continuous by starting from current position
+      const normalizedValue = currentValue % 1;
+      
+      // Set the starting position to current normalized value
+      spinValue.setValue(normalizedValue);
+      
+      // Create loop animation from current position
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: 1,
-          duration: duration,
+          toValue: normalizedValue + 1000, // Large number to keep spinning
+          duration: duration * 1000, // Multiply duration to match large toValue
           useNativeDriver: true,
           easing: (t) => t,
         })
@@ -610,6 +617,7 @@ export default function VinylPlayerScreen() {
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
+    extrapolate: 'extend',
   });
 
   const handleStop = () => {
