@@ -2548,8 +2548,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A0A',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   groove: {
     position: 'absolute',
@@ -2569,8 +2568,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     padding: 10,
-    position: 'relative',
-    overflow: 'hidden',
   },
 
   labelTitle: {
@@ -2597,15 +2594,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   centerHole: {
+    position: 'absolute',
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: '#0A0A0A',
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    marginTop: -4,
-    marginLeft: -4,
   },
   trackInfo: {
     alignItems: 'center',
