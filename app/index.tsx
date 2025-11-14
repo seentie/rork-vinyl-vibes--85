@@ -180,6 +180,7 @@ export default function VinylPlayerScreen() {
 
   // Spinning effect controlled by play state
   useEffect(() => {
+    // Stop any existing animation first
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
@@ -188,15 +189,21 @@ export default function VinylPlayerScreen() {
     if (isPlaying && !isStopped) {
       const duration = rpm === 45 ? 1333 : 1818;
       
+      // Get current rotation value (0-1)
       const currentValue = (spinValue as any)._value || 0;
+      
+      // Calculate how far we are into the current rotation
+      // Keep the rotation continuous by starting from current position
       const normalizedValue = currentValue % 1;
       
+      // Set the starting position to current normalized value
       spinValue.setValue(normalizedValue);
       
+      // Create loop animation from current position
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: normalizedValue + 1,
-          duration: duration,
+          toValue: normalizedValue + 1000, // Large number to keep spinning
+          duration: duration * 1000, // Multiply duration to match large toValue
           useNativeDriver: true,
           easing: (t) => t,
         })
@@ -204,6 +211,7 @@ export default function VinylPlayerScreen() {
       
       spinAnimation.current.start();
     }
+    // If paused or stopped, keep current position - don't reset
 
     return () => {
       if (spinAnimation.current) {
