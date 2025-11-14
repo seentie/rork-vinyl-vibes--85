@@ -638,7 +638,14 @@ export default function VinylPlayerScreen() {
       spinAnimation.current = null;
     }
     
-    // Don't reset spin value - keep it where it is
+    const currentValue = (spinValue as any)._value || 0;
+    const nearestFullRotation = Math.round(currentValue);
+    
+    Animated.timing(spinValue, {
+      toValue: nearestFullRotation,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
     
     setIsPlaying(false);
     setIsStopped(true);
