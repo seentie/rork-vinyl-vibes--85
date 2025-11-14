@@ -1551,7 +1551,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 24,
-    width: 140,
+    width: 170,
     height: 6,
     backgroundColor: '#B5B5B5',
     borderRadius: 3,
@@ -1564,7 +1564,7 @@ const styles = StyleSheet.create({
   stylusHead: {
     position: 'absolute',
     top: 5,
-    right: 164,
+    right: 194,
     width: 22,
     height: 14,
     backgroundColor: '#909090',
@@ -1578,7 +1578,7 @@ const styles = StyleSheet.create({
   stylusNeedle: {
     position: 'absolute',
     top: 19,
-    right: 170,
+    right: 200,
     width: 2,
     height: 14,
     backgroundColor: '#606060',
