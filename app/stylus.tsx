@@ -833,7 +833,7 @@ export default function StylusViewScreen() {
           >
             <ArrowLeft size={20} color={theme.accent} />
           </TouchableOpacity>
-          <Text style={[styles.brandText, { color: theme.accent }]}>STYLUS VIEW</Text>
+          <Text style={[styles.brandText, { color: theme.accent }]}>VINYL VIBES &apos;85</Text>
           <View style={styles.headerRight}>
             <TouchableOpacity 
               onPress={toggleStylusMovement} 
