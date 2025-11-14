@@ -175,7 +175,6 @@ export default function VinylPlayerScreen() {
 
   // Spinning effect controlled by play state
   useEffect(() => {
-    // Stop any existing animation first
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
@@ -184,32 +183,22 @@ export default function VinylPlayerScreen() {
     if (isPlaying && !isStopped) {
       const duration = rpm === 45 ? 1333 : 1818;
       
-      // Get current rotation value (0-1)
       const currentValue = (spinValue as any)._value || 0;
-      
-      // Calculate how far we are into the current rotation
-      // Keep the rotation continuous by starting from current position
       const normalizedValue = currentValue % 1;
       
-      // Set the starting position to current normalized value
       spinValue.setValue(normalizedValue);
       
-      // Create loop animation from current position
       spinAnimation.current = Animated.loop(
         Animated.timing(spinValue, {
-          toValue: normalizedValue + 1000, // Large number to keep spinning
-          duration: duration * 1000, // Multiply duration to match large toValue
+          toValue: normalizedValue + 1,
+          duration: duration,
           useNativeDriver: true,
           easing: (t) => t,
         })
       );
       
       spinAnimation.current.start();
-    } else if (isStopped) {
-      // When fully stopped, keep current rotation to avoid visual distortion
-      // No need to animate back to 0
     }
-    // If just paused (not stopped), keep current position
 
     return () => {
       if (spinAnimation.current) {
@@ -1498,7 +1487,9 @@ export default function VinylPlayerScreen() {
                 <Animated.View
                   style={[
                     styles.record,
-                    { transform: [{ rotate: spin }] },
+                    {
+                      transform: [{ rotate: spin }],
+                    },
                   ]}
                 >
                   {/* Record Grooves */}
@@ -2578,7 +2569,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     padding: 10,
     position: 'relative',
-    overflow: 'hidden',
   },
 
   labelTitle: {
