@@ -173,9 +173,18 @@ export default function VinylPlayerScreen() {
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
 
-  // Ensure initial state is 0 on mount and stays 0 when stopped
+  // Force spinValue to 0 on initial mount and when stopped
+  useEffect(() => {
+    spinValue.setValue(0);
+  }, [spinValue]);
+
+  // Keep spinValue at 0 when stopped
   useEffect(() => {
     if (isStopped) {
+      if (spinAnimation.current) {
+        spinAnimation.current.stop();
+        spinAnimation.current = null;
+      }
       spinValue.setValue(0);
     }
   }, [isStopped, spinValue]);
@@ -1495,6 +1504,7 @@ export default function VinylPlayerScreen() {
               >
                 {/* Vinyl Record */}
                 <Animated.View
+                  key={`vinyl-${isInitialized ? 'ready' : 'loading'}`}
                   style={[
                     styles.record,
                     {
