@@ -173,10 +173,12 @@ export default function VinylPlayerScreen() {
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
 
-  // Ensure initial state is 0 on mount
+  // Ensure initial state is 0 on mount and stays 0 when stopped
   useEffect(() => {
-    spinValue.setValue(0);
-  }, []);
+    if (isStopped) {
+      spinValue.setValue(0);
+    }
+  }, [isStopped, spinValue]);
 
   // Spinning effect controlled by play state
   useEffect(() => {
@@ -1496,7 +1498,7 @@ export default function VinylPlayerScreen() {
                   style={[
                     styles.record,
                     {
-                      transform: [{ rotate: spin }],
+                      transform: [{ rotate: spin }]
                     },
                   ]}
                 >
