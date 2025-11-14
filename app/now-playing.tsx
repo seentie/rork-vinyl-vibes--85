@@ -34,55 +34,67 @@ export default function NowPlayingScreen() {
   // Only show this view if there's a cover image
   const hasCover = selectedRecord?.coverImage;
   
+  // Ensure values are initialized to exactly correct starting values on mount
+  useEffect(() => {
+    glowAnimation.setValue(0);
+    pulseAnimation.setValue(1);
+    lightAnimation.setValue(0);
+  }, []);
+  
   useEffect(() => {
     if (hasCover) {
-      // Glow animation
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnimation, {
-            toValue: 1,
-            duration: 2000,
-            useNativeDriver: false,
-          }),
-          Animated.timing(glowAnimation, {
-            toValue: 0,
-            duration: 2000,
-            useNativeDriver: false,
-          }),
-        ])
-      ).start();
+      // Small delay to ensure layout is complete before starting animations
+      const timer = setTimeout(() => {
+        // Glow animation
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(glowAnimation, {
+              toValue: 1,
+              duration: 2000,
+              useNativeDriver: false,
+            }),
+            Animated.timing(glowAnimation, {
+              toValue: 0,
+              duration: 2000,
+              useNativeDriver: false,
+            }),
+          ])
+        ).start();
+        
+        // Pulse animation
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(pulseAnimation, {
+              toValue: 1.05,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(pulseAnimation, {
+              toValue: 1,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        
+        // Light sparkle animation
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(lightAnimation, {
+              toValue: 1,
+              duration: 800,
+              useNativeDriver: false,
+            }),
+            Animated.timing(lightAnimation, {
+              toValue: 0,
+              duration: 1200,
+              useNativeDriver: false,
+            }),
+          ])
+        ).start();
+      }, 100);
       
-      // Pulse animation
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnimation, {
-            toValue: 1.05,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnimation, {
-            toValue: 1,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-      
-      // Light sparkle animation
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(lightAnimation, {
-            toValue: 1,
-            duration: 800,
-            useNativeDriver: false,
-          }),
-          Animated.timing(lightAnimation, {
-            toValue: 0,
-            duration: 1200,
-            useNativeDriver: false,
-          }),
-        ])
-      ).start();
+      return () => clearTimeout(timer);
     }
   }, [hasCover, glowAnimation, pulseAnimation, lightAnimation]);
   
@@ -491,10 +503,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 25,
     elevation: 20,
+    backfaceVisibility: 'hidden' as const,
   },
   coverImage: {
     width: '100%',
     height: '100%',
+    backfaceVisibility: 'hidden' as const,
   },
   coverOverlay: {
     position: 'absolute',
