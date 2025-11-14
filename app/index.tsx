@@ -1,12 +1,17 @@
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
+import { View } from 'react-native';
 
 export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/stylus');
+    const timeout = setTimeout(() => {
+      router.replace('/stylus');
+    }, 0);
+
+    return () => clearTimeout(timeout);
   }, [router]);
 
-  return null;
+  return <View style={{ flex: 1 }} />;
 }
