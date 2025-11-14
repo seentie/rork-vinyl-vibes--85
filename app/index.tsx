@@ -2548,7 +2548,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A0A',
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'visible',
+    overflow: 'hidden',
   },
   groove: {
     position: 'absolute',
