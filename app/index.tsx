@@ -164,12 +164,6 @@ export default function VinylPlayerScreen() {
   } = useRecord();
   
   const spinValue = useRef(new Animated.Value(0)).current;
-  
-  // Initialize spin value to 0 on mount to prevent visual distortion
-  useEffect(() => {
-    spinValue.setValue(0);
-    console.log('[Init] Spin value initialized to 0');
-  }, [spinValue]);
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
@@ -2619,10 +2613,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: '#0A0A0A',
     position: 'absolute' as const,
+    alignSelf: 'center',
     top: '50%',
-    left: '50%',
-    marginTop: -4,
-    marginLeft: -4,
+    transform: [{ translateY: -4 }],
   },
   trackInfo: {
     alignItems: 'center',
