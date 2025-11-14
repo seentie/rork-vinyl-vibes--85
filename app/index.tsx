@@ -164,6 +164,11 @@ export default function VinylPlayerScreen() {
   } = useRecord();
   
   const spinValue = useRef(new Animated.Value(0)).current;
+  
+  // Initialize spin value to 0 on mount to prevent visual distortion
+  useEffect(() => {
+    spinValue.setValue(0);
+  }, []);
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
