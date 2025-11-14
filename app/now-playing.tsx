@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useRecord } from './context/RecordContext';
+import { useState } from 'react';
 
 export default function NowPlayingScreen() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -25,6 +26,9 @@ export default function NowPlayingScreen() {
   
   const insets = useSafeAreaInsets();
   const { selectedRecord, currentSong } = useRecord();
+  
+  // Add playing state
+  const [isPlaying, setIsPlaying] = useState(false);
   
   // Animation values
   const glowAnimation = useRef(new Animated.Value(0)).current;
@@ -42,7 +46,8 @@ export default function NowPlayingScreen() {
   }, []);
   
   useEffect(() => {
-    if (hasCover) {
+    // Only run animations if playing AND has cover
+    if (hasCover && isPlaying) {
       // Small delay to ensure layout is complete before starting animations
       const timer = setTimeout(() => {
         // Glow animation
@@ -95,8 +100,13 @@ export default function NowPlayingScreen() {
       }, 100);
       
       return () => clearTimeout(timer);
+    } else {
+      // When stopped, reset animations to starting state
+      glowAnimation.stopAnimation(() => glowAnimation.setValue(0));
+      pulseAnimation.stopAnimation(() => pulseAnimation.setValue(1));
+      lightAnimation.stopAnimation(() => lightAnimation.setValue(0));
     }
-  }, [hasCover, glowAnimation, pulseAnimation, lightAnimation]);
+  }, [hasCover, isPlaying, glowAnimation, pulseAnimation, lightAnimation]);
   
   const glowOpacity = glowAnimation.interpolate({
     inputRange: [0, 1],
@@ -296,6 +306,19 @@ export default function NowPlayingScreen() {
             ♪ {currentSong}
           </Text>
         )}
+        
+        {/* Play/Pause Button */}
+        <TouchableOpacity 
+          onPress={() => {
+            if (Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+            setIsPlaying(!isPlaying);
+          }}
+          style={styles.playButton}
+        >
+          <Text style={styles.playButtonText}>{isPlaying ? 'Pause' : 'Play'}</Text>
+        </TouchableOpacity>
       </View>
       
 
@@ -548,6 +571,21 @@ const styles = StyleSheet.create({
     color: '#00FF00',
     textAlign: 'center' as const,
     fontStyle: 'italic' as const,
+  },
+  playButton: {
+    marginTop: 20,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+  },
+  playButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600' as const,
+    textAlign: 'center' as const,
   },
 
   ambientLights: {
