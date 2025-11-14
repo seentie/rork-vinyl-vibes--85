@@ -18,7 +18,6 @@ import {
   Pause,
   RotateCcw,
   Settings,
-  ArrowLeft,
   Edit2,
   X,
   Check,
@@ -827,12 +826,8 @@ export default function StylusViewScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <TouchableOpacity 
-            onPress={() => router.back()} 
-            style={[styles.backButton, { borderColor: theme.accent }]}
-          >
-            <ArrowLeft size={20} color={theme.accent} />
-          </TouchableOpacity>
+          <View style={[styles.backButton, { borderColor: theme.accent, opacity: 0 }]} />
+          
           <Text style={[styles.brandText, { color: theme.accent }]}>VINYL VIBES &apos;85</Text>
           <View style={styles.headerRight}>
             <TouchableOpacity 
