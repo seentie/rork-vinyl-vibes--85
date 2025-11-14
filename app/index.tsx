@@ -173,21 +173,10 @@ export default function VinylPlayerScreen() {
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
 
-  // Force spinValue to 0 on initial mount and when stopped
+  // Force spinValue to 0 on initial mount
   useEffect(() => {
     spinValue.setValue(0);
-  }, [spinValue]);
-
-  // Keep spinValue at 0 when stopped
-  useEffect(() => {
-    if (isStopped) {
-      if (spinAnimation.current) {
-        spinAnimation.current.stop();
-        spinAnimation.current = null;
-      }
-      spinValue.setValue(0);
-    }
-  }, [isStopped, spinValue]);
+  }, []);
 
   // Spinning effect controlled by play state
   useEffect(() => {
@@ -214,9 +203,6 @@ export default function VinylPlayerScreen() {
       );
       
       spinAnimation.current.start();
-    } else if (isStopped) {
-      // When stopped, always reset to 0 to prevent distortion
-      spinValue.setValue(0);
     }
 
     return () => {
@@ -226,6 +212,13 @@ export default function VinylPlayerScreen() {
       }
     };
   }, [rpm, isPlaying, isStopped, spinValue]);
+
+  // Ensure spin is always 0 when stopped
+  useEffect(() => {
+    if (isStopped) {
+      spinValue.setValue(0);
+    }
+  }, [isStopped]);
 
 
 
@@ -627,16 +620,16 @@ export default function VinylPlayerScreen() {
   });
 
   const handleStop = () => {
-    setIsPlaying(false);
-    setIsStopped(true);
-    
     if (spinAnimation.current) {
       spinAnimation.current.stop();
       spinAnimation.current = null;
     }
     
-    // Keep the current rotation position exactly where it is to prevent any visual distortion
-    // Do not normalize or round the value - just leave it as-is
+    // Reset spin immediately to 0 before updating state
+    spinValue.setValue(0);
+    
+    setIsPlaying(false);
+    setIsStopped(true);
     
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -1504,11 +1497,10 @@ export default function VinylPlayerScreen() {
               >
                 {/* Vinyl Record */}
                 <Animated.View
-                  key={`vinyl-${isInitialized ? 'ready' : 'loading'}`}
                   style={[
                     styles.record,
                     {
-                      transform: [{ rotate: spin }]
+                      transform: [{ rotate: isStopped ? '0deg' : spin }]
                     },
                   ]}
                 >
