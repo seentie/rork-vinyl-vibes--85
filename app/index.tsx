@@ -163,6 +163,7 @@ export default function VinylPlayerScreen() {
     setTracks 
   } = useRecord();
   
+  // Initialize spinValue at 0 - this happens immediately, before any render
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
@@ -172,13 +173,6 @@ export default function VinylPlayerScreen() {
   const [isEditingSong, setIsEditingSong] = useState(false);
   const [editingSongText, setEditingSongText] = useState('');
   const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
-
-  // Force initial state - run immediately on mount before any render
-  useEffect(() => {
-    spinValue.setValue(0);
-    setIsStopped(true);
-    setIsPlaying(false);
-  }, [spinValue]);
 
   // Spinning effect controlled by play state
   useEffect(() => {
@@ -1509,7 +1503,7 @@ export default function VinylPlayerScreen() {
                   style={[
                     styles.record,
                     {
-                      transform: [{ rotate: isStopped ? '0deg' : spin }]
+                      transform: [{ rotate: spin }]
                     },
                   ]}
                 >
