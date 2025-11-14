@@ -166,15 +166,6 @@ export default function VinylPlayerScreen() {
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
-  
-  // Ensure spinValue is initialized to exactly 0 on mount and only once
-  const isInitialMount = useRef(true);
-  useEffect(() => {
-    if (isInitialMount.current) {
-      spinValue.setValue(0);
-      isInitialMount.current = false;
-    }
-  }, []);
 
   const currentTrack = tracks[currentTrackIndex];
   const [tempCurrentSong, setTempCurrentSong] = useState(currentTrack?.title || '');
@@ -624,7 +615,6 @@ export default function VinylPlayerScreen() {
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
-    extrapolate: 'extend',
   });
 
   const handleStop = () => {
@@ -2537,17 +2527,16 @@ const styles = StyleSheet.create({
   turntableBase: {
     width: RECORD_SIZE + 40,
     height: RECORD_SIZE + 40,
-    borderRadius: (RECORD_SIZE + 40) / 2,
-    backgroundColor: '#B8B8B8',
+    backgroundColor: '#C0C0C0',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
-    borderWidth: 3,
-    borderColor: '#909090',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 15,
+    borderWidth: 4,
+    borderColor: '#A8A8A8',
   },
   recordContainer: {
     width: RECORD_SIZE,
