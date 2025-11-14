@@ -2551,6 +2551,7 @@ const styles = StyleSheet.create({
     height: RECORD_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'visible',
   },
   record: {
     width: RECORD_SIZE,
@@ -2559,7 +2560,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A0A',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
+    position: 'absolute',
+    overflow: 'hidden',
   },
   groove: {
     position: 'absolute',
