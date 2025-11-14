@@ -175,10 +175,11 @@ export default function VinylPlayerScreen() {
 
   // Force spinValue to 0 on initial mount and ensure stopped state
   useEffect(() => {
+    // Immediately set to 0 on mount, no animation
     spinValue.setValue(0);
     setIsStopped(true);
     setIsPlaying(false);
-  }, [spinValue]);
+  }, []);
 
   // Spinning effect controlled by play state
   useEffect(() => {
@@ -215,12 +216,18 @@ export default function VinylPlayerScreen() {
     };
   }, [rpm, isPlaying, isStopped, spinValue]);
 
-  // Ensure spin is always 0 when stopped
+  // Ensure spin is always 0 when stopped - no animation
   useEffect(() => {
     if (isStopped) {
+      // Stop any animations first
+      if (spinAnimation.current) {
+        spinAnimation.current.stop();
+        spinAnimation.current = null;
+      }
+      // Force immediate reset to 0
       spinValue.setValue(0);
     }
-  }, [isStopped]);
+  }, [isStopped, spinValue]);
 
 
 
@@ -1520,39 +1527,37 @@ export default function VinylPlayerScreen() {
                     />
                   ))}
                   
-                  {/* Record Label - Only render when initialized */}
-                  {isInitialized && (
-                    <View style={[styles.label, { backgroundColor: theme.accent }]}>
-                      <Text 
-                        style={styles.labelTitle} 
-                        numberOfLines={2}
-                        ellipsizeMode="tail"
-                      >
-                        {recordName}
-                      </Text>
-                      <Text 
-                        style={styles.labelArtist}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {artistName}
-                      </Text>
-                    {isStopped && (
-                      <TouchableOpacity 
-                        style={styles.editLabelButton}
-                        onPress={() => {
-                          setTempRecordName(recordName);
-                          setTempArtistName(artistName);
-                          setTempCurrentSong(currentTrack?.title || '');
-                          setShowEditModal(true);
-                        }}
-                      >
-                        <Edit2 size={10} color="#1A0E08" />
-                      </TouchableOpacity>
-                    )}
-                      <View style={styles.centerHole} />
-                    </View>
+                  {/* Record Label */}
+                  <View style={[styles.label, { backgroundColor: theme.accent }]}>
+                    <Text 
+                      style={styles.labelTitle} 
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {recordName}
+                    </Text>
+                    <Text 
+                      style={styles.labelArtist}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {artistName}
+                    </Text>
+                  {isStopped && (
+                    <TouchableOpacity 
+                      style={styles.editLabelButton}
+                      onPress={() => {
+                        setTempRecordName(recordName);
+                        setTempArtistName(artistName);
+                        setTempCurrentSong(currentTrack?.title || '');
+                        setShowEditModal(true);
+                      }}
+                    >
+                      <Edit2 size={10} color="#1A0E08" />
+                    </TouchableOpacity>
                   )}
+                    <View style={styles.centerHole} />
+                  </View>
                 </Animated.View>
               </LinearGradient>
             </View>
