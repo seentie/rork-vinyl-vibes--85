@@ -129,6 +129,14 @@ export default function StylusViewScreen() {
   const stylusAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
+  // Ensure spin value is always 0 when stopped on mount
+  useEffect(() => {
+    if (isStopped) {
+      spinValue.setValue(0);
+      stylusPosition.setValue(0);
+    }
+  }, []);
+
   const currentTrack = tracks[currentTrackIndex] || tracks[0];
   
   // Update temp song when context song changes
@@ -171,8 +179,9 @@ export default function StylusViewScreen() {
       
       spinAnimation.current.start();
     } else if (isStopped) {
-      // When fully stopped, keep current rotation to avoid visual distortion
-      // No need to animate back to 0
+      // When stopped, always reset to 0 to prevent distortion
+      spinValue.setValue(0);
+      stylusPosition.setValue(0);
     }
     // If just paused (not stopped), keep current position
 
@@ -182,7 +191,7 @@ export default function StylusViewScreen() {
         spinAnimation.current = null;
       }
     };
-  }, [rpm, isPlaying, isStopped, spinValue]);
+  }, [rpm, isPlaying, isStopped, spinValue, stylusPosition]);
 
   // Handle stylus movement
   // The stylus should take about 3 minutes per track/ridge on a real vinyl

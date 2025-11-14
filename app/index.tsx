@@ -167,6 +167,13 @@ export default function VinylPlayerScreen() {
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const insets = useSafeAreaInsets();
 
+  // Ensure spin value is always 0 when stopped on mount
+  useEffect(() => {
+    if (isStopped) {
+      spinValue.setValue(0);
+    }
+  }, []);
+
   const currentTrack = tracks[currentTrackIndex];
   const [tempCurrentSong, setTempCurrentSong] = useState(currentTrack?.title || '');
   const [isEditingSong, setIsEditingSong] = useState(false);
@@ -198,6 +205,9 @@ export default function VinylPlayerScreen() {
       );
       
       spinAnimation.current.start();
+    } else if (isStopped) {
+      // When stopped, always reset to 0 to prevent distortion
+      spinValue.setValue(0);
     }
 
     return () => {
