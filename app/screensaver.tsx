@@ -39,6 +39,7 @@ export default function ScreensaverScreen() {
   const currentY = useRef(screenHeight / 2);
   
   const ALBUM_SIZE = Math.min(screenWidth, screenHeight) * 0.4;
+  const KALEIDOSCOPE_SIZE = Math.max(screenWidth, screenHeight) * 1.2;
   
   // Switch styles every 10 seconds (only if in screensaver mode)
   useEffect(() => {
@@ -185,17 +186,52 @@ export default function ScreensaverScreen() {
   }, [currentStyle, opacity]);
   
   // Kaleidoscope animation - rotates multiple copies at different speeds
+  const rotation2 = useRef(new Animated.Value(0)).current;
+  const rotation3 = useRef(new Animated.Value(0)).current;
+  const pulse = useRef(new Animated.Value(1)).current;
+  
   useEffect(() => {
     if (currentStyle !== 'kaleidoscope') return;
     
     Animated.loop(
       Animated.timing(rotation, {
         toValue: 1,
-        duration: 10000,
+        duration: 15000,
         useNativeDriver: true,
       })
     ).start();
-  }, [currentStyle, rotation]);
+    
+    Animated.loop(
+      Animated.timing(rotation2, {
+        toValue: 1,
+        duration: 20000,
+        useNativeDriver: true,
+      })
+    ).start();
+    
+    Animated.loop(
+      Animated.timing(rotation3, {
+        toValue: 1,
+        duration: 25000,
+        useNativeDriver: true,
+      })
+    ).start();
+    
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1.15,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [currentStyle, rotation, rotation2, rotation3, pulse]);
   
   if (!selectedRecord?.coverImage) {
     return (
@@ -294,23 +330,24 @@ export default function ScreensaverScreen() {
       <View style={styles.screensaverContainer}>
         {currentStyle === 'kaleidoscope' ? (
           <View style={styles.kaleidoscopeContainer}>
-            {[...Array(8)].map((_, i) => {
+            {/* Outer ring - 12 segments */}
+            {[...Array(12)].map((_, i) => {
               const rotateZ = rotation.interpolate({
                 inputRange: [0, 1],
-                outputRange: [`${i * 45}deg`, `${i * 45 + 360}deg`],
+                outputRange: [`${i * 30}deg`, `${i * 30 + 360}deg`],
               });
               
               return (
                 <Animated.View
-                  key={`kaleidoscope-${i}`}
+                  key={`outer-${i}`}
                   style={[
                     styles.kaleidoscopeSegment,
                     {
-                      width: ALBUM_SIZE * 0.6,
-                      height: ALBUM_SIZE * 0.6,
+                      width: KALEIDOSCOPE_SIZE * 0.55,
+                      height: KALEIDOSCOPE_SIZE * 0.55,
                       transform: [
                         { rotate: rotateZ },
-                        { scale: i % 2 === 0 ? 1 : 0.8 },
+                        { scale: pulse },
                       ],
                     },
                   ]}
@@ -321,19 +358,87 @@ export default function ScreensaverScreen() {
                       style={styles.coverImage}
                       resizeMode="cover"
                     />
-                    <View style={[styles.kaleidoscopeOverlay, { opacity: 0.3 + (i * 0.05) }]} />
+                    <View style={[styles.kaleidoscopeOverlay, { opacity: 0.2 }]} />
                   </View>
                 </Animated.View>
               );
             })}
             
-            {/* Center piece */}
-            <View 
+            {/* Middle ring - 8 segments, counter rotation */}
+            {[...Array(8)].map((_, i) => {
+              const rotateZ = rotation2.interpolate({
+                inputRange: [0, 1],
+                outputRange: [`${i * 45 + 360}deg`, `${i * 45}deg`],
+              });
+              
+              return (
+                <Animated.View
+                  key={`middle-${i}`}
+                  style={[
+                    styles.kaleidoscopeSegment,
+                    {
+                      width: KALEIDOSCOPE_SIZE * 0.38,
+                      height: KALEIDOSCOPE_SIZE * 0.38,
+                      transform: [
+                        { rotate: rotateZ },
+                      ],
+                    },
+                  ]}
+                >
+                  <View style={styles.albumCover}>
+                    <Image 
+                      source={{ uri: selectedRecord.coverImage }} 
+                      style={styles.coverImage}
+                      resizeMode="cover"
+                    />
+                    <View style={[styles.kaleidoscopeOverlay, { opacity: 0.15 }]} />
+                  </View>
+                </Animated.View>
+              );
+            })}
+            
+            {/* Inner ring - 6 segments */}
+            {[...Array(6)].map((_, i) => {
+              const rotateZ = rotation3.interpolate({
+                inputRange: [0, 1],
+                outputRange: [`${i * 60}deg`, `${i * 60 + 360}deg`],
+              });
+              
+              return (
+                <Animated.View
+                  key={`inner-${i}`}
+                  style={[
+                    styles.kaleidoscopeSegment,
+                    {
+                      width: KALEIDOSCOPE_SIZE * 0.25,
+                      height: KALEIDOSCOPE_SIZE * 0.25,
+                      transform: [
+                        { rotate: rotateZ },
+                        { scale: pulse },
+                      ],
+                    },
+                  ]}
+                >
+                  <View style={styles.albumCover}>
+                    <Image 
+                      source={{ uri: selectedRecord.coverImage }} 
+                      style={styles.coverImage}
+                      resizeMode="cover"
+                    />
+                    <View style={[styles.kaleidoscopeOverlay, { opacity: 0.1 }]} />
+                  </View>
+                </Animated.View>
+              );
+            })}
+            
+            {/* Center piece - pulsing */}
+            <Animated.View 
               style={[
                 styles.kaleidoscopeCenter,
                 {
-                  width: ALBUM_SIZE * 0.4,
-                  height: ALBUM_SIZE * 0.4,
+                  width: KALEIDOSCOPE_SIZE * 0.15,
+                  height: KALEIDOSCOPE_SIZE * 0.15,
+                  transform: [{ scale: pulse }],
                 }
               ]}
             >
@@ -342,7 +447,7 @@ export default function ScreensaverScreen() {
                 style={styles.coverImage}
                 resizeMode="cover"
               />
-            </View>
+            </Animated.View>
           </View>
         ) : (
           <Animated.View style={[styles.albumWrapper, getAnimatedStyle()]}>
