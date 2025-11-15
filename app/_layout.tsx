@@ -17,6 +17,7 @@ function RootLayoutNav() {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="stylus" options={{ headerShown: false }} />
       <Stack.Screen name="now-playing" options={{ headerShown: false }} />
+      <Stack.Screen name="collection" options={{ title: "My Collection" }} />
       <Stack.Screen name="settings" options={{ title: "Settings & Privacy" }} />
     </Stack>
   );

@@ -866,7 +866,7 @@ export default function StylusViewScreen() {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
-              router.push('/settings');
+              router.push('/collection');
             }}
           >
             <Music size={20} color={theme.accent} />
