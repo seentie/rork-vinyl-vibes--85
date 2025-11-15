@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
+  Text,
   TouchableOpacity,
   Animated,
   Platform,
@@ -12,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { useRecord } from './context/RecordContext';
 const decadeThemes = {
   '1940s': {
     background: ['#8B4513', '#654321', '#2F1B14'],
@@ -60,9 +62,14 @@ export default function NakedVinylScreen() {
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   
+  const { selectedRecord } = useRecord();
+  
   // Get theme - using 1950s as default to match the main display default
   const defaultTheme = decadeThemes['1950s'];
   const theme = defaultTheme;
+  
+  const albumName = selectedRecord?.albumName || 'The Retro Renaissance';
+  const artistName = selectedRecord?.artistName || 'Old Skool Apps';
 
   // Initialize spin value
   useEffect(() => {
@@ -187,6 +194,14 @@ export default function NakedVinylScreen() {
                 borderRadius: (VINYL_SIZE * 0.35) / 2,
                 backgroundColor: theme.accent 
               }]}>
+                <View style={styles.labelContent}>
+                  <Text style={[styles.albumText, { fontSize: VINYL_SIZE * 0.04 }]} numberOfLines={2}>
+                    {albumName}
+                  </Text>
+                  <Text style={[styles.artistText, { fontSize: VINYL_SIZE * 0.03 }]} numberOfLines={1}>
+                    {artistName}
+                  </Text>
+                </View>
                 <View style={styles.centerHole} />
               </View>
             </Animated.View>
@@ -256,6 +271,26 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     position: 'relative',
+  },
+  labelContent: {
+    position: 'absolute' as const,
+    top: '25%',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  albumText: {
+    color: '#0A0A0A',
+    fontWeight: '700' as const,
+    textAlign: 'center' as const,
+    marginBottom: 4,
+  },
+  artistText: {
+    color: '#0A0A0A',
+    fontWeight: '600' as const,
+    textAlign: 'center' as const,
+    opacity: 0.8,
   },
   centerHole: {
     width: 8,
