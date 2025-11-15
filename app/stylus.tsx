@@ -886,6 +886,21 @@ export default function StylusViewScreen() {
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>Now Playing</Text>
           </TouchableOpacity>
         </View>
+        
+        <View style={styles.navigationMenu}>
+          <TouchableOpacity
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.push('/screensaver');
+            }}
+          >
+            <Radio size={20} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Screensaver Display</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Theme Selector */}
         <ScrollView 
