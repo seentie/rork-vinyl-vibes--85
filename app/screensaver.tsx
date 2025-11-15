@@ -33,6 +33,8 @@ export default function ScreensaverScreen() {
   // Velocity for bounce
   const velocityX = useRef(2);
   const velocityY = useRef(2);
+  const currentX = useRef(screenWidth / 2);
+  const currentY = useRef(screenHeight / 2);
   
   const ALBUM_SIZE = Math.min(screenWidth, screenHeight) * 0.4;
   
@@ -46,6 +48,8 @@ export default function ScreensaverScreen() {
       setCurrentStyle(styles[currentIndex]);
       
       // Reset animations
+      currentX.current = screenWidth / 2;
+      currentY.current = screenHeight / 2;
       bounceX.setValue(screenWidth / 2);
       bounceY.setValue(screenHeight / 2);
       scale.setValue(1);
@@ -61,24 +65,22 @@ export default function ScreensaverScreen() {
     if (currentStyle !== 'bounce') return;
     
     const animate = () => {
-      bounceX.setValue((prev) => {
-        const newX = prev + velocityX.current;
-        if (newX <= ALBUM_SIZE / 2 || newX >= screenWidth - ALBUM_SIZE / 2) {
-          velocityX.current *= -1;
-        }
-        return Math.max(ALBUM_SIZE / 2, Math.min(screenWidth - ALBUM_SIZE / 2, newX));
-      });
+      const newX = currentX.current + velocityX.current;
+      if (newX <= ALBUM_SIZE / 2 || newX >= screenWidth - ALBUM_SIZE / 2) {
+        velocityX.current *= -1;
+      }
+      currentX.current = Math.max(ALBUM_SIZE / 2, Math.min(screenWidth - ALBUM_SIZE / 2, newX));
+      bounceX.setValue(currentX.current);
       
-      bounceY.setValue((prev) => {
-        const newY = prev + velocityY.current;
-        if (newY <= ALBUM_SIZE / 2 + insets.top + 60 || newY >= screenHeight - ALBUM_SIZE / 2 - insets.bottom - 60) {
-          velocityY.current *= -1;
-        }
-        return Math.max(
-          ALBUM_SIZE / 2 + insets.top + 60,
-          Math.min(screenHeight - ALBUM_SIZE / 2 - insets.bottom - 60, newY)
-        );
-      });
+      const newY = currentY.current + velocityY.current;
+      if (newY <= ALBUM_SIZE / 2 + insets.top + 60 || newY >= screenHeight - ALBUM_SIZE / 2 - insets.bottom - 60) {
+        velocityY.current *= -1;
+      }
+      currentY.current = Math.max(
+        ALBUM_SIZE / 2 + insets.top + 60,
+        Math.min(screenHeight - ALBUM_SIZE / 2 - insets.bottom - 60, newY)
+      );
+      bounceY.setValue(currentY.current);
     };
     
     const interval = setInterval(animate, 16);
