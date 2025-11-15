@@ -24,6 +24,8 @@ export default function ScreensaverScreen() {
   const mode = params.mode as string || 'screensaver';
   
   const [currentStyle, setCurrentStyle] = useState<ScreensaverStyle>(mode === 'kaleidoscope' ? 'kaleidoscope' : 'bounce');
+  const [showHeader, setShowHeader] = useState(false);
+  const headerOpacity = useRef(new Animated.Value(0)).current;
   
   // Animation values
   const bounceX = useRef(new Animated.Value(screenWidth / 2)).current;
@@ -191,6 +193,21 @@ export default function ScreensaverScreen() {
   const pulse = useRef(new Animated.Value(1)).current;
   
   useEffect(() => {
+    Animated.timing(headerOpacity, {
+      toValue: showHeader ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [showHeader, headerOpacity]);
+  
+  const handleScreenTap = () => {
+    setShowHeader(!showHeader);
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+  
+  useEffect(() => {
     if (currentStyle !== 'kaleidoscope') return;
     
     Animated.loop(
@@ -312,8 +329,12 @@ export default function ScreensaverScreen() {
   };
   
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+    <TouchableOpacity 
+      style={styles.container} 
+      activeOpacity={1}
+      onPress={handleScreenTap}
+    >
+      <Animated.View style={[styles.header, { paddingTop: insets.top, opacity: headerOpacity }]}>
         <TouchableOpacity 
           onPress={() => {
             if (Platform.OS !== 'web') {
@@ -325,7 +346,7 @@ export default function ScreensaverScreen() {
         >
           <ArrowLeft size={24} color="#000000" />
         </TouchableOpacity>
-      </View>
+      </Animated.View>
       
       <View style={styles.screensaverContainer}>
         {currentStyle === 'kaleidoscope' ? (
@@ -461,7 +482,7 @@ export default function ScreensaverScreen() {
           </Animated.View>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -471,6 +492,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   header: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
