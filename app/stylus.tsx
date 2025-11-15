@@ -25,6 +25,8 @@ import {
   Plus,
   Trash2,
   ArrowRight,
+  Music,
+  Radio,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -856,6 +858,35 @@ export default function StylusViewScreen() {
           </View>
         </View>
 
+        {/* Navigation Menu */}
+        <View style={styles.navigationMenu}>
+          <TouchableOpacity
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.push('/settings');
+            }}
+          >
+            <Music size={20} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>My Collection</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.push('/now-playing');
+            }}
+          >
+            <Radio size={20} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Now Playing</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Theme Selector */}
         <ScrollView 
           horizontal 
@@ -1404,6 +1435,27 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 16,
     borderWidth: 1,
+  },
+  navigationMenu: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    gap: 12,
+  },
+  menuButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    gap: 8,
+  },
+  menuButtonText: {
+    fontSize: 14,
+    fontWeight: '600' as const,
   },
   themeSelector: {
     maxHeight: 60,
