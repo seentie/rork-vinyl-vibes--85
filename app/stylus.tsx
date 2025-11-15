@@ -895,11 +895,24 @@ export default function StylusViewScreen() {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
-              router.push('/screensaver');
+              router.push('/screensaver?mode=screensaver');
             }}
           >
             <Sparkles size={20} color={theme.accent} />
-            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Displays</Text>
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Screensaver</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.push('/screensaver?mode=kaleidoscope');
+            }}
+          >
+            <Sparkles size={20} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Kaleidoscope</Text>
           </TouchableOpacity>
         </View>
 

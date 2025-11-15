@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useRecord } from './context/RecordContext';
 
@@ -20,8 +20,10 @@ export default function ScreensaverScreen() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { selectedRecord } = useRecord();
+  const params = useLocalSearchParams();
+  const mode = params.mode as string || 'screensaver';
   
-  const [currentStyle, setCurrentStyle] = useState<ScreensaverStyle>('bounce');
+  const [currentStyle, setCurrentStyle] = useState<ScreensaverStyle>(mode === 'kaleidoscope' ? 'kaleidoscope' : 'bounce');
   
   // Animation values
   const bounceX = useRef(new Animated.Value(screenWidth / 2)).current;
@@ -38,9 +40,14 @@ export default function ScreensaverScreen() {
   
   const ALBUM_SIZE = Math.min(screenWidth, screenHeight) * 0.4;
   
-  // Switch styles every 10 seconds
+  // Switch styles every 10 seconds (only if in screensaver mode)
   useEffect(() => {
-    const styles: ScreensaverStyle[] = ['bounce', 'zoom', 'float', 'rotate', 'fade', 'kaleidoscope'];
+    if (mode === 'kaleidoscope') {
+      setCurrentStyle('kaleidoscope');
+      return;
+    }
+    
+    const styles: ScreensaverStyle[] = ['bounce', 'zoom', 'float', 'rotate', 'fade'];
     let currentIndex = 0;
     
     const interval = setInterval(() => {
@@ -58,7 +65,7 @@ export default function ScreensaverScreen() {
     }, 10000);
     
     return () => clearInterval(interval);
-  }, [screenWidth, screenHeight, bounceX, bounceY, scale, rotation, opacity]);
+  }, [screenWidth, screenHeight, bounceX, bounceY, scale, rotation, opacity, mode]);
   
   // Bounce animation
   useEffect(() => {
