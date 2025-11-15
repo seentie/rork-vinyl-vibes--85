@@ -28,6 +28,7 @@ import {
   Music,
   Radio,
   Sparkles,
+  Disc,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -913,6 +914,21 @@ export default function StylusViewScreen() {
           >
             <Sparkles size={20} color={theme.accent} />
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>Kaleidoscope</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.navigationMenu}>
+          <TouchableOpacity
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.push('/naked-vinyl');
+            }}
+          >
+            <Disc size={20} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Naked Vinyl</Text>
           </TouchableOpacity>
         </View>
 
