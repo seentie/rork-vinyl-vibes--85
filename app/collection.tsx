@@ -33,7 +33,7 @@ export default function CollectionScreen() {
 
   const displayRecord = savedRecords.find(r => r.id === 'display-retro-renaissance');
   const userRecords = savedRecords.filter(r => r.id !== 'display-retro-renaissance');
-  const canAddMore = userRecords.length < 20;
+  const canAddMore = userRecords.length < 85;
 
   const handleAddAlbum = async () => {
     if (!newAlbumName.trim() || !newArtistName.trim()) {
@@ -42,7 +42,7 @@ export default function CollectionScreen() {
     }
 
     if (!canAddMore) {
-      Alert.alert('Collection Full', 'You can only add up to 20 albums.');
+      Alert.alert('Collection Full', 'You can only add up to 85 albums.');
       return;
     }
 
@@ -200,7 +200,7 @@ export default function CollectionScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>My Collection</Text>
           <Text style={styles.subtitle}>
-            {userRecords.length}/20 albums
+            {userRecords.length}/85 albums
           </Text>
         </View>
 
