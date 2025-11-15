@@ -7,6 +7,7 @@ import {
   Animated,
   Platform,
   useWindowDimensions,
+  Image,
 } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -194,15 +195,32 @@ export default function NakedVinylScreen() {
                 borderRadius: (VINYL_SIZE * 0.35) / 2,
                 backgroundColor: theme.accent 
               }]}>
-                <View style={styles.labelContent}>
-                  <Text style={[styles.albumText, { fontSize: VINYL_SIZE * 0.04 }]} numberOfLines={2}>
-                    {albumName}
-                  </Text>
-                  <Text style={[styles.artistText, { fontSize: VINYL_SIZE * 0.03 }]} numberOfLines={1}>
-                    {artistName}
-                  </Text>
-                </View>
-                <View style={styles.centerHole} />
+                {selectedRecord?.coverImage ? (
+                  <View style={styles.labelWithImage}>
+                    <Image 
+                      source={{ uri: selectedRecord.coverImage }}
+                      style={[styles.albumCoverImage, {
+                        width: VINYL_SIZE * 0.35,
+                        height: VINYL_SIZE * 0.35,
+                        borderRadius: (VINYL_SIZE * 0.35) / 2,
+                      }]}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.centerHole} />
+                  </View>
+                ) : (
+                  <>
+                    <View style={styles.labelContent}>
+                      <Text style={[styles.albumText, { fontSize: VINYL_SIZE * 0.04 }]} numberOfLines={2}>
+                        {albumName}
+                      </Text>
+                      <Text style={[styles.artistText, { fontSize: VINYL_SIZE * 0.03 }]} numberOfLines={1}>
+                        {artistName}
+                      </Text>
+                    </View>
+                    <View style={styles.centerHole} />
+                  </>
+                )}
               </View>
             </Animated.View>
           </View>
@@ -271,6 +289,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     position: 'relative',
+    overflow: 'hidden' as const,
+  },
+  labelWithImage: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  albumCoverImage: {
+    position: 'absolute' as const,
   },
   labelContent: {
     position: 'absolute' as const,
