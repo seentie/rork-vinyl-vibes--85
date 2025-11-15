@@ -1447,6 +1447,9 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center' as const,
     marginHorizontal: 10,
+    textShadowColor: '#000000',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
   stylusToggleButton: {
     paddingHorizontal: 10,
