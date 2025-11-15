@@ -27,6 +27,7 @@ import {
   ArrowRight,
   Music,
   Radio,
+  Sparkles,
 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -897,8 +898,8 @@ export default function StylusViewScreen() {
               router.push('/screensaver');
             }}
           >
-            <Radio size={20} color={theme.accent} />
-            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Screensaver Display</Text>
+            <Sparkles size={20} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Displays</Text>
           </TouchableOpacity>
         </View>
 

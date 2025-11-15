@@ -31,6 +31,7 @@ export default function CollectionScreen() {
   const [newArtistName, setNewArtistName] = useState('');
   const [coverImageUri, setCoverImageUri] = useState<string | undefined>(undefined);
 
+  const displayRecord = savedRecords.find(r => r.id === 'display-retro-renaissance');
   const userRecords = savedRecords.filter(r => r.id !== 'display-retro-renaissance');
   const canAddMore = userRecords.length < 20;
 
@@ -218,6 +219,52 @@ export default function CollectionScreen() {
           </TouchableOpacity>
         )}
 
+        {/* Display Album Section */}
+        {displayRecord && (
+          <View style={styles.displaySection}>
+            <Text style={styles.displaySectionTitle}>Display Album</Text>
+            <View style={styles.albumCard}>
+              <TouchableOpacity
+                style={styles.albumTouchable}
+                onPress={() => {
+                  selectRecord(displayRecord);
+                  if (Platform.OS !== 'web') {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
+                  Alert.alert(
+                    'Album Selected',
+                    `Now playing "${displayRecord.albumName}" by ${displayRecord.artistName}`
+                  );
+                }}
+              >
+                <View style={styles.albumCover}>
+                  {displayRecord.coverImage ? (
+                    <Image source={{ uri: displayRecord.coverImage }} style={styles.coverImage} />
+                  ) : (
+                    <View style={styles.placeholderCover}>
+                      <Music size={48} color="#FFFFFF" strokeWidth={1} />
+                    </View>
+                  )}
+                </View>
+                <View style={styles.albumInfo}>
+                  <Text style={styles.albumName} numberOfLines={2}>
+                    {displayRecord.albumName}
+                  </Text>
+                  <Text style={styles.artistName} numberOfLines={1}>
+                    {displayRecord.artistName}
+                  </Text>
+                  <Text style={styles.songCount}>
+                    {displayRecord.songs?.length || 0} songs
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {/* User Albums Section */}
+        <Text style={styles.sectionTitle}>Your Albums</Text>
+        
         {userRecords.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Music size={64} color="#FFFFFF" strokeWidth={1} />
@@ -472,6 +519,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     opacity: 0.9,
+  },
+  displaySection: {
+    marginBottom: 32,
+  },
+  displaySectionTitle: {
+    fontSize: 20,
+    fontWeight: '700' as const,
+    color: '#FFFFFF',
+    marginBottom: 12,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700' as const,
+    color: '#FFFFFF',
+    marginBottom: 12,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1,
   },
   addButton: {
     flexDirection: 'row',
