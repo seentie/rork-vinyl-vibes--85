@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plus, X, Check, Music, Trash2, Edit2 } from 'lucide-react-native';
+import { Plus, X, Check, Music, Trash2, Edit2, Music2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useRecord } from './context/RecordContext';
@@ -30,6 +30,8 @@ export default function CollectionScreen() {
   const [newAlbumName, setNewAlbumName] = useState('');
   const [newArtistName, setNewArtistName] = useState('');
   const [coverImageUri, setCoverImageUri] = useState<string | undefined>(undefined);
+  const [newSongTitle, setNewSongTitle] = useState('');
+  const [editingSongs, setEditingSongs] = useState<string[]>([]);
 
   const displayRecord = savedRecords.find(r => r.id === 'display-retro-renaissance');
   const userRecords = savedRecords.filter(r => r.id !== 'display-retro-renaissance');
@@ -85,6 +87,7 @@ export default function CollectionScreen() {
       albumName: newAlbumName.trim(),
       artistName: newArtistName.trim(),
       coverImage: coverImageUri,
+      songs: editingSongs,
     };
 
     const updatedRecords = savedRecords.map(r => 
@@ -101,6 +104,8 @@ export default function CollectionScreen() {
     setNewAlbumName('');
     setNewArtistName('');
     setCoverImageUri(undefined);
+    setEditingSongs([]);
+    setNewSongTitle('');
     setShowEditModal(false);
 
     if (Platform.OS !== 'web') {
@@ -169,6 +174,8 @@ export default function CollectionScreen() {
     setNewAlbumName(record.albumName);
     setNewArtistName(record.artistName);
     setCoverImageUri(record.coverImage);
+    setEditingSongs(record.songs || []);
+    setNewSongTitle('');
     setShowEditModal(true);
   };
 
@@ -184,7 +191,36 @@ export default function CollectionScreen() {
     setNewAlbumName('');
     setNewArtistName('');
     setCoverImageUri(undefined);
+    setEditingSongs([]);
+    setNewSongTitle('');
     setShowEditModal(false);
+  };
+
+  const handleAddSongToEditing = () => {
+    if (!newSongTitle.trim()) {
+      Alert.alert('Missing Information', 'Please enter a song title.');
+      return;
+    }
+
+    if (editingSongs.length >= 15) {
+      Alert.alert('Song Limit Reached', 'You can only add up to 15 songs per album.');
+      return;
+    }
+
+    setEditingSongs([...editingSongs, newSongTitle.trim()]);
+    setNewSongTitle('');
+
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+  const handleRemoveSongFromEditing = (index: number) => {
+    setEditingSongs(editingSongs.filter((_, i) => i !== index));
+
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
   };
 
   return (
@@ -467,9 +503,49 @@ export default function CollectionScreen() {
                   onChangeText={setNewArtistName}
                   placeholder="Enter artist name"
                   placeholderTextColor="#999"
-                  returnKeyType="done"
-                  onSubmitEditing={handleEditAlbum}
+                  returnKeyType="next"
                 />
+              </View>
+
+              {/* Songs Section */}
+              <View style={styles.songsContainer}>
+                <Text style={styles.inputLabel}>Songs ({editingSongs.length}/15)</Text>
+                
+                {editingSongs.length > 0 && (
+                  <View style={styles.songsList}>
+                    {editingSongs.map((song, index) => (
+                      <View key={index} style={styles.songItem}>
+                        <Music2 size={16} color="#666" />
+                        <Text style={styles.songItemText} numberOfLines={1}>{song}</Text>
+                        <TouchableOpacity
+                          onPress={() => handleRemoveSongFromEditing(index)}
+                          style={styles.removeSongButton}
+                        >
+                          <X size={16} color="#FF6B6B" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                <View style={styles.addSongContainer}>
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={newSongTitle}
+                    onChangeText={setNewSongTitle}
+                    placeholder="Add song title"
+                    placeholderTextColor="#999"
+                    returnKeyType="done"
+                    onSubmitEditing={handleAddSongToEditing}
+                  />
+                  <TouchableOpacity
+                    style={styles.addSongButton}
+                    onPress={handleAddSongToEditing}
+                    disabled={!newSongTitle.trim() || editingSongs.length >= 15}
+                  >
+                    <Plus size={20} color="#FFFFFF" />
+                  </TouchableOpacity>
+                </View>
               </View>
 
               <View style={styles.modalButtons}>
@@ -733,5 +809,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600' as const,
     color: '#FFFFFF',
+  },
+  songsContainer: {
+    marginBottom: 16,
+  },
+  songsList: {
+    maxHeight: 150,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  songItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 6,
+    gap: 8,
+  },
+  songItemText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#333',
+  },
+  removeSongButton: {
+    padding: 4,
+  },
+  addSongContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  addSongButton: {
+    backgroundColor: '#9C27B0',
+    padding: 10,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
