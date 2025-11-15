@@ -14,7 +14,7 @@ import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useRecord } from './context/RecordContext';
 
-type ScreensaverStyle = 'bounce' | 'zoom' | 'float' | 'rotate' | 'fade';
+type ScreensaverStyle = 'bounce' | 'zoom' | 'float' | 'rotate' | 'fade' | 'kaleidoscope';
 
 export default function ScreensaverScreen() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -40,7 +40,7 @@ export default function ScreensaverScreen() {
   
   // Switch styles every 10 seconds
   useEffect(() => {
-    const styles: ScreensaverStyle[] = ['bounce', 'zoom', 'float', 'rotate', 'fade'];
+    const styles: ScreensaverStyle[] = ['bounce', 'zoom', 'float', 'rotate', 'fade', 'kaleidoscope'];
     let currentIndex = 0;
     
     const interval = setInterval(() => {
@@ -177,6 +177,19 @@ export default function ScreensaverScreen() {
     ).start();
   }, [currentStyle, opacity]);
   
+  // Kaleidoscope animation - rotates multiple copies at different speeds
+  useEffect(() => {
+    if (currentStyle !== 'kaleidoscope') return;
+    
+    Animated.loop(
+      Animated.timing(rotation, {
+        toValue: 1,
+        duration: 10000,
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [currentStyle, rotation]);
+  
   if (!selectedRecord?.coverImage) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -247,6 +260,9 @@ export default function ScreensaverScreen() {
           opacity,
         };
       
+      case 'kaleidoscope':
+        return baseStyle;
+      
       default:
         return baseStyle;
     }
@@ -269,15 +285,69 @@ export default function ScreensaverScreen() {
       </View>
       
       <View style={styles.screensaverContainer}>
-        <Animated.View style={[styles.albumWrapper, getAnimatedStyle()]}>
-          <View style={styles.albumCover}>
-            <Image 
-              source={{ uri: selectedRecord.coverImage }} 
-              style={styles.coverImage}
-              resizeMode="cover"
-            />
+        {currentStyle === 'kaleidoscope' ? (
+          <View style={styles.kaleidoscopeContainer}>
+            {[...Array(8)].map((_, i) => {
+              const rotateZ = rotation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [`${i * 45}deg`, `${i * 45 + 360}deg`],
+              });
+              
+              return (
+                <Animated.View
+                  key={`kaleidoscope-${i}`}
+                  style={[
+                    styles.kaleidoscopeSegment,
+                    {
+                      width: ALBUM_SIZE * 0.6,
+                      height: ALBUM_SIZE * 0.6,
+                      transform: [
+                        { rotate: rotateZ },
+                        { scale: i % 2 === 0 ? 1 : 0.8 },
+                      ],
+                    },
+                  ]}
+                >
+                  <View style={styles.albumCover}>
+                    <Image 
+                      source={{ uri: selectedRecord.coverImage }} 
+                      style={styles.coverImage}
+                      resizeMode="cover"
+                    />
+                    <View style={[styles.kaleidoscopeOverlay, { opacity: 0.3 + (i * 0.05) }]} />
+                  </View>
+                </Animated.View>
+              );
+            })}
+            
+            {/* Center piece */}
+            <View 
+              style={[
+                styles.kaleidoscopeCenter,
+                {
+                  width: ALBUM_SIZE * 0.4,
+                  height: ALBUM_SIZE * 0.4,
+                }
+              ]}
+            >
+              <Image 
+                source={{ uri: selectedRecord.coverImage }} 
+                style={styles.coverImage}
+                resizeMode="cover"
+              />
+            </View>
           </View>
-        </Animated.View>
+        ) : (
+          <Animated.View style={[styles.albumWrapper, getAnimatedStyle()]}>
+            <View style={styles.albumCover}>
+              <Image 
+                source={{ uri: selectedRecord.coverImage }} 
+                style={styles.coverImage}
+                resizeMode="cover"
+              />
+            </View>
+          </Animated.View>
+        )}
       </View>
     </View>
   );
@@ -324,5 +394,33 @@ const styles = StyleSheet.create({
   coverImage: {
     width: '100%',
     height: '100%',
+  },
+  kaleidoscopeContainer: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  kaleidoscopeSegment: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  kaleidoscopeOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
+  },
+  kaleidoscopeCenter: {
+    borderRadius: 1000,
+    overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 30,
+    elevation: 15,
   },
 });
