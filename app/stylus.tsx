@@ -112,14 +112,13 @@ export default function StylusViewScreen() {
   const [isStopped, setIsStopped] = useState(true);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [rpm, setRpm] = useState<33 | 45>(33);
-  const [currentTheme, setCurrentTheme] = useState<keyof typeof decadeThemes>('1950s');
-  const [aiTheme, setAiTheme] = useState(decadeThemes.ai);
-  const [youPickTheme, setYouPickTheme] = useState(decadeThemes.youPick);
+  const [localAiTheme, setLocalAiTheme] = useState(decadeThemes.ai);
+  const [localYouPickTheme, setLocalYouPickTheme] = useState(decadeThemes.youPick);
   const [isGeneratingTheme, setIsGeneratingTheme] = useState(false);
   const [showYouPickModal, setShowYouPickModal] = useState(false);
   const [youPickDescription, setYouPickDescription] = useState('');
 
-  const { selectedRecord, currentSong, tracks, updateCurrentSong, stylusMovementEnabled, toggleStylusMovement, addSongToRecord, removeSongFromRecord, selectSongFromRecord } = useRecord();
+  const { selectedRecord, currentSong, tracks, updateCurrentSong, stylusMovementEnabled, toggleStylusMovement, addSongToRecord, removeSongFromRecord, selectSongFromRecord, currentTheme, setCurrentTheme, aiTheme: contextAiTheme, youPickTheme: contextYouPickTheme, setAiTheme: setContextAiTheme, setYouPickTheme: setContextYouPickTheme } = useRecord();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSongListModal, setShowSongListModal] = useState(false);
   const [tempCurrentSong, setTempCurrentSong] = useState(currentSong);
@@ -145,7 +144,9 @@ export default function StylusViewScreen() {
     setTempCurrentSong(currentSong);
   }, [currentSong]);
   
-  const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme];
+  const aiTheme = contextAiTheme || localAiTheme;
+  const youPickTheme = contextYouPickTheme || localYouPickTheme;
+  const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme as keyof typeof decadeThemes] || decadeThemes['1950s'];
 
   // Spinning effect controlled by play state
   useEffect(() => {
@@ -361,7 +362,8 @@ export default function StylusViewScreen() {
       }
       
       const fallbackTheme = generateEnhancedFallbackTheme(albumName, artistName, coverImageUri);
-      setAiTheme(fallbackTheme);
+      setLocalAiTheme(fallbackTheme);
+      setContextAiTheme(fallbackTheme);
       
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -377,7 +379,8 @@ export default function StylusViewScreen() {
       console.error('Error in generateAITheme:', error);
       
       const fallbackTheme = generateEnhancedFallbackTheme(albumName, artistName, coverImageUri);
-      setAiTheme(fallbackTheme);
+      setLocalAiTheme(fallbackTheme);
+      setContextAiTheme(fallbackTheme);
       
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -1367,7 +1370,8 @@ export default function StylusViewScreen() {
                         text: fallbackTheme.text
                       };
                       
-                      setYouPickTheme(newYouPickTheme);
+                      setLocalYouPickTheme(newYouPickTheme);
+                      setContextYouPickTheme(newYouPickTheme);
                       
                       if (Platform.OS !== 'web') {
                         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -1382,7 +1386,8 @@ export default function StylusViewScreen() {
                       console.error('Error generating You Pick theme:', error);
                       
                       const fallbackTheme = generateFallbackFromDescription(description);
-                      setYouPickTheme(fallbackTheme);
+                      setLocalYouPickTheme(fallbackTheme);
+                      setContextYouPickTheme(fallbackTheme);
                       
                       if (Platform.OS !== 'web') {
                         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

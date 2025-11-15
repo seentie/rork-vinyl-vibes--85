@@ -51,6 +51,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
   const [savedRecords, setSavedRecords] = useState<SavedRecord[]>([]);
   const [tracks, setTracks] = useState<Track[]>(defaultTracks);
   const [stylusMovementEnabled, setStylusMovementEnabled] = useState<boolean>(true);
+  const [currentTheme, setCurrentTheme] = useState<string>('1950s');
+  const [aiTheme, setAiTheme] = useState<any>(null);
+  const [youPickTheme, setYouPickTheme] = useState<any>(null);
 
   const loadSavedRecords = useCallback(async () => {
     try {
@@ -464,6 +467,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     savedRecords,
     tracks,
     stylusMovementEnabled,
+    currentTheme,
+    aiTheme,
+    youPickTheme,
     selectRecord,
     updateCurrentSong,
     loadSavedRecords,
@@ -476,6 +482,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     addSongToRecord,
     removeSongFromRecord,
     selectSongFromRecord,
+    setCurrentTheme,
+    setAiTheme,
+    setYouPickTheme,
   }), [
     isInitialized,
     selectedRecord,
@@ -483,6 +492,9 @@ export const [RecordProvider, useRecord] = createContextHook(() => {
     savedRecords,
     tracks,
     stylusMovementEnabled,
+    currentTheme,
+    aiTheme,
+    youPickTheme,
     selectRecord,
     updateCurrentSong,
     loadSavedRecords,

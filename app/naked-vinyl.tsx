@@ -51,6 +51,16 @@ const decadeThemes = {
     accent: '#39FF14',
     vinyl: ['#0A0E27', '#050714'],
   },
+  'ai': {
+    background: ['#FF6B6B', '#FF8E53', '#FF6B9D'],
+    accent: '#FFD700',
+    vinyl: ['#2F0147', '#1A0033'],
+  },
+  'youPick': {
+    background: ['#9C27B0', '#E91E63', '#3F51B5'],
+    accent: '#FFD700',
+    vinyl: ['#2F0147', '#1A0033'],
+  },
 };
 
 export default function NakedVinylScreen() {
@@ -63,11 +73,12 @@ export default function NakedVinylScreen() {
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   
-  const { selectedRecord } = useRecord();
+  const { selectedRecord, currentTheme, aiTheme: contextAiTheme, youPickTheme: contextYouPickTheme } = useRecord();
   
-  // Get theme - using 1950s as default to match the main display default
-  const defaultTheme = decadeThemes['1950s'];
-  const theme = defaultTheme;
+  // Get theme based on currentTheme from context
+  const aiTheme = contextAiTheme || decadeThemes['ai'];
+  const youPickTheme = contextYouPickTheme || decadeThemes['youPick'];
+  const theme = currentTheme === 'ai' ? aiTheme : currentTheme === 'youPick' ? youPickTheme : decadeThemes[currentTheme as keyof typeof decadeThemes] || decadeThemes['1950s'];
   
   const albumName = selectedRecord?.albumName || 'The Retro Renaissance';
   const artistName = selectedRecord?.artistName || 'Old Skool Apps';
