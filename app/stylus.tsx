@@ -1739,6 +1739,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 30,
+    marginTop: 15,
     marginBottom: 20,
     gap: 8,
   },
