@@ -1540,7 +1540,8 @@ const styles = StyleSheet.create({
   stylusContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 60,
+    marginTop: 30,
     marginBottom: 30,
     position: 'relative',
   },
@@ -1685,6 +1686,7 @@ const styles = StyleSheet.create({
   songEditContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
     gap: 8,
   },
