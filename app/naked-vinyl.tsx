@@ -380,8 +380,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   quoteTop: {
-    top: '4%',
-    maxHeight: '18%',
+    top: '8%',
+    maxHeight: '25%',
   },
   quoteBottom: {
     bottom: '4%',
