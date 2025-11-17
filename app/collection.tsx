@@ -34,6 +34,7 @@ export default function CollectionScreen() {
   const [newAlbumSongs, setNewAlbumSongs] = useState<string[]>([]);
   const [editingSongs, setEditingSongs] = useState<string[]>([]);
   const [showSongSelector, setShowSongSelector] = useState(false);
+  const [viewingRecord, setViewingRecord] = useState<SavedRecord | null>(null);
 
   const displayRecord = savedRecords.find(r => r.id === 'display-retro-renaissance');
   const userRecords = savedRecords.filter(r => r.id !== 'display-retro-renaissance');
@@ -362,14 +363,19 @@ export default function CollectionScreen() {
                 <TouchableOpacity
                   style={styles.albumTouchable}
                   onPress={() => {
+                    setViewingRecord(record);
                     selectRecord(record);
                     if (Platform.OS !== 'web') {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }
-                    Alert.alert(
-                      'Album Selected',
-                      `Now playing "${record.albumName}" by ${record.artistName}`
-                    );
+                    if (record.songs && record.songs.length > 0) {
+                      setShowSongSelector(true);
+                    } else {
+                      Alert.alert(
+                        'Album Selected',
+                        `Now playing "${record.albumName}" by ${record.artistName}.\n\nThis album has no songs yet. Tap Edit to add songs.`
+                      );
+                    }
                   }}
                 >
                   <View style={styles.albumCover}>
@@ -394,7 +400,9 @@ export default function CollectionScreen() {
                     {record.songs && record.songs.length > 0 && (
                       <TouchableOpacity
                         style={styles.songSelectorButton}
-                        onPress={() => {
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          setViewingRecord(record);
                           selectRecord(record);
                           setShowSongSelector(true);
                           if (Platform.OS !== 'web') {
@@ -402,7 +410,7 @@ export default function CollectionScreen() {
                           }
                         }}
                       >
-                        <Play size={14} color="#9C27B0" />
+                        <Play size={14} color="#FFFFFF" />
                         <Text style={styles.songSelectorButtonText}>Select Song</Text>
                       </TouchableOpacity>
                     )}
@@ -443,24 +451,30 @@ export default function CollectionScreen() {
         visible={showSongSelector}
         transparent
         animationType="slide"
-        onRequestClose={() => setShowSongSelector(false)}
+        onRequestClose={() => {
+          setShowSongSelector(false);
+          setViewingRecord(null);
+        }}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>Select Song</Text>
-                <TouchableOpacity onPress={() => setShowSongSelector(false)}>
+                <TouchableOpacity onPress={() => {
+                  setShowSongSelector(false);
+                  setViewingRecord(null);
+                }}>
                   <X size={24} color="#333" />
                 </TouchableOpacity>
               </View>
 
               <Text style={styles.modalSubtitle}>
-                {selectedRecord?.albumName} - {selectedRecord?.artistName}
+                {viewingRecord?.albumName} - {viewingRecord?.artistName}
               </Text>
 
               <ScrollView style={styles.songSelectorList}>
-                {selectedRecord?.songs?.map((song, index) => (
+                {viewingRecord?.songs?.map((song, index) => (
                   <TouchableOpacity
                     key={index}
                     style={[
@@ -470,6 +484,7 @@ export default function CollectionScreen() {
                     onPress={() => {
                       selectSongFromRecord(song);
                       setShowSongSelector(false);
+                      setViewingRecord(null);
                       if (Platform.OS !== 'web') {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                       }
