@@ -1758,9 +1758,9 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   playButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: '#2A2A2A',
     borderWidth: 2,
   },
