@@ -865,7 +865,7 @@ export default function StylusViewScreen() {
         {/* Navigation Menu */}
         <View style={styles.navigationMenu}>
           <TouchableOpacity
-            style={[styles.menuButton, { borderColor: 'rgba(255, 255, 255, 0.4)' }]}
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
             onPress={() => {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -873,12 +873,12 @@ export default function StylusViewScreen() {
               router.push('/collection');
             }}
           >
-            <Music size={16} color="#FFFFFF" />
-            <Text style={[styles.menuButtonText, { color: '#FFFFFF' }]}>My Collection</Text>
+            <Music size={16} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>My Collection</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-            style={[styles.menuButton, { borderColor: 'rgba(255, 255, 255, 0.4)' }]}
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
             onPress={() => {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -886,14 +886,14 @@ export default function StylusViewScreen() {
               router.push('/now-playing');
             }}
           >
-            <Radio size={16} color="#FFFFFF" />
-            <Text style={[styles.menuButtonText, { color: '#FFFFFF' }]}>Now Playing</Text>
+            <Radio size={16} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Now Playing</Text>
           </TouchableOpacity>
         </View>
         
         <View style={styles.navigationMenu}>
           <TouchableOpacity
-            style={[styles.menuButton, { borderColor: 'rgba(255, 255, 255, 0.4)' }]}
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
             onPress={() => {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -901,12 +901,12 @@ export default function StylusViewScreen() {
               router.push('/screensaver?mode=screensaver');
             }}
           >
-            <Sparkles size={16} color="#FFFFFF" />
-            <Text style={[styles.menuButtonText, { color: '#FFFFFF' }]}>Screensaver</Text>
+            <Sparkles size={16} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Screensaver</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-            style={[styles.menuButton, { borderColor: 'rgba(255, 255, 255, 0.4)' }]}
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
             onPress={() => {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -914,14 +914,14 @@ export default function StylusViewScreen() {
               router.push('/screensaver?mode=kaleidoscope');
             }}
           >
-            <Sparkles size={16} color="#FFFFFF" />
-            <Text style={[styles.menuButtonText, { color: '#FFFFFF' }]}>Kaleidoscope</Text>
+            <Sparkles size={16} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Kaleidoscope</Text>
           </TouchableOpacity>
         </View>
         
         <View style={styles.navigationMenu}>
           <TouchableOpacity
-            style={[styles.menuButton, { borderColor: 'rgba(255, 255, 255, 0.4)' }]}
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
             onPress={() => {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -929,12 +929,12 @@ export default function StylusViewScreen() {
               router.push('/naked-vinyl-spin');
             }}
           >
-            <Disc size={16} color="#FFFFFF" />
-            <Text style={[styles.menuButtonText, { color: '#FFFFFF' }]}>Naked Vinyl</Text>
+            <Disc size={16} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Naked Vinyl</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-            style={[styles.menuButton, { borderColor: 'rgba(255, 255, 255, 0.4)' }]}
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
             onPress={() => {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -942,8 +942,8 @@ export default function StylusViewScreen() {
               router.push('/naked-vinyl');
             }}
           >
-            <Disc size={16} color="#FFFFFF" />
-            <Text style={[styles.menuButtonText, { color: '#FFFFFF' }]}>Vinyl Quotes</Text>
+            <Disc size={16} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Vinyl Quotes</Text>
           </TouchableOpacity>
         </View>
 
@@ -1461,60 +1461,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 16,
-    borderWidth: 2,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 8,
+    borderWidth: 1,
   },
   stylusToggleText: {
     fontSize: 10,
-    fontWeight: '700' as const,
-    textShadowColor: '#000000',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    fontWeight: '600' as const,
   },
   rpmButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: '#1A1A1A',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    borderWidth: 2,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 8,
+    borderWidth: 1,
   },
   rpmText: {
     fontSize: 11,
-    fontWeight: '700' as const,
-    textShadowColor: '#000000',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    fontWeight: '600' as const,
   },
   songListButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: '#1A1A1A',
     padding: 6,
     borderRadius: 16,
-    borderWidth: 2,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 8,
+    borderWidth: 1,
   },
   settingsButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: '#1A1A1A',
     padding: 6,
     borderRadius: 16,
-    borderWidth: 2,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 8,
+    borderWidth: 1,
   },
   navigationMenu: {
     flexDirection: 'row',
@@ -1527,25 +1501,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    borderWidth: 2,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1.5,
     gap: 6,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-    elevation: 5,
   },
   menuButtonText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600' as const,
-    textShadowColor: '#000000',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
   },
   themeSelector: {
     maxHeight: 60,
