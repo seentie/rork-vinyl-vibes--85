@@ -264,7 +264,21 @@ export default function NakedVinylQuotesScreen() {
         <View style={styles.vinylContainer}>
           {isQuoteAtTop && (
             <Animated.View style={[styles.quoteContainer, styles.quoteTop, { opacity: quoteOpacity }]}>
-              <Text style={styles.quoteText}>{VINYL_QUOTES[currentQuoteIndex]}</Text>
+              {(() => {
+                const quoteText = VINYL_QUOTES[currentQuoteIndex];
+                const dashIndex = quoteText.lastIndexOf(' - ');
+                if (dashIndex > 0) {
+                  const quote = quoteText.substring(0, dashIndex);
+                  const author = quoteText.substring(dashIndex + 3);
+                  return (
+                    <>
+                      <Text style={styles.quoteText}>{quote}</Text>
+                      <Text style={styles.quoteAuthor}>— {author}</Text>
+                    </>
+                  );
+                }
+                return <Text style={styles.quoteText}>{quoteText}</Text>;
+              })()}
             </Animated.View>
           )}
           
@@ -333,7 +347,21 @@ export default function NakedVinylQuotesScreen() {
           
           {!isQuoteAtTop && (
             <Animated.View style={[styles.quoteContainer, styles.quoteBottom, { opacity: quoteOpacity }]}>
-              <Text style={styles.quoteText}>{VINYL_QUOTES[currentQuoteIndex]}</Text>
+              {(() => {
+                const quoteText = VINYL_QUOTES[currentQuoteIndex];
+                const dashIndex = quoteText.lastIndexOf(' - ');
+                if (dashIndex > 0) {
+                  const quote = quoteText.substring(0, dashIndex);
+                  const author = quoteText.substring(dashIndex + 3);
+                  return (
+                    <>
+                      <Text style={styles.quoteText}>{quote}</Text>
+                      <Text style={styles.quoteAuthor}>— {author}</Text>
+                    </>
+                  );
+                }
+                return <Text style={styles.quoteText}>{quoteText}</Text>;
+              })()}
             </Animated.View>
           )}
         </View>
@@ -372,7 +400,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: '15%',
+    paddingBottom: '10%',
   },
   quoteContainer: {
     position: 'absolute' as const,
@@ -382,12 +410,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   quoteTop: {
-    top: '12%',
-    maxHeight: '22%',
+    top: '17%',
+    maxHeight: '28%',
   },
   quoteBottom: {
-    bottom: '48%',
-    maxHeight: '22%',
+    bottom: '52%',
+    maxHeight: '28%',
   },
   quoteText: {
     fontSize: 22,
@@ -397,6 +425,18 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: '700' as const,
     letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.95)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
+  },
+  quoteAuthor: {
+    fontSize: 18,
+    lineHeight: 28,
+    color: '#FFFFFF',
+    textAlign: 'center' as const,
+    fontWeight: '600' as const,
+    letterSpacing: 0.3,
+    marginTop: 8,
     textShadowColor: 'rgba(0, 0, 0, 0.95)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 8,
