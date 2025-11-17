@@ -833,34 +833,33 @@ export default function StylusViewScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <View style={[styles.backButton, { borderColor: theme.accent, opacity: 0 }]} />
-          
           <Text style={[styles.brandText, { color: theme.accent }]}>VINYL VIBES &apos;85</Text>
-          <View style={styles.headerRight}>
-            <TouchableOpacity 
-              onPress={toggleStylusMovement} 
-              style={[styles.stylusToggleButton, { borderColor: theme.accent, backgroundColor: stylusMovementEnabled ? theme.accent + '20' : '#1A1A1A' }]}
-            >
-              <Text style={[styles.stylusToggleText, { color: theme.accent }]}>
-                {stylusMovementEnabled ? 'MOVE' : 'FIXED'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={toggleRPM} style={[styles.rpmButton, { borderColor: theme.accent }]}>
-              <Text style={[styles.rpmText, { color: theme.accent }]}>{rpm} RPM</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={() => setShowSongListModal(true)} 
-              style={[styles.songListButton, { borderColor: theme.accent }]}
-            >
-              <List size={18} color={theme.accent} />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={() => router.push('/settings')} 
-              style={[styles.settingsButton, { borderColor: theme.accent }]}
-            >
-              <Settings size={20} color={theme.accent} />
-            </TouchableOpacity>
-          </View>
+        </View>
+        
+        <View style={styles.buttonBar}>
+          <TouchableOpacity 
+            onPress={toggleStylusMovement} 
+            style={[styles.stylusToggleButton, { borderColor: theme.accent, backgroundColor: stylusMovementEnabled ? theme.accent + '20' : '#1A1A1A' }]}
+          >
+            <Text style={[styles.stylusToggleText, { color: theme.accent }]}>
+              {stylusMovementEnabled ? 'MOVE' : 'FIXED'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleRPM} style={[styles.rpmButton, { borderColor: theme.accent }]}>
+            <Text style={[styles.rpmText, { color: theme.accent }]}>{rpm} RPM</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => setShowSongListModal(true)} 
+            style={[styles.songListButton, { borderColor: theme.accent }]}
+          >
+            <List size={18} color={theme.accent} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => router.push('/settings')} 
+            style={[styles.settingsButton, { borderColor: theme.accent }]}
+          >
+            <Settings size={20} color={theme.accent} />
+          </TouchableOpacity>
         </View>
 
         {/* Navigation Menu */}
@@ -1424,34 +1423,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 10,
-    minHeight: 60,
-  },
-  backButton: {
-    backgroundColor: '#1A1A1A',
-    padding: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    flexShrink: 0,
-  },
-  headerRight: {
-    flexDirection: 'row',
+    paddingBottom: 15,
     alignItems: 'center',
+  },
+  buttonBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 15,
     gap: 8,
-    flexShrink: 0,
   },
   brandText: {
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: '700' as const,
-    letterSpacing: 1.5,
-    flex: 1,
+    letterSpacing: 2,
     textAlign: 'center' as const,
-    marginHorizontal: 10,
+    width: '100%',
     textShadowColor: '#000000',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,
