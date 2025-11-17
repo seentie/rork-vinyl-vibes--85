@@ -360,6 +360,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     zIndex: 100,
+    backgroundColor: 'transparent',
   },
   backButton: {
     padding: 8,
@@ -368,9 +369,10 @@ const styles = StyleSheet.create({
   },
   vinylContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingBottom: '15%',
   },
   quoteContainer: {
     position: 'absolute' as const,
@@ -380,12 +382,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   quoteTop: {
-    top: '8%',
-    maxHeight: '25%',
+    top: '12%',
+    maxHeight: '22%',
   },
   quoteBottom: {
-    bottom: '4%',
-    maxHeight: '18%',
+    bottom: '48%',
+    maxHeight: '22%',
   },
   quoteText: {
     fontSize: 22,
