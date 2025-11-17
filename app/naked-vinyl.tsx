@@ -125,6 +125,7 @@ export default function NakedVinylQuotesScreen() {
   const [showHeader, setShowHeader] = useState(false);
   const headerOpacity = useRef(new Animated.Value(0)).current;
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  const [isQuoteAtTop, setIsQuoteAtTop] = useState(true);
   const quoteOpacity = useRef(new Animated.Value(1)).current;
   
   const spinValue = useRef(new Animated.Value(0)).current;
@@ -213,6 +214,7 @@ export default function NakedVinylQuotesScreen() {
         
         setTimeout(() => {
           setCurrentQuoteIndex((prev) => (prev + 1) % VINYL_QUOTES.length);
+          setIsQuoteAtTop((prev) => !prev);
         }, 1000);
       }, randomDuration);
     };
@@ -260,9 +262,11 @@ export default function NakedVinylQuotesScreen() {
         </Animated.View>
         
         <View style={styles.vinylContainer}>
-          <Animated.View style={[styles.quoteContainer, { opacity: quoteOpacity }]}>
-            <Text style={styles.quoteText}>{VINYL_QUOTES[currentQuoteIndex]}</Text>
-          </Animated.View>
+          {isQuoteAtTop && (
+            <Animated.View style={[styles.quoteContainer, styles.quoteTop, { opacity: quoteOpacity }]}>
+              <Text style={styles.quoteText}>{VINYL_QUOTES[currentQuoteIndex]}</Text>
+            </Animated.View>
+          )}
           
           <View style={styles.recordContainer}>
             <Animated.View
@@ -326,6 +330,12 @@ export default function NakedVinylQuotesScreen() {
               </View>
             </Animated.View>
           </View>
+          
+          {!isQuoteAtTop && (
+            <Animated.View style={[styles.quoteContainer, styles.quoteBottom, { opacity: quoteOpacity }]}>
+              <Text style={styles.quoteText}>{VINYL_QUOTES[currentQuoteIndex]}</Text>
+            </Animated.View>
+          )}
         </View>
       </LinearGradient>
     </TouchableOpacity>
@@ -364,26 +374,34 @@ const styles = StyleSheet.create({
   },
   quoteContainer: {
     position: 'absolute' as const,
-    top: '10%',
     left: 20,
     right: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 16,
+    paddingHorizontal: 32,
+    paddingVertical: 28,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    borderRadius: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  quoteTop: {
+    top: '8%',
+  },
+  quoteBottom: {
+    bottom: '8%',
   },
   quoteText: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 20,
+    lineHeight: 32,
     color: '#FFFFFF',
     textAlign: 'center' as const,
     fontStyle: 'italic',
-    fontWeight: '500' as const,
+    fontWeight: '600' as const,
+    letterSpacing: 0.5,
   },
   recordContainer: {
     justifyContent: 'center',
