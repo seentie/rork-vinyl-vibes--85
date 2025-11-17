@@ -926,11 +926,24 @@ export default function StylusViewScreen() {
               if (Platform.OS !== 'web') {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
-              router.push('/naked-vinyl');
+              router.push('/naked-vinyl-spin');
             }}
           >
             <Disc size={16} color={theme.accent} />
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>Naked Vinyl</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.menuButton, { borderColor: theme.accent, backgroundColor: theme.accent + '15' }]}
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.push('/naked-vinyl');
+            }}
+          >
+            <Disc size={16} color={theme.accent} />
+            <Text style={[styles.menuButtonText, { color: theme.accent }]}>Vinyl Quotes</Text>
           </TouchableOpacity>
         </View>
 
