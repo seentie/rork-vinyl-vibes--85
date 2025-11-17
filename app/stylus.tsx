@@ -12,6 +12,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Alert,
+  PanResponder,
 } from 'react-native';
 import {
   Play,
@@ -126,6 +127,8 @@ export default function StylusViewScreen() {
   
   const spinValue = useRef(new Animated.Value(0)).current;
   const stylusPosition = useRef(new Animated.Value(0)).current;
+  const controlsTranslateY = useRef(new Animated.Value(0)).current;
+  const [controlsVisible, setControlsVisible] = useState(true);
 
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const stylusAnimation = useRef<Animated.CompositeAnimation | null>(null);
@@ -135,7 +138,61 @@ export default function StylusViewScreen() {
   useEffect(() => {
     spinValue.setValue(0);
     stylusPosition.setValue(0);
+    controlsTranslateY.setValue(0);
   }, []);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dy) > 10 && controlsVisible;
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        if (gestureState.dy > 0) {
+          controlsTranslateY.setValue(gestureState.dy);
+        }
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dy > 100) {
+          hideControls();
+        } else {
+          Animated.spring(controlsTranslateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 50,
+            friction: 8,
+          }).start();
+        }
+      },
+    })
+  ).current;
+
+  const hideControls = () => {
+    Animated.timing(controlsTranslateY, {
+      toValue: 400,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setControlsVisible(false);
+    });
+    
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+  const showControls = () => {
+    setControlsVisible(true);
+    Animated.spring(controlsTranslateY, {
+      toValue: 0,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 8,
+    }).start();
+    
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
 
   const currentTrack = tracks[currentTrackIndex] || tracks[0];
   
@@ -1052,8 +1109,30 @@ export default function StylusViewScreen() {
 
       </ScrollView>
       
+      {/* Tap to show controls when hidden */}
+      {!controlsVisible && (
+        <TouchableOpacity 
+          style={styles.tapToShowOverlay}
+          onPress={showControls}
+          activeOpacity={1}
+        >
+          <View style={styles.tapToShowIndicator}>
+            <Text style={styles.tapToShowText}>Tap to show controls</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+      
       {/* Bottom Controls Container - Fixed at bottom */}
-      <View style={[styles.bottomControlsContainer, { paddingBottom: insets.bottom }]}>
+      <Animated.View 
+        style={[
+          styles.bottomControlsContainer, 
+          { 
+            paddingBottom: insets.bottom,
+            transform: [{ translateY: controlsTranslateY }]
+          }
+        ]}
+        {...panResponder.panHandlers}
+      >
         {/* Main Controls */}
         <View style={styles.controls}>
           <TouchableOpacity
@@ -1172,7 +1251,7 @@ export default function StylusViewScreen() {
             <Settings size={20} color={theme.accent} />
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
       
       {/* Edit Song Modal */}
       <Modal
@@ -1583,6 +1662,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+  },
+  tapToShowOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 40,
+  },
+  tapToShowIndicator: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 20,
+  },
+  tapToShowText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600' as const,
+    opacity: 0.8,
   },
   utilityButtonsRow: {
     flexDirection: 'row',
