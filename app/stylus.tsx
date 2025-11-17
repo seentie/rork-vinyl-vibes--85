@@ -1071,9 +1071,7 @@ export default function StylusViewScreen() {
             </Text>
             <Edit2 size={14} color={theme.accent} style={styles.editIcon} />
           </TouchableOpacity>
-          <View style={styles.decadeBadge}>
-            <Text style={[styles.decadeText, { color: theme.accent }]}>{theme.name}</Text>
-          </View>
+
         </View>
 
         {/* Controls */}
@@ -1542,8 +1540,8 @@ const styles = StyleSheet.create({
   stylusContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
-    marginBottom: 20,
+    paddingVertical: 40,
+    marginBottom: 30,
     position: 'relative',
   },
   recordContainer: {
