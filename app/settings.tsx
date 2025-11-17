@@ -98,6 +98,8 @@ export default function SettingsScreen() {
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Naked Vinyl:</Text> A minimalist view that puts the spinning record center stage without any player controls - pure vinyl beauty
               {"\n\n"}
+              • <Text style={styles.instructionsBold}>Naked Vinyl + Vinyl Quotes:</Text> The same beautiful spinning vinyl with inspiring quotes about vinyl from legendary artists that rotate every 3-5 minutes - 52 different quotes to discover
+              {"\n\n"}
               • <Text style={styles.instructionsBold}>Screensaver:</Text> A mesmerizing animated view perfect for letting your music play while enjoying visual ambience
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Collection:</Text> Browse and manage your entire album collection with up to 85 albums, complete with custom covers and song lists

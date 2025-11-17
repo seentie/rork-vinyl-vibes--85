@@ -15,6 +15,61 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useRecord } from './context/RecordContext';
+
+const VINYL_QUOTES = [
+  "Vinyl is the real deal. I've always felt like, until you buy the vinyl record, you don't really own the album. - Jack White",
+  "Records have a feel to them. You can feel the notes. - Quincy Jones",
+  "Vinyl is more than just sound quality. It's about the connection we have with music. - Ben Gibbard",
+  "There's something about the ritual of it. Dropping the needle and being forced to listen to an entire side of an album. - Jack White",
+  "Vinyl is the real soul of music. The soul is being able to hear it breathing. - Neil Young",
+  "I love the sound of vinyl. There's a warmth that you just can't reproduce digitally. - Taylor Swift",
+  "The charm of vinyl lies in its imperfections and the authentic sound it produces. - Eddie Vedder",
+  "Every scratch and pop tells a story. That's the beauty of vinyl. - Dave Grohl",
+  "Vinyl demands your attention in ways that streaming never will. - Adele",
+  "There's magic in the grooves. You can almost see the music when you look at a record spinning. - Pharrell Williams",
+  "Listening to vinyl is like reading a book instead of scrolling through headlines. - Billie Eilish",
+  "Vinyl isn't just a format, it's an experience. It's tactile, it's visual, it's complete. - Thom Yorke",
+  "The act of putting on a record is a commitment to the music. - St. Vincent",
+  "Records are like time machines. They transport you back to a specific moment. - John Mayer",
+  "Vinyl is the closest thing to being in the room with the artist. - Stevie Nicks",
+  "There's a romance to vinyl that digital will never capture. - Lana Del Rey",
+  "When you drop the needle, you're not just hearing music—you're experiencing it. - Chris Martin",
+  "Vinyl is proof that old school is the best school. - Kendrick Lamar",
+  "The crackle before the music starts is like an overture to the album. - Beck",
+  "Collecting records is like collecting memories. Each one tells a different story. - Harry Styles",
+  "Vinyl forces you to slow down and really listen. That's a gift in this fast-paced world. - Alicia Keys",
+  "The album cover is part of the art. With vinyl, you get to appreciate it the way it was meant to be seen. - Paul McCartney",
+  "Nothing beats the warmth and depth of vinyl. It's like comfort food for your ears. - Norah Jones",
+  "Records are meant to be played loud and proud. - Foo Fighters",
+  "Vinyl isn't nostalgic—it's timeless. - The Black Keys",
+  "When I listen to vinyl, I feel connected to music history. - Bruno Mars",
+  "The ritual of flipping the record is part of the joy. - Daft Punk",
+  "Vinyl makes you appreciate music as a complete work of art, not just individual tracks. - Arcade Fire",
+  "There's a physicality to vinyl that makes the music feel more real. - Florence Welch",
+  "Records breathe life into music in a way that digital formats can't match. - Jack Johnson",
+  "The sound of vinyl is like a warm hug from your favorite song. - Ed Sheeran",
+  "Vinyl demands patience, and in return, it gives you something special. - Bon Iver",
+  "Every record is a journey, and the pops and clicks are part of the adventure. - Tyler, The Creator",
+  "Vinyl has a soul. You can hear it in every groove. - Erykah Badu",
+  "There's something sacred about placing a needle on a record. - Leonard Cohen",
+  "Vinyl is music you can hold in your hands. - David Bowie",
+  "The imperfections of vinyl remind us that music is human. - Sufjan Stevens",
+  "A record collection is a autobiography. - Nick Hornby",
+  "Vinyl is the sound of analog warmth in a digital world. - Damon Albarn",
+  "Records make you slow down and savor every moment of the music. - Joni Mitchell",
+  "The weight of a record in your hands makes the music feel more substantial. - Tame Impala",
+  "Vinyl is a meditation. It asks you to be present with the music. - Bon Iver",
+  "There's no shuffle button on vinyl. You listen the way the artist intended. - Radiohead",
+  "Records are living, breathing artifacts of sound. - My Morning Jacket",
+  "Vinyl captures the emotion of a performance in ways digital can't. - Patti Smith",
+  "The sound of a needle hitting the groove is pure anticipation. - Arctic Monkeys",
+  "Vinyl is proof that some things are better analog. - LCD Soundsystem",
+  "Records remind us that music is meant to be experienced, not just consumed. - Vampire Weekend",
+  "There's a ceremony to vinyl. It makes every listening session special. - The National",
+  "Vinyl is where music lives and breathes. - Tom Petty",
+  "The beauty of vinyl is that it ages with you, and every scratch tells your story. - Fleet Foxes",
+  "Records are time capsules of sound, capturing moments that digital files can never hold. - Wilco"
+];
 const decadeThemes = {
   '1940s': {
     background: ['#8B4513', '#654321', '#2F1B14'],
@@ -69,6 +124,8 @@ export default function NakedVinylScreen() {
   const insets = useSafeAreaInsets();
   const [showHeader, setShowHeader] = useState(false);
   const headerOpacity = useRef(new Animated.Value(0)).current;
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  const quoteOpacity = useRef(new Animated.Value(1)).current;
   
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
@@ -135,6 +192,36 @@ export default function NakedVinylScreen() {
     }).start();
   }, [showHeader, headerOpacity]);
 
+  // Quote rotation every 3-5 minutes (randomized)
+  useEffect(() => {
+    const rotateQuote = () => {
+      const randomDuration = 180000 + Math.random() * 120000;
+      
+      return setTimeout(() => {
+        Animated.sequence([
+          Animated.timing(quoteOpacity, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(quoteOpacity, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ]).start();
+        
+        setTimeout(() => {
+          setCurrentQuoteIndex((prev) => (prev + 1) % VINYL_QUOTES.length);
+        }, 1000);
+      }, randomDuration);
+    };
+
+    const timeoutId = rotateQuote();
+
+    return () => clearTimeout(timeoutId);
+  }, [currentQuoteIndex, quoteOpacity]);
+
   const handleScreenTap = () => {
     setShowHeader(!showHeader);
     if (Platform.OS !== 'web') {
@@ -173,6 +260,10 @@ export default function NakedVinylScreen() {
         </Animated.View>
         
         <View style={styles.vinylContainer}>
+          <Animated.View style={[styles.quoteContainer, { opacity: quoteOpacity }]}>
+            <Text style={styles.quoteText}>{VINYL_QUOTES[currentQuoteIndex]}</Text>
+          </Animated.View>
+          
           <View style={styles.recordContainer}>
             <Animated.View
               style={[
@@ -269,6 +360,30 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  quoteContainer: {
+    position: 'absolute' as const,
+    top: '10%',
+    left: 20,
+    right: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  quoteText: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#FFFFFF',
+    textAlign: 'center' as const,
+    fontStyle: 'italic',
+    fontWeight: '500' as const,
   },
   recordContainer: {
     justifyContent: 'center',
