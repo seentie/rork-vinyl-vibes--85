@@ -12,7 +12,6 @@ import {
   Modal,
   KeyboardAvoidingView,
   Alert,
-  PanResponder,
 } from 'react-native';
 import {
   Play,
@@ -127,8 +126,6 @@ export default function StylusViewScreen() {
   
   const spinValue = useRef(new Animated.Value(0)).current;
   const stylusPosition = useRef(new Animated.Value(0)).current;
-  const controlsTranslateY = useRef(new Animated.Value(0)).current;
-  const [controlsVisible, setControlsVisible] = useState(true);
 
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const stylusAnimation = useRef<Animated.CompositeAnimation | null>(null);
@@ -138,61 +135,7 @@ export default function StylusViewScreen() {
   useEffect(() => {
     spinValue.setValue(0);
     stylusPosition.setValue(0);
-    controlsTranslateY.setValue(0);
   }, []);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return Math.abs(gestureState.dy) > 10 && controlsVisible;
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        if (gestureState.dy > 0) {
-          controlsTranslateY.setValue(gestureState.dy);
-        }
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        if (gestureState.dy > 100) {
-          hideControls();
-        } else {
-          Animated.spring(controlsTranslateY, {
-            toValue: 0,
-            useNativeDriver: true,
-            tension: 50,
-            friction: 8,
-          }).start();
-        }
-      },
-    })
-  ).current;
-
-  const hideControls = () => {
-    Animated.timing(controlsTranslateY, {
-      toValue: 400,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setControlsVisible(false);
-    });
-    
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-  };
-
-  const showControls = () => {
-    setControlsVisible(true);
-    Animated.spring(controlsTranslateY, {
-      toValue: 0,
-      useNativeDriver: true,
-      tension: 50,
-      friction: 8,
-    }).start();
-    
-    if (Platform.OS !== 'web') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-  };
 
   const currentTrack = tracks[currentTrackIndex] || tracks[0];
   
@@ -890,7 +833,34 @@ export default function StylusViewScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
+          <View style={[styles.backButton, { borderColor: theme.accent, opacity: 0 }]} />
+          
           <Text style={[styles.brandText, { color: theme.accent }]}>VINYL VIBES &apos;85</Text>
+          <View style={styles.headerRight}>
+            <TouchableOpacity 
+              onPress={toggleStylusMovement} 
+              style={[styles.stylusToggleButton, { borderColor: theme.accent, backgroundColor: stylusMovementEnabled ? theme.accent + '20' : '#1A1A1A' }]}
+            >
+              <Text style={[styles.stylusToggleText, { color: theme.accent }]}>
+                {stylusMovementEnabled ? 'MOVE' : 'FIXED'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleRPM} style={[styles.rpmButton, { borderColor: theme.accent }]}>
+              <Text style={[styles.rpmText, { color: theme.accent }]}>{rpm} RPM</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => setShowSongListModal(true)} 
+              style={[styles.songListButton, { borderColor: theme.accent }]}
+            >
+              <List size={18} color={theme.accent} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => router.push('/settings')} 
+              style={[styles.settingsButton, { borderColor: theme.accent }]}
+            >
+              <Settings size={20} color={theme.accent} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Navigation Menu */}
@@ -1107,33 +1077,7 @@ export default function StylusViewScreen() {
           </View>
         </View>
 
-      </ScrollView>
-      
-      {/* Tap to show controls when hidden */}
-      {!controlsVisible && (
-        <TouchableOpacity 
-          style={styles.tapToShowOverlay}
-          onPress={showControls}
-          activeOpacity={1}
-        >
-          <View style={styles.tapToShowIndicator}>
-            <Text style={styles.tapToShowText}>Tap to show controls</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-      
-      {/* Bottom Controls Container - Fixed at bottom */}
-      <Animated.View 
-        style={[
-          styles.bottomControlsContainer, 
-          { 
-            paddingBottom: insets.bottom,
-            transform: [{ translateY: controlsTranslateY }]
-          }
-        ]}
-        {...panResponder.panHandlers}
-      >
-        {/* Main Controls */}
+        {/* Controls */}
         <View style={styles.controls}>
           <TouchableOpacity
             onPress={prevTrack}
@@ -1171,87 +1115,8 @@ export default function StylusViewScreen() {
             <ArrowRight color={theme.accent} size={24} />
           </TouchableOpacity>
         </View>
-        
-        {/* Theme Selector Below Controls */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.bottomThemeSelector}
-          contentContainerStyle={styles.themeSelectorContent}
-        >
-          {Object.entries(decadeThemes).map(([key, themeData]) => {
-            const displayTheme = key === 'ai' ? aiTheme : key === 'youPick' ? youPickTheme : themeData;
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[
-                  styles.themeButton,
-                  currentTheme === key && [styles.themeButtonActive, { borderColor: theme.accent }],
-                  (key === 'ai' || key === 'youPick') && styles.aiThemeButton
-                ]}
-                onPress={() => {
-                  setCurrentTheme(key as keyof typeof decadeThemes);
-                  if (key === 'ai') {
-                    const albumName = selectedRecord?.albumName || currentTrack?.album || 'The Retro Renaissance';
-                    const artistName = selectedRecord?.artistName || currentTrack?.artist || 'Old Skool Apps';
-                    const coverImageUri = selectedRecord?.coverImage;
-                    generateAITheme(albumName, artistName, coverImageUri);
-                  } else if (key === 'youPick') {
-                    setShowYouPickModal(true);
-                  }
-                }}
-                disabled={(key === 'ai' || key === 'youPick') && isGeneratingTheme}
-              >
-                <LinearGradient
-                  colors={displayTheme.background as [string, string, ...string[]]}
-                  style={[styles.themeGradient, (key === 'ai' || key === 'youPick') && styles.aiThemeGradient]}
-                >
-                  {(key === 'ai' || key === 'youPick') && isGeneratingTheme ? (
-                    <Text style={[styles.themeText, { color: displayTheme.text }]}>Generating...</Text>
-                  ) : (
-                    <Text style={[styles.themeText, { color: displayTheme.text }]}>
-                      {displayTheme.name}
-                    </Text>
-                  )}
-                  {key === 'ai' && (
-                    <Text style={[styles.aiThemeSubtext, { color: displayTheme.text }]}>✨</Text>
-                  )}
-                  {key === 'youPick' && (
-                    <Text style={[styles.aiThemeSubtext, { color: displayTheme.text }]}>🎨</Text>
-                  )}
-                </LinearGradient>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-        
-        {/* Settings and Utility Buttons Row */}
-        <View style={styles.utilityButtonsRow}>
-          <TouchableOpacity 
-            onPress={toggleStylusMovement} 
-            style={[styles.utilityButton, { borderColor: theme.accent, backgroundColor: stylusMovementEnabled ? theme.accent + '20' : '#1A1A1A' }]}
-          >
-            <Text style={[styles.stylusToggleText, { color: theme.accent }]}>
-              {stylusMovementEnabled ? 'MOVE' : 'FIXED'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toggleRPM} style={[styles.utilityButton, { borderColor: theme.accent }]}>
-            <Text style={[styles.rpmText, { color: theme.accent }]}>{rpm} RPM</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={() => setShowSongListModal(true)} 
-            style={[styles.utilityIconButton, { borderColor: theme.accent }]}
-          >
-            <List size={18} color={theme.accent} />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={() => router.push('/settings')} 
-            style={[styles.utilityIconButton, { borderColor: theme.accent }]}
-          >
-            <Settings size={20} color={theme.accent} />
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+
+      </ScrollView>
       
       {/* Edit Song Modal */}
       <Modal
@@ -1560,12 +1425,12 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 20,
-    minHeight: 80,
+    paddingBottom: 10,
+    minHeight: 60,
   },
   backButton: {
     backgroundColor: '#1A1A1A',
@@ -1581,14 +1446,15 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   brandText: {
-    fontSize: 32,
-    fontWeight: '900' as const,
-    letterSpacing: 3,
+    fontSize: 18,
+    fontWeight: '700' as const,
+    letterSpacing: 1.5,
+    flex: 1,
     textAlign: 'center' as const,
+    marginHorizontal: 10,
     textShadowColor: '#000000',
-    textShadowOffset: { width: 3, height: 3 },
-    textShadowRadius: 6,
-    width: '100%',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
   stylusToggleButton: {
     paddingHorizontal: 10,
@@ -1647,64 +1513,6 @@ const styles = StyleSheet.create({
   themeSelector: {
     maxHeight: 60,
     marginVertical: 10,
-  },
-  bottomThemeSelector: {
-    maxHeight: 60,
-    marginVertical: 10,
-  },
-  bottomControlsContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    paddingTop: 15,
-    paddingHorizontal: 10,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  tapToShowOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    top: 0,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 40,
-  },
-  tapToShowIndicator: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 20,
-  },
-  tapToShowText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600' as const,
-    opacity: 0.8,
-  },
-  utilityButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-  },
-  utilityButton: {
-    backgroundColor: '#1A1A1A',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  utilityIconButton: {
-    backgroundColor: '#1A1A1A',
-    padding: 8,
-    borderRadius: 16,
-    borderWidth: 1,
   },
   themeSelectorContent: {
     paddingHorizontal: 20,
