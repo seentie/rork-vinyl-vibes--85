@@ -262,9 +262,10 @@ const styles = StyleSheet.create({
   },
   vinylContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingBottom: '20%',
   },
   recordContainer: {
     justifyContent: 'center',
