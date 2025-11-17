@@ -1541,7 +1541,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 60,
-    marginTop: 30,
+    marginTop: 60,
     marginBottom: 30,
     position: 'relative',
   },
@@ -1698,6 +1698,7 @@ const styles = StyleSheet.create({
     fontWeight: '500' as const,
     marginBottom: 2,
     textAlign: 'center' as const,
+    alignSelf: 'center' as const,
   },
   trackArtist: {
     fontSize: 20,
