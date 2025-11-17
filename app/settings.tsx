@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Mail, Phone, MapPin, Shield, Info, HelpCircle, ChevronRight } from 'lucide-react-native';
+import { Mail, Phone, MapPin, Shield, Info, HelpCircle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 const APP_VERSION = '1.0';
 const CONTACT_EMAIL = 'sarah@oldskoolapps.com';
@@ -19,6 +20,8 @@ const CONTACT_ADDRESS = '2114 N Flamingo Road #867, Pembroke Pines, FL 33028';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const [isPrivacyExpanded, setIsPrivacyExpanded] = useState(false);
 
   const handleEmailPress = () => {
     Linking.openURL(`mailto:${CONTACT_EMAIL}`);
@@ -48,10 +51,19 @@ export default function SettingsScreen() {
     >
       <ScrollView 
         style={styles.scrollView}
-        contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 }]}
+        contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.pageTitle}>Settings & Privacy</Text>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <View style={styles.backButtonContent}>
+            <ArrowLeft size={22} color="#FFFFFF" />
+            <Text style={styles.backButtonText}>Back</Text>
+          </View>
+        </TouchableOpacity>
         {/* How to Use Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -174,75 +186,88 @@ export default function SettingsScreen() {
 
         {/* Privacy Policy Section */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.iconCircle}>
-              <Shield size={20} color="#FFFFFF" />
+          <TouchableOpacity 
+            style={styles.collapsibleHeader}
+            onPress={() => setIsPrivacyExpanded(!isPrivacyExpanded)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.sectionHeader}>
+              <View style={styles.iconCircle}>
+                <Shield size={20} color="#FFFFFF" />
+              </View>
+              <Text style={styles.sectionTitle}>Privacy Policy</Text>
             </View>
-            <Text style={styles.sectionTitle}>Privacy Policy</Text>
-          </View>
-          <View style={styles.card}>
-            <Text style={styles.privacyText}>
-              <Text style={styles.privacyHeader}>Privacy Policy</Text>
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Updated: November 2025</Text>
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>The Short Version</Text>
-              {"\n\n"}
-              We don't track you. We don't collect your data. We don't sell anything to anyone. You do you.
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>The Slightly Longer Version</Text>
-              {"\n\n"}
-              Old Skool Apps believes your business is your business. Here's what that means:
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>What We Don't Collect</Text>
-              {"\n\n"}
-              • Personal information{"\n"}
-              • Usage data{"\n"}
-              • Location data{"\n"}
-              • Device information{"\n"}
-              • Cookies or tracking pixels{"\n"}
-              • Analytics{"\n"}
-              • Literally anything about you
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>What We Don't Do</Text>
-              {"\n\n"}
-              • Track your activity{"\n"}
-              • Sell your data{"\n"}
-              • Share information with third parties{"\n"}
-              • Send you marketing emails (unless you explicitly sign up){"\n"}
-              • Connect to social media{"\n"}
-              • Use creepy ad networks
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>What Happens on Your Device Stays on Your Device</Text>
-              {"\n\n"}
-              All our apps store data locally on your device. Your journals, lists, birthdays, contacts, preferences—everything lives on your phone or tablet. Not our servers. Not the cloud (unless you choose to back up via your device's built-in backup features).
-              {"\n\n"}
-              If you delete the app, your data goes with it. We never see it in the first place.
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Third-Party Services</Text>
-              {"\n\n"}
-              Some apps may use your device's built-in features (like photo library access or camera) but only when you give permission, and only to make the app work. We don't send that data anywhere.
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Changes to This Policy</Text>
-              {"\n\n"}
-              If we ever change this policy (spoiler: we probably won't), we'll update this page and the date at the top. But our philosophy stays the same: your data is yours.
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Questions?</Text>
-              {"\n\n"}
-              If you have questions about this Privacy Policy or our privacy practices, please contact us at:{"\n\n"}
-              Email: {CONTACT_EMAIL}{"\n"}
-              Address: {CONTACT_ADDRESS}{"\n"}
-              Phone: {CONTACT_PHONE}
-              {"\n\n"}
-              We're real humans who do respond.
-              {"\n\n"}
-              <Text style={styles.privacyNote}>We're old skool about apps, and privacy too. You do you.</Text>
-              {"\n\n"}
-              <Text style={styles.privacySubheader}>Old Skool Apps</Text>
-              {"\n"}
-              <Text style={styles.privacyNote}>Where nostalgia meets function, and your privacy is actually yours.</Text>
-            </Text>
-          </View>
+            {isPrivacyExpanded ? (
+              <ChevronDown size={24} color="#FFFFFF" />
+            ) : (
+              <ChevronRight size={24} color="#FFFFFF" />
+            )}
+          </TouchableOpacity>
+          {isPrivacyExpanded && (
+            <View style={styles.card}>
+              <Text style={styles.privacyText}>
+                <Text style={styles.privacyHeader}>Privacy Policy</Text>
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>Updated: November 2025</Text>
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>The Short Version</Text>
+                {"\n\n"}
+                We don't track you. We don't collect your data. We don't sell anything to anyone. You do you.
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>The Slightly Longer Version</Text>
+                {"\n\n"}
+                Old Skool Apps believes your business is your business. Here's what that means:
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>What We Don't Collect</Text>
+                {"\n\n"}
+                • Personal information{"\n"}
+                • Usage data{"\n"}
+                • Location data{"\n"}
+                • Device information{"\n"}
+                • Cookies or tracking pixels{"\n"}
+                • Analytics{"\n"}
+                • Literally anything about you
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>What We Don't Do</Text>
+                {"\n\n"}
+                • Track your activity{"\n"}
+                • Sell your data{"\n"}
+                • Share information with third parties{"\n"}
+                • Send you marketing emails (unless you explicitly sign up){"\n"}
+                • Connect to social media{"\n"}
+                • Use creepy ad networks
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>What Happens on Your Device Stays on Your Device</Text>
+                {"\n\n"}
+                All our apps store data locally on your device. Your journals, lists, birthdays, contacts, preferences—everything lives on your phone or tablet. Not our servers. Not the cloud (unless you choose to back up via your device's built-in backup features).
+                {"\n\n"}
+                If you delete the app, your data goes with it. We never see it in the first place.
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>Third-Party Services</Text>
+                {"\n\n"}
+                Some apps may use your device's built-in features (like photo library access or camera) but only when you give permission, and only to make the app work. We don't send that data anywhere.
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>Changes to This Policy</Text>
+                {"\n\n"}
+                If we ever change this policy (spoiler: we probably won't), we'll update this page and the date at the top. But our philosophy stays the same: your data is yours.
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>Questions?</Text>
+                {"\n\n"}
+                If you have questions about this Privacy Policy or our privacy practices, please contact us at:{"\n\n"}
+                Email: {CONTACT_EMAIL}{"\n"}
+                Address: {CONTACT_ADDRESS}{"\n"}
+                Phone: {CONTACT_PHONE}
+                {"\n\n"}
+                We're real humans who do respond.
+                {"\n\n"}
+                <Text style={styles.privacyNote}>We're old skool about apps, and privacy too. You do you.</Text>
+                {"\n\n"}
+                <Text style={styles.privacySubheader}>Old Skool Apps</Text>
+                {"\n"}
+                <Text style={styles.privacyNote}>Where nostalgia meets function, and your privacy is actually yours.</Text>
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </LinearGradient>
@@ -259,14 +284,23 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 20,
   },
-  pageTitle: {
-    fontSize: 32,
-    fontWeight: '800' as const,
+  backButton: {
+    marginBottom: 24,
+    alignSelf: 'flex-start',
+  },
+  backButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: '600' as const,
     color: '#FFFFFF',
-    marginBottom: 28,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
   },
   section: {
     marginBottom: 28,
@@ -276,6 +310,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
     gap: 10,
+    flex: 1,
+  },
+  collapsibleHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+    paddingVertical: 8,
   },
   iconCircle: {
     width: 36,
@@ -294,7 +336,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
     borderRadius: 20,
     padding: 18,
     shadowColor: '#000',
