@@ -139,15 +139,16 @@ export default function NakedVinylSpinScreen() {
   });
 
   return (
-    <TouchableOpacity 
-      style={styles.container} 
-      activeOpacity={1}
-      onPress={handleScreenTap}
-    >
+    <View style={styles.container}>
       <LinearGradient
         colors={theme.background as [string, string, ...string[]]}
         style={styles.gradient}
       >
+        <TouchableOpacity 
+          style={styles.touchableArea} 
+          activeOpacity={1}
+          onPress={handleScreenTap}
+        >
         <Animated.View style={[styles.header, { paddingTop: insets.top, opacity: headerOpacity }]}>
           <TouchableOpacity 
             onPress={() => {
@@ -224,16 +225,21 @@ export default function NakedVinylSpinScreen() {
             </Animated.View>
           </View>
         </View>
+        </TouchableOpacity>
       </LinearGradient>
-    </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
   },
   gradient: {
+    flex: 1,
+  },
+  touchableArea: {
     flex: 1,
   },
   header: {
