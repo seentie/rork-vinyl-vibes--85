@@ -83,7 +83,7 @@ export default function SettingsScreen() {
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Visual experience:</Text> Watch the vinyl spin, the tonearm move, and enjoy the authentic turntable interface
               {"\n\n"}
-              <Text style={styles.instructionsNote}>We know record players aren't exactly portable, but we love vinyl and wanted to make the visual as portable as a Walkman and as affordable as the 80s too. With alternate views and Now Playing too, we hope the nostalgia factor is well played.</Text>
+              <Text style={styles.instructionsNote}>We know record players aren't exactly portable, but we love vinyl and wanted to make the visual as portable as a Walkman and as affordable as the 80s too. So spin up your favorite tracks and let the good vibes roll.</Text>
               {"\n\n"}
               <Text style={styles.instructionsNote}>Note: This app provides the visual vinyl experience - your actual music continues playing from your preferred music streaming service.</Text>
             </Text>
