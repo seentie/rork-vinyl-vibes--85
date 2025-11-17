@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -25,6 +25,8 @@ export default function NowPlayingScreen() {
   
   const insets = useSafeAreaInsets();
   const { selectedRecord } = useRecord();
+  const [showHeader, setShowHeader] = useState(false);
+  const headerOpacity = useRef(new Animated.Value(0)).current;
   
   // Always playing - no play state needed
   
@@ -41,7 +43,16 @@ export default function NowPlayingScreen() {
     glowAnimation.setValue(0);
     pulseAnimation.setValue(1);
     lightAnimation.setValue(0);
+    headerOpacity.setValue(0);
   }, []);
+  
+  useEffect(() => {
+    Animated.timing(headerOpacity, {
+      toValue: showHeader ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [showHeader, headerOpacity]);
   
   useEffect(() => {
     // Always run animations if has cover
@@ -111,6 +122,13 @@ export default function NowPlayingScreen() {
     outputRange: [0.2, 1],
   });
   
+  const handleScreenTap = () => {
+    setShowHeader(!showHeader);
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+  
   if (!hasCover) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -151,27 +169,33 @@ export default function NowPlayingScreen() {
       colors={['#000000', '#1a1a1a', '#000000']}
       style={styles.container}
     >
-      <ScrollView
-        style={[styles.scrollView, { paddingTop: insets.top }]}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
-        showsVerticalScrollIndicator={false}
+      <TouchableOpacity 
+        style={styles.touchableArea} 
+        activeOpacity={1}
+        onPress={handleScreenTap}
       >
-        {/* Header */}
-        <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => {
-            if (Platform.OS !== 'web') {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            }
-            router.back();
-          }}
-          style={styles.backButton}
+        <ScrollView
+          style={[styles.scrollView, { paddingTop: insets.top }]}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
         >
-          <ArrowLeft size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <View style={styles.placeholder} />
-        <View style={styles.placeholder} />
-      </View>
+          {/* Header */}
+          <Animated.View style={[styles.header, { opacity: headerOpacity }]}>
+          <TouchableOpacity 
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.back();
+            }}
+            style={styles.backButton}
+          >
+            <ArrowLeft size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <View style={styles.placeholder} />
+          <View style={styles.placeholder} />
+        </Animated.View>
       
       {/* Glowing NOW PLAYING Text */}
       <View style={styles.signContainer}>
@@ -313,13 +337,17 @@ export default function NowPlayingScreen() {
             />
           ))}
         </View>
-      </ScrollView>
+        </ScrollView>
+      </TouchableOpacity>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  touchableArea: {
     flex: 1,
   },
   scrollView: {
@@ -329,11 +357,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
+    zIndex: 100,
   },
   backButton: {
     padding: 8,
