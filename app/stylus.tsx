@@ -873,7 +873,7 @@ export default function StylusViewScreen() {
               router.push('/collection');
             }}
           >
-            <Music size={20} color={theme.accent} />
+            <Music size={16} color={theme.accent} />
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>My Collection</Text>
           </TouchableOpacity>
           
@@ -886,7 +886,7 @@ export default function StylusViewScreen() {
               router.push('/now-playing');
             }}
           >
-            <Radio size={20} color={theme.accent} />
+            <Radio size={16} color={theme.accent} />
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>Now Playing</Text>
           </TouchableOpacity>
         </View>
@@ -901,7 +901,7 @@ export default function StylusViewScreen() {
               router.push('/screensaver?mode=screensaver');
             }}
           >
-            <Sparkles size={20} color={theme.accent} />
+            <Sparkles size={16} color={theme.accent} />
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>Screensaver</Text>
           </TouchableOpacity>
           
@@ -914,7 +914,7 @@ export default function StylusViewScreen() {
               router.push('/screensaver?mode=kaleidoscope');
             }}
           >
-            <Sparkles size={20} color={theme.accent} />
+            <Sparkles size={16} color={theme.accent} />
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>Kaleidoscope</Text>
           </TouchableOpacity>
         </View>
@@ -929,7 +929,7 @@ export default function StylusViewScreen() {
               router.push('/naked-vinyl');
             }}
           >
-            <Disc size={20} color={theme.accent} />
+            <Disc size={16} color={theme.accent} />
             <Text style={[styles.menuButtonText, { color: theme.accent }]}>Naked Vinyl</Text>
           </TouchableOpacity>
         </View>
@@ -1482,22 +1482,22 @@ const styles = StyleSheet.create({
   navigationMenu: {
     flexDirection: 'row',
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 12,
+    paddingVertical: 6,
+    gap: 10,
   },
   menuButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
     borderWidth: 1.5,
-    gap: 8,
+    gap: 6,
   },
   menuButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600' as const,
   },
   themeSelector: {
