@@ -409,12 +409,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   quoteTop: {
-    top: '17%',
-    maxHeight: '28%',
+    top: '15%',
+    maxHeight: '25%',
   },
   quoteBottom: {
-    bottom: '52%',
-    maxHeight: '28%',
+    bottom: '15%',
+    maxHeight: '25%',
   },
   quoteText: {
     fontSize: 22,
