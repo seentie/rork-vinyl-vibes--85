@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plus, X, Check, Music, Trash2, Edit2, Music2 } from 'lucide-react-native';
+import { Plus, X, Check, Music, Trash2, Edit2, Music2, Play } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { useRecord } from './context/RecordContext';
@@ -22,7 +22,7 @@ import type { SavedRecord } from './context/RecordContext';
 
 export default function CollectionScreen() {
   const insets = useSafeAreaInsets();
-  const { savedRecords, saveSavedRecords, selectRecord, selectedRecord } = useRecord();
+  const { savedRecords, saveSavedRecords, selectRecord, selectedRecord, selectSongFromRecord, currentSong } = useRecord();
   
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -31,7 +31,9 @@ export default function CollectionScreen() {
   const [newArtistName, setNewArtistName] = useState('');
   const [coverImageUri, setCoverImageUri] = useState<string | undefined>(undefined);
   const [newSongTitle, setNewSongTitle] = useState('');
+  const [newAlbumSongs, setNewAlbumSongs] = useState<string[]>([]);
   const [editingSongs, setEditingSongs] = useState<string[]>([]);
+  const [showSongSelector, setShowSongSelector] = useState(false);
 
   const displayRecord = savedRecords.find(r => r.id === 'display-retro-renaissance');
   const userRecords = savedRecords.filter(r => r.id !== 'display-retro-renaissance');
@@ -54,7 +56,7 @@ export default function CollectionScreen() {
       artistName: newArtistName.trim(),
       dateAdded: new Date().toISOString(),
       coverImage: coverImageUri,
-      songs: [],
+      songs: newAlbumSongs,
     };
 
     const updatedRecords = [...savedRecords, newRecord];
@@ -65,6 +67,8 @@ export default function CollectionScreen() {
     setNewAlbumName('');
     setNewArtistName('');
     setCoverImageUri(undefined);
+    setNewAlbumSongs([]);
+    setNewSongTitle('');
     setShowAddModal(false);
 
     if (Platform.OS !== 'web') {
@@ -183,6 +187,8 @@ export default function CollectionScreen() {
     setNewAlbumName('');
     setNewArtistName('');
     setCoverImageUri(undefined);
+    setNewAlbumSongs([]);
+    setNewSongTitle('');
     setShowAddModal(false);
   };
 
@@ -217,6 +223,33 @@ export default function CollectionScreen() {
 
   const handleRemoveSongFromEditing = (index: number) => {
     setEditingSongs(editingSongs.filter((_, i) => i !== index));
+
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+  const handleAddSongToNew = () => {
+    if (!newSongTitle.trim()) {
+      Alert.alert('Missing Information', 'Please enter a song title.');
+      return;
+    }
+
+    if (newAlbumSongs.length >= 15) {
+      Alert.alert('Song Limit Reached', 'You can only add up to 15 songs per album.');
+      return;
+    }
+
+    setNewAlbumSongs([...newAlbumSongs, newSongTitle.trim()]);
+    setNewSongTitle('');
+
+    if (Platform.OS !== 'web') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+  const handleRemoveSongFromNew = (index: number) => {
+    setNewAlbumSongs(newAlbumSongs.filter((_, i) => i !== index));
 
     if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -292,6 +325,21 @@ export default function CollectionScreen() {
                   <Text style={styles.songCount}>
                     {displayRecord.songs?.length || 0} songs
                   </Text>
+                  {displayRecord.songs && displayRecord.songs.length > 0 && (
+                    <TouchableOpacity
+                      style={styles.songSelectorButton}
+                      onPress={() => {
+                        selectRecord(displayRecord);
+                        setShowSongSelector(true);
+                        if (Platform.OS !== 'web') {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }
+                      }}
+                    >
+                      <Play size={14} color="#FFFFFF" />
+                      <Text style={styles.songSelectorButtonText}>Select Song</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </TouchableOpacity>
             </View>
@@ -343,6 +391,21 @@ export default function CollectionScreen() {
                     <Text style={styles.songCount}>
                       {record.songs?.length || 0} songs
                     </Text>
+                    {record.songs && record.songs.length > 0 && (
+                      <TouchableOpacity
+                        style={styles.songSelectorButton}
+                        onPress={() => {
+                          selectRecord(record);
+                          setShowSongSelector(true);
+                          if (Platform.OS !== 'web') {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          }
+                        }}
+                      >
+                        <Play size={14} color="#9C27B0" />
+                        <Text style={styles.songSelectorButtonText}>Select Song</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </TouchableOpacity>
                 <View style={styles.albumActions}>
@@ -374,6 +437,64 @@ export default function CollectionScreen() {
           </View>
         )}
       </ScrollView>
+
+      {/* Song Selector Modal */}
+      <Modal
+        visible={showSongSelector}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowSongSelector(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Song</Text>
+                <TouchableOpacity onPress={() => setShowSongSelector(false)}>
+                  <X size={24} color="#333" />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.modalSubtitle}>
+                {selectedRecord?.albumName} - {selectedRecord?.artistName}
+              </Text>
+
+              <ScrollView style={styles.songSelectorList}>
+                {selectedRecord?.songs?.map((song, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.songSelectorItem,
+                      currentSong === song && styles.songSelectorItemActive,
+                    ]}
+                    onPress={() => {
+                      selectSongFromRecord(song);
+                      setShowSongSelector(false);
+                      if (Platform.OS !== 'web') {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                      }
+                      Alert.alert('Song Selected', `Now playing "${song}"`);
+                    }}
+                  >
+                    <Music2 size={18} color={currentSong === song ? "#9C27B0" : "#666"} />
+                    <Text
+                      style={[
+                        styles.songSelectorItemText,
+                        currentSong === song && styles.songSelectorItemTextActive,
+                      ]}
+                    >
+                      {song}
+                    </Text>
+                    {currentSong === song && (
+                      <Check size={18} color="#9C27B0" />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Add Album Modal */}
       <Modal
@@ -426,9 +547,49 @@ export default function CollectionScreen() {
                   onChangeText={setNewArtistName}
                   placeholder="Enter artist name"
                   placeholderTextColor="#999"
-                  returnKeyType="done"
-                  onSubmitEditing={handleAddAlbum}
+                  returnKeyType="next"
                 />
+              </View>
+
+              {/* Songs Section */}
+              <View style={styles.songsContainer}>
+                <Text style={styles.inputLabel}>Songs ({newAlbumSongs.length}/15)</Text>
+                
+                {newAlbumSongs.length > 0 && (
+                  <View style={styles.songsList}>
+                    {newAlbumSongs.map((song, index) => (
+                      <View key={index} style={styles.songItem}>
+                        <Music2 size={16} color="#666" />
+                        <Text style={styles.songItemText} numberOfLines={1}>{song}</Text>
+                        <TouchableOpacity
+                          onPress={() => handleRemoveSongFromNew(index)}
+                          style={styles.removeSongButton}
+                        >
+                          <X size={16} color="#FF6B6B" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                <View style={styles.addSongContainer}>
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={newSongTitle}
+                    onChangeText={setNewSongTitle}
+                    placeholder="Add song title"
+                    placeholderTextColor="#999"
+                    returnKeyType="done"
+                    onSubmitEditing={handleAddSongToNew}
+                  />
+                  <TouchableOpacity
+                    style={styles.addSongButton}
+                    onPress={handleAddSongToNew}
+                    disabled={!newSongTitle.trim() || newAlbumSongs.length >= 15}
+                  >
+                    <Plus size={20} color="#FFFFFF" />
+                  </TouchableOpacity>
+                </View>
               </View>
 
               <View style={styles.modalButtons}>
@@ -846,5 +1007,53 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  songSelectorButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  songSelectorButtonText: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    color: '#FFFFFF',
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 20,
+    textAlign: 'center' as const,
+  },
+  songSelectorList: {
+    maxHeight: 400,
+  },
+  songSelectorItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#F5F5F5',
+    marginBottom: 8,
+    gap: 12,
+  },
+  songSelectorItemActive: {
+    backgroundColor: '#E8D4F1',
+    borderWidth: 2,
+    borderColor: '#9C27B0',
+  },
+  songSelectorItemText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  songSelectorItemTextActive: {
+    fontWeight: '700' as const,
+    color: '#9C27B0',
   },
 });
