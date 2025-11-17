@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Mail, Phone, MapPin, Shield, Info, HelpCircle } from 'lucide-react-native';
+import { Mail, Phone, MapPin, Shield, Info, HelpCircle, ChevronRight } from 'lucide-react-native';
 
 const APP_VERSION = '1.0';
 const CONTACT_EMAIL = 'sarah@oldskoolapps.com';
@@ -48,13 +48,16 @@ export default function SettingsScreen() {
     >
       <ScrollView 
         style={styles.scrollView}
-        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 20 }]}
+        contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 }]}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={styles.pageTitle}>Settings & Privacy</Text>
         {/* How to Use Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <HelpCircle size={24} color="#FFFFFF" />
+            <View style={styles.iconCircle}>
+              <HelpCircle size={20} color="#FFFFFF" />
+            </View>
             <Text style={styles.sectionTitle}>How to Use</Text>
           </View>
           <View style={styles.card}>
@@ -103,17 +106,24 @@ export default function SettingsScreen() {
         {/* App Info Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Info size={24} color="#FFFFFF" />
+            <View style={styles.iconCircle}>
+              <Info size={20} color="#FFFFFF" />
+            </View>
             <Text style={styles.sectionTitle}>App Information</Text>
           </View>
           <View style={styles.card}>
             <TouchableOpacity style={styles.infoItem} onPress={showAppInfo}>
-              <Text style={styles.infoLabel}>Version</Text>
-              <Text style={styles.infoValue}>{APP_VERSION}</Text>
+              <View>
+                <Text style={styles.infoLabel}>Version</Text>
+                <Text style={styles.infoValue}>{APP_VERSION}</Text>
+              </View>
+              <ChevronRight size={20} color="#CCCCCC" />
             </TouchableOpacity>
             <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Developer</Text>
-              <Text style={styles.infoValue}>OLD SKOOL APPS</Text>
+              <View>
+                <Text style={styles.infoLabel}>Developer</Text>
+                <Text style={styles.infoValue}>OLD SKOOL APPS</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -121,32 +131,43 @@ export default function SettingsScreen() {
         {/* Contact Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Mail size={24} color="#FFFFFF" />
+            <View style={styles.iconCircle}>
+              <Mail size={20} color="#FFFFFF" />
+            </View>
             <Text style={styles.sectionTitle}>Contact Us</Text>
           </View>
           <View style={styles.card}>
             <TouchableOpacity style={styles.contactItem} onPress={handleEmailPress}>
-              <Mail size={20} color="#FF6B6B" />
+              <View style={styles.iconContainer}>
+                <Mail size={18} color="#FF6B6B" />
+              </View>
               <View style={styles.contactText}>
                 <Text style={styles.contactLabel}>Email</Text>
                 <Text style={styles.contactValue}>{CONTACT_EMAIL}</Text>
               </View>
+              <ChevronRight size={18} color="#CCCCCC" />
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.contactItem} onPress={handlePhonePress}>
-              <Phone size={20} color="#FF6B6B" />
+              <View style={styles.iconContainer}>
+                <Phone size={18} color="#FF6B6B" />
+              </View>
               <View style={styles.contactText}>
                 <Text style={styles.contactLabel}>Phone</Text>
                 <Text style={styles.contactValue}>{CONTACT_PHONE}</Text>
               </View>
+              <ChevronRight size={18} color="#CCCCCC" />
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.contactItem} onPress={handleAddressPress}>
-              <MapPin size={20} color="#FF6B6B" />
+              <View style={styles.iconContainer}>
+                <MapPin size={18} color="#FF6B6B" />
+              </View>
               <View style={styles.contactText}>
                 <Text style={styles.contactLabel}>Address</Text>
                 <Text style={styles.contactValue}>{CONTACT_ADDRESS}</Text>
               </View>
+              <ChevronRight size={18} color="#CCCCCC" />
             </TouchableOpacity>
           </View>
         </View>
@@ -154,7 +175,9 @@ export default function SettingsScreen() {
         {/* Privacy Policy Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Shield size={24} color="#FFFFFF" />
+            <View style={styles.iconCircle}>
+              <Shield size={20} color="#FFFFFF" />
+            </View>
             <Text style={styles.sectionTitle}>Privacy Policy</Text>
           </View>
           <View style={styles.card}>
@@ -234,114 +257,143 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
+  },
+  pageTitle: {
+    fontSize: 32,
+    fontWeight: '800' as const,
+    color: '#FFFFFF',
+    marginBottom: 28,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
-    gap: 8,
+    marginBottom: 14,
+    gap: 10,
+  },
+  iconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700' as const,
     color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    borderRadius: 20,
+    padding: 18,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
   infoItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: '#F5F5F5',
   },
   infoLabel: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 13,
+    color: '#999',
     fontWeight: '500' as const,
+    marginBottom: 4,
   },
   infoValue: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 17,
+    color: '#333',
     fontWeight: '600' as const,
+  },
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: '#F5F5F5',
     gap: 12,
   },
   contactText: {
     flex: 1,
   },
   contactLabel: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 13,
+    color: '#999',
     fontWeight: '500' as const,
+    marginBottom: 3,
   },
   contactValue: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#333',
     fontWeight: '600' as const,
-    marginTop: 2,
   },
   privacyText: {
     fontSize: 14,
-    lineHeight: 20,
-    color: '#333',
+    lineHeight: 22,
+    color: '#444',
   },
   privacyHeader: {
-    fontSize: 18,
-    fontWeight: '700' as const,
+    fontSize: 20,
+    fontWeight: '800' as const,
     color: '#333',
   },
   privacySubheader: {
     fontSize: 16,
-    fontWeight: '600' as const,
-    color: '#333',
+    fontWeight: '700' as const,
+    color: '#FF6B6B',
   },
   privacyNote: {
     fontStyle: 'italic',
-    color: '#666',
+    color: '#888',
     fontSize: 13,
   },
   instructionsText: {
     fontSize: 14,
-    lineHeight: 22,
-    color: '#333',
+    lineHeight: 24,
+    color: '#444',
   },
   instructionsHeader: {
-    fontSize: 18,
-    fontWeight: '700' as const,
+    fontSize: 20,
+    fontWeight: '800' as const,
     color: '#FF6B6B',
   },
   instructionsSubheader: {
     fontSize: 16,
-    fontWeight: '600' as const,
-    color: '#333',
+    fontWeight: '700' as const,
+    color: '#FF6B6B',
   },
   instructionsBold: {
-    fontWeight: '600' as const,
-    color: '#FF6B6B',
+    fontWeight: '700' as const,
+    color: '#333',
   },
   instructionsNote: {
     fontStyle: 'italic',
-    color: '#666',
+    color: '#888',
     fontSize: 13,
   },
 });
