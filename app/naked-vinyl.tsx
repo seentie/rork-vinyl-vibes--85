@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: '10%',
+    paddingBottom: '20%',
   },
   quoteContainer: {
     position: 'absolute' as const,
