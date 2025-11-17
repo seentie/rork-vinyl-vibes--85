@@ -73,9 +73,19 @@ export default function SettingsScreen() {
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Choose your palette vibes:</Text> Select from decade-themed color schemes, AI-generated themes based on your album, or create your own custom colors with "You Pick"
               {"\n\n"}
-              • <Text style={styles.instructionsBold}>Two vinyl views:</Text> Switch between the classic turntable view and the immersive "Now Playing" view with glowing album art
+              <Text style={styles.instructionsSubheader}>Available Views:</Text>
               {"\n\n"}
-              • <Text style={styles.instructionsBold}>Stylus view:</Text> Tap the stylus icon to see a close-up view of the tonearm and needle on the spinning vinyl - just like watching a real record player in action
+              • <Text style={styles.instructionsBold}>Classic Turntable:</Text> The main view featuring the full vinyl record player with spinning vinyl, tonearm, and all controls
+              {"\n\n"}
+              • <Text style={styles.instructionsBold}>Now Playing:</Text> An immersive view showcasing your album art with a glowing effect and the vinyl record prominently displayed
+              {"\n\n"}
+              • <Text style={styles.instructionsBold}>Stylus View:</Text> A close-up cinematic view of the tonearm and needle on the spinning vinyl - watch the stylus ride the grooves just like a real record player
+              {"\n\n"}
+              • <Text style={styles.instructionsBold}>Naked Vinyl:</Text> A minimalist view that puts the spinning record center stage without any player controls - pure vinyl beauty
+              {"\n\n"}
+              • <Text style={styles.instructionsBold}>Screensaver:</Text> A mesmerizing animated view perfect for letting your music play while enjoying visual ambience
+              {"\n\n"}
+              • <Text style={styles.instructionsBold}>Collection:</Text> Browse and manage your entire album collection with up to 85 albums, complete with custom covers and song lists
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Two speeds:</Text> Toggle between 33 RPM and 45 RPM to match your listening mood
               {"\n\n"}
