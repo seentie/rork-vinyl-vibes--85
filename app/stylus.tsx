@@ -1057,6 +1057,8 @@ export default function StylusViewScreen() {
 
         {/* Track Info */}
         <View style={styles.trackInfo}>
+          <Text style={[styles.trackAlbum, { color: theme.text }]}>{currentTrack?.album || 'The Retro Renaissance'}</Text>
+          <Text style={[styles.trackArtist, { color: theme.text, opacity: 0.9 }]}>{currentTrack?.artist || 'Old Skool Apps'}</Text>
           <TouchableOpacity 
             style={styles.songEditContainer}
             onPress={() => {
@@ -1067,10 +1069,8 @@ export default function StylusViewScreen() {
             <Text style={[styles.trackTitle, { color: theme.text }]}>
               {currentSong || currentTrack?.title || 'Saturday Morning Forever'}
             </Text>
-            <Edit2 size={16} color={theme.accent} style={styles.editIcon} />
+            <Edit2 size={14} color={theme.accent} style={styles.editIcon} />
           </TouchableOpacity>
-          <Text style={[styles.trackArtist, { color: theme.text, opacity: 0.8 }]}>{currentTrack?.artist || 'Old Skool Apps'}</Text>
-          <Text style={[styles.trackAlbum, { color: theme.text, opacity: 0.6 }]}>{currentTrack?.album || 'The Retro Renaissance'}</Text>
           <View style={styles.decadeBadge}>
             <Text style={[styles.decadeText, { color: theme.accent }]}>{theme.name}</Text>
           </View>
@@ -1694,19 +1694,21 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   trackTitle: {
-    fontSize: 24,
-    fontWeight: '800' as const,
-    marginBottom: 4,
+    fontSize: 14,
+    fontWeight: '500' as const,
+    marginBottom: 2,
     textAlign: 'center' as const,
   },
   trackArtist: {
-    fontSize: 18,
-    marginBottom: 4,
+    fontSize: 20,
+    fontWeight: '700' as const,
+    marginBottom: 8,
     textAlign: 'center' as const,
   },
   trackAlbum: {
-    fontSize: 16,
-    marginBottom: 8,
+    fontSize: 28,
+    fontWeight: '800' as const,
+    marginBottom: 6,
     textAlign: 'center' as const,
   },
   decadeBadge: {
