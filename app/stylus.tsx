@@ -1553,8 +1553,8 @@ const styles = StyleSheet.create({
   stylusContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 60,
-    marginTop: 60,
+    paddingVertical: 20,
+    marginTop: 10,
     marginBottom: 30,
     position: 'relative',
   },
@@ -1623,7 +1623,7 @@ const styles = StyleSheet.create({
   },
   stylusArmContainer: {
     position: 'absolute',
-    top: 10,
+    top: 20,
     right: 10,
     width: 180,
     height: 120,
