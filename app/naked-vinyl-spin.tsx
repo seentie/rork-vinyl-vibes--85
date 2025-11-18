@@ -140,17 +140,16 @@ export default function NakedVinylSpinScreen() {
   });
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity 
+      style={styles.container} 
+      activeOpacity={1}
+      onPress={handleScreenTap}
+    >
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <LinearGradient
         colors={theme.background as [string, string, ...string[]]}
         style={styles.gradient}
       >
-        <TouchableOpacity 
-          style={styles.touchableArea} 
-          activeOpacity={1}
-          onPress={handleScreenTap}
-        >
         <Animated.View style={[styles.header, { paddingTop: insets.top + 5, opacity: headerOpacity }]}>
           <TouchableOpacity 
             onPress={() => {
@@ -227,9 +226,8 @@ export default function NakedVinylSpinScreen() {
             </Animated.View>
           </View>
         </View>
-        </TouchableOpacity>
       </LinearGradient>
-    </View>
+    </TouchableOpacity>
   );
 }
 
