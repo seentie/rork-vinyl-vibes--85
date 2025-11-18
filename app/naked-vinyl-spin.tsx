@@ -8,6 +8,7 @@ import {
   Platform,
   useWindowDimensions,
   Image,
+  StatusBar,
 } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -139,16 +140,18 @@ export default function NakedVinylSpinScreen() {
   });
 
   return (
-    <LinearGradient
-      colors={theme.background as [string, string, ...string[]]}
-      style={styles.container}
-    >
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      <LinearGradient
+        colors={theme.background as [string, string, ...string[]]}
+        style={styles.gradient}
+      >
         <TouchableOpacity 
           style={styles.touchableArea} 
           activeOpacity={1}
           onPress={handleScreenTap}
         >
-        <Animated.View style={[styles.header, { paddingTop: insets.top, opacity: headerOpacity }]}>
+        <Animated.View style={[styles.header, { paddingTop: insets.top + 5, opacity: headerOpacity }]}>
           <TouchableOpacity 
             onPress={() => {
               if (Platform.OS !== 'web') {
@@ -225,12 +228,17 @@ export default function NakedVinylSpinScreen() {
           </View>
         </View>
         </TouchableOpacity>
-    </LinearGradient>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  gradient: {
     flex: 1,
   },
   touchableArea: {
