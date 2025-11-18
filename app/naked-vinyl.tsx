@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 20,
     elevation: 15,
-    marginTop: 120,
+    marginTop: 160,
   },
   record: {
     backgroundColor: '#0A0A0A',
