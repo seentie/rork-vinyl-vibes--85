@@ -22,6 +22,7 @@ export default function ScreensaverScreen() {
   const { selectedRecord } = useRecord();
   const params = useLocalSearchParams();
   const mode = params.mode as string || 'screensaver';
+  const isLargeDevice = screenWidth >= 768;
   
   const [currentStyle, setCurrentStyle] = useState<ScreensaverStyle>(mode === 'kaleidoscope' ? 'kaleidoscope' : 'bounce');
   const [showHeader, setShowHeader] = useState(false);
@@ -35,12 +36,12 @@ export default function ScreensaverScreen() {
   const opacity = useRef(new Animated.Value(1)).current;
   
   // Velocity for bounce
-  const velocityX = useRef(2);
-  const velocityY = useRef(2);
+  const velocityX = useRef(isLargeDevice ? 3 : 2);
+  const velocityY = useRef(isLargeDevice ? 3 : 2);
   const currentX = useRef(screenWidth / 2);
   const currentY = useRef(screenHeight / 2);
   
-  const ALBUM_SIZE = Math.min(screenWidth, screenHeight) * 0.4;
+  const ALBUM_SIZE = isLargeDevice ? Math.min(screenWidth, screenHeight) * 0.3 : Math.min(screenWidth, screenHeight) * 0.4;
   const KALEIDOSCOPE_SIZE = Math.max(screenWidth, screenHeight) * 1.2;
   
   // Switch styles every 10 seconds (only if in screensaver mode)

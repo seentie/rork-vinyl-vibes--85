@@ -119,8 +119,9 @@ const decadeThemes = {
 };
 
 export default function NakedVinylQuotesScreen() {
-  const { width: screenWidth } = useWindowDimensions();
-  const VINYL_SIZE = screenWidth * 0.85;
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const isLargeDevice = screenWidth >= 768;
+  const VINYL_SIZE = isLargeDevice ? Math.min(screenWidth * 0.5, screenHeight * 0.5) : screenWidth * 0.85;
   const insets = useSafeAreaInsets();
   const [showHeader, setShowHeader] = useState(false);
   const headerOpacity = useRef(new Animated.Value(0)).current;
@@ -409,16 +410,16 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   quoteTop: {
-    top: '15%',
-    maxHeight: '25%',
+    top: '12%',
+    maxHeight: '22%',
   },
   quoteBottom: {
-    bottom: '15%',
-    maxHeight: '25%',
+    bottom: '12%',
+    maxHeight: '22%',
   },
   quoteText: {
-    fontSize: 22,
-    lineHeight: 34,
+    fontSize: 20,
+    lineHeight: 32,
     color: '#FFFFFF',
     textAlign: 'center' as const,
     fontStyle: 'italic',
@@ -429,8 +430,8 @@ const styles = StyleSheet.create({
     textShadowRadius: 8,
   },
   quoteAuthor: {
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 16,
+    lineHeight: 26,
     color: '#FFFFFF',
     textAlign: 'center' as const,
     fontWeight: '600' as const,

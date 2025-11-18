@@ -5,13 +5,13 @@ import {
   View,
   TouchableOpacity,
   Animated,
-  Dimensions,
   Platform,
   ScrollView,
   TextInput,
   Modal,
   KeyboardAvoidingView,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import {
   Play,
@@ -36,8 +36,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useRecord } from './context/RecordContext';
 
-const { width: screenWidth } = Dimensions.get('window');
-const STYLUS_SIZE = screenWidth * 0.8;
+
 
 
 
@@ -108,6 +107,10 @@ const decadeThemes = {
 };
 
 export default function StylusViewScreen() {
+  const { width: screenWidth } = useWindowDimensions();
+  const isLargeDevice = screenWidth >= 768;
+  const STYLUS_SIZE = isLargeDevice ? Math.min(screenWidth * 0.5, 500) : screenWidth * 0.8;
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [isStopped, setIsStopped] = useState(true);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -1003,11 +1006,16 @@ export default function StylusViewScreen() {
         {/* Stylus View Container */}
         <View style={styles.stylusContainer}>
           {/* Record */}
-          <View style={styles.recordContainer}>
+          <View style={[styles.recordContainer, { width: STYLUS_SIZE, height: STYLUS_SIZE }]}>
             <Animated.View
               style={[
                 styles.record,
-                { transform: [{ rotate: spin }] },
+                {
+                  width: STYLUS_SIZE,
+                  height: STYLUS_SIZE,
+                  borderRadius: STYLUS_SIZE / 2,
+                  transform: [{ rotate: spin }]
+                },
               ]}
             >
               {/* Record Grooves - Enhanced visibility */}
@@ -1025,16 +1033,21 @@ export default function StylusViewScreen() {
               ))}
               
               {/* Record Label */}
-              <View style={[styles.label, { backgroundColor: theme.accent }]}>
+              <View style={[styles.label, { 
+                backgroundColor: theme.accent,
+                width: STYLUS_SIZE * 0.35,
+                height: STYLUS_SIZE * 0.35,
+                borderRadius: (STYLUS_SIZE * 0.35) / 2,
+              }]}>
                 <Text 
-                  style={styles.labelTitle} 
+                  style={[styles.labelTitle, { maxWidth: STYLUS_SIZE * 0.3 }]} 
                   numberOfLines={2}
                   ellipsizeMode="tail"
                 >
                   {currentTrack?.album || 'The Retro Renaissance'}
                 </Text>
                 <Text 
-                  style={styles.labelArtist}
+                  style={[styles.labelArtist, { maxWidth: STYLUS_SIZE * 0.3 }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
@@ -1448,7 +1461,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   brandText: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700' as const,
     letterSpacing: 2,
     textAlign: 'center' as const,
@@ -1495,9 +1508,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 6,
     gap: 10,
+    flexWrap: 'wrap' as const,
   },
   menuButton: {
     flex: 1,
+    minWidth: 140,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1559,8 +1574,6 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   recordContainer: {
-    width: STYLUS_SIZE,
-    height: STYLUS_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -1570,9 +1583,6 @@ const styles = StyleSheet.create({
     elevation: 15,
   },
   record: {
-    width: STYLUS_SIZE,
-    height: STYLUS_SIZE,
-    borderRadius: STYLUS_SIZE / 2,
     backgroundColor: '#0A0A0A',
     justifyContent: 'center',
     alignItems: 'center',
@@ -1586,9 +1596,6 @@ const styles = StyleSheet.create({
   },
 
   label: {
-    width: STYLUS_SIZE * 0.35,
-    height: STYLUS_SIZE * 0.35,
-    borderRadius: (STYLUS_SIZE * 0.35) / 2,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -1605,14 +1612,12 @@ const styles = StyleSheet.create({
     color: '#1A0E08',
     letterSpacing: 0.3,
     textAlign: 'center' as const,
-    maxWidth: STYLUS_SIZE * 0.3,
   },
   labelArtist: {
     fontSize: 9,
     color: '#2C1810',
     marginTop: 2,
     textAlign: 'center' as const,
-    maxWidth: STYLUS_SIZE * 0.3,
   },
   centerHole: {
     position: 'absolute',

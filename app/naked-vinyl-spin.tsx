@@ -66,8 +66,9 @@ const decadeThemes = {
 };
 
 export default function NakedVinylSpinScreen() {
-  const { width: screenWidth } = useWindowDimensions();
-  const VINYL_SIZE = screenWidth * 0.85;
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const isLargeDevice = screenWidth >= 768;
+  const VINYL_SIZE = isLargeDevice ? Math.min(screenWidth * 0.5, screenHeight * 0.6) : screenWidth * 0.85;
   const insets = useSafeAreaInsets();
   const [showHeader, setShowHeader] = useState(false);
   const headerOpacity = useRef(new Animated.Value(0)).current;

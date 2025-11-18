@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +22,8 @@ const CONTACT_ADDRESS = '2114 N Flamingo Road #867, Pembroke Pines, FL 33028';
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { width: screenWidth } = useWindowDimensions();
+  const isLargeDevice = screenWidth >= 768;
   const [isPrivacyExpanded, setIsPrivacyExpanded] = useState(false);
 
   const handleEmailPress = () => {
@@ -51,7 +54,16 @@ export default function SettingsScreen() {
     >
       <ScrollView 
         style={styles.scrollView}
-        contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 20 }]}
+        contentContainerStyle={[
+          styles.contentContainer, 
+          { 
+            paddingTop: insets.top + 16, 
+            paddingBottom: insets.bottom + 20,
+            maxWidth: isLargeDevice ? 800 : undefined,
+            alignSelf: isLargeDevice ? 'center' as const : 'auto' as const,
+            width: isLargeDevice ? '100%' : undefined,
+          }
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity 

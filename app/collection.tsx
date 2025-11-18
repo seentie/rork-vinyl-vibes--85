@@ -11,6 +11,7 @@ import {
   Platform,
   Image,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +23,8 @@ import type { SavedRecord } from './context/RecordContext';
 
 export default function CollectionScreen() {
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
+  const isLargeDevice = screenWidth >= 768;
   const { savedRecords, saveSavedRecords, selectRecord, selectedRecord, selectSongFromRecord, currentSong } = useRecord();
   
   const [showAddModal, setShowAddModal] = useState(false);
@@ -357,9 +360,9 @@ export default function CollectionScreen() {
             <Text style={styles.emptySubtext}>Add albums to build your collection</Text>
           </View>
         ) : (
-          <View style={styles.albumGrid}>
+          <View style={[styles.albumGrid]}>
             {userRecords.map((record) => (
-              <View key={record.id} style={styles.albumCard}>
+              <View key={record.id} style={[styles.albumCard, isLargeDevice && { width: '48%' }]}>
                 <TouchableOpacity
                   style={styles.albumTouchable}
                   onPress={() => {
@@ -828,6 +831,8 @@ const styles = StyleSheet.create({
   },
   albumGrid: {
     gap: 16,
+    flexDirection: 'row' as const,
+    flexWrap: 'wrap' as const,
   },
   albumCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',

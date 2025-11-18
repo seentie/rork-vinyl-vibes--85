@@ -21,7 +21,8 @@ import { useRecord } from './context/RecordContext';
 
 export default function NowPlayingScreen() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-  const ALBUM_SIZE = screenWidth * 0.7;
+  const isLargeDevice = screenWidth >= 768;
+  const ALBUM_SIZE = isLargeDevice ? Math.min(screenWidth * 0.5, 500) : screenWidth * 0.7;
   
   const insets = useSafeAreaInsets();
   const { selectedRecord } = useRecord();
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
   signContainer: {
     alignItems: 'center',
     marginTop: 30,
-    marginBottom: 50,
+    marginBottom: 40,
     position: 'relative',
     height: 80,
   },
@@ -481,7 +482,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   albumContainer: {
-    minHeight: 400,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
