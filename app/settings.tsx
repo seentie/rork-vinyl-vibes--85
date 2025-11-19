@@ -222,7 +222,7 @@ export default function SettingsScreen() {
               <Text style={styles.privacyText}>
                 <Text style={styles.privacyHeader}>Privacy Policy</Text>
                 {"\n\n"}
-                <Text style={styles.privacySubheader}>Updated: November 2025</Text>
+                <Text style={styles.privacySubheader}>Updated: January 2025</Text>
                 {"\n\n"}
                 <Text style={styles.privacySubheader}>The Short Version</Text>
                 {"\n\n"}
