@@ -102,17 +102,17 @@ export default function SettingsScreen() {
               {"\n\n"}
               <Text style={styles.instructionsSubheader}>Available Views:</Text>
               {"\n\n"}
-              • <Text style={styles.instructionsBold}>Classic Turntable:</Text> The main view featuring the full vinyl record player with spinning vinyl, tonearm, and all controls
+              • <Text style={styles.instructionsBold}>Main Player:</Text> The main view featuring the full vinyl record player with spinning vinyl, tonearm, and all controls - your home base for the full turntable experience
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Now Playing:</Text> An immersive view showcasing your album art with a glowing effect and the vinyl record prominently displayed
               {"\n\n"}
-              • <Text style={styles.instructionsBold}>Stylus View:</Text> A close-up cinematic view of the tonearm and needle on the spinning vinyl - watch the stylus ride the grooves just like a real record player
-              {"\n\n"}
               • <Text style={styles.instructionsBold}>Naked Vinyl:</Text> A minimalist view that puts the spinning record center stage without any player controls - pure vinyl beauty
               {"\n\n"}
-              • <Text style={styles.instructionsBold}>Naked Vinyl + Vinyl Quotes:</Text> The same beautiful spinning vinyl with inspiring quotes about vinyl from legendary artists that rotate every 3-5 minutes - 52 different quotes to discover
+              • <Text style={styles.instructionsBold}>Vinyl Quotes:</Text> The same beautiful spinning vinyl with inspiring quotes about vinyl from legendary artists that rotate every 3-5 minutes - 52 different quotes to discover
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Screensaver:</Text> A mesmerizing animated view perfect for letting your music play while enjoying visual ambience
+              {"\n\n"}
+              • <Text style={styles.instructionsBold}>Kaleidoscope:</Text> A trippy, psychedelic visual experience that reacts to your vibe
               {"\n\n"}
               • <Text style={styles.instructionsBold}>Collection:</Text> Browse and manage your entire album collection with up to 85 albums, complete with custom covers and song lists
               {"\n\n"}
