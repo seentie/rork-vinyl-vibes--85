@@ -1706,10 +1706,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
-    gap: 8,
+    position: 'relative',
   },
   editIcon: {
     opacity: 0.7,
+    position: 'absolute',
+    right: -22,
   },
   trackTitle: {
     fontSize: 14,
