@@ -162,7 +162,7 @@ export default function CollectionScreen() {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images' as any,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -287,7 +287,9 @@ export default function CollectionScreen() {
               setShowAddModal(true);
             }}
           >
-            <Plus size={24} color="#FFFFFF" />
+            <View style={styles.addButtonIcon}>
+              <Plus size={24} color="#FFFFFF" />
+            </View>
             <Text style={styles.addButtonText}>Add Album</Text>
           </TouchableOpacity>
         )}
@@ -340,7 +342,9 @@ export default function CollectionScreen() {
                         }
                       }}
                     >
-                      <Play size={14} color="#FFFFFF" />
+                      <View style={styles.songSelectorButtonIcon}>
+                        <Play size={14} color="#FFFFFF" />
+                      </View>
                       <Text style={styles.songSelectorButtonText}>Select Song</Text>
                     </TouchableOpacity>
                   )}
@@ -361,8 +365,16 @@ export default function CollectionScreen() {
           </View>
         ) : (
           <View style={[styles.albumGrid]}>
-            {userRecords.map((record) => (
-              <View key={record.id} style={[styles.albumCard, isLargeDevice && { width: '48%' }]}>
+            {userRecords.map((record, recordIndex) => (
+              <View 
+                key={record.id} 
+                style={[
+                  styles.albumCard, 
+                  isLargeDevice && { width: '48%' },
+                  recordIndex > 0 && { marginTop: 16 },
+                  isLargeDevice && recordIndex % 2 === 1 && { marginLeft: 16 },
+                ]}
+              >
                 <TouchableOpacity
                   style={styles.albumTouchable}
                   onPress={() => {
@@ -413,7 +425,9 @@ export default function CollectionScreen() {
                           }
                         }}
                       >
-                        <Play size={14} color="#FFFFFF" />
+                        <View style={styles.songSelectorButtonIcon}>
+                          <Play size={14} color="#FFFFFF" />
+                        </View>
                         <Text style={styles.songSelectorButtonText}>Select Song</Text>
                       </TouchableOpacity>
                     )}
@@ -479,7 +493,7 @@ export default function CollectionScreen() {
               <ScrollView style={styles.songSelectorList}>
                 {viewingRecord?.songs?.map((song, index) => (
                   <TouchableOpacity
-                    key={index}
+                    key={`song-selector-${index}`}
                     style={[
                       styles.songSelectorItem,
                       currentSong === song && styles.songSelectorItemActive,
@@ -494,7 +508,9 @@ export default function CollectionScreen() {
                       Alert.alert('Song Selected', `Now playing "${song}"`);
                     }}
                   >
-                    <Music2 size={18} color={currentSong === song ? "#9C27B0" : "#666"} />
+                    <View style={styles.songSelectorItemIcon}>
+                      <Music2 size={18} color={currentSong === song ? "#9C27B0" : "#666"} />
+                    </View>
                     <Text
                       style={[
                         styles.songSelectorItemText,
@@ -576,8 +592,10 @@ export default function CollectionScreen() {
                 {newAlbumSongs.length > 0 && (
                   <View style={styles.songsList}>
                     {newAlbumSongs.map((song, index) => (
-                      <View key={index} style={styles.songItem}>
-                        <Music2 size={16} color="#666" />
+                      <View key={`new-song-${index}`} style={styles.songItem}>
+                        <View style={styles.songItemIcon}>
+                          <Music2 size={16} color="#666" />
+                        </View>
                         <Text style={styles.songItemText} numberOfLines={1}>{song}</Text>
                         <TouchableOpacity
                           onPress={() => handleRemoveSongFromNew(index)}
@@ -592,7 +610,7 @@ export default function CollectionScreen() {
 
                 <View style={styles.addSongContainer}>
                   <TextInput
-                    style={[styles.input, { flex: 1 }]}
+                    style={[styles.input, styles.addSongInput]}
                     value={newSongTitle}
                     onChangeText={setNewSongTitle}
                     placeholder="Add song title"
@@ -611,20 +629,24 @@ export default function CollectionScreen() {
               </View>
 
               <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.cancelButton]}
-                  onPress={closeAddModal}
-                >
-                  <Text style={styles.modalButtonText}>Cancel</Text>
-                </TouchableOpacity>
+                <View style={styles.modalButtonWrapper}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.cancelButton]}
+                    onPress={closeAddModal}
+                  >
+                    <Text style={styles.modalButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.saveButton]}
-                  onPress={handleAddAlbum}
-                >
-                  <Check size={20} color="#FFFFFF" />
-                  <Text style={[styles.modalButtonText, { marginLeft: 8 }]}>Add</Text>
-                </TouchableOpacity>
+                <View style={styles.modalButtonWrapper}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.saveButton]}
+                    onPress={handleAddAlbum}
+                  >
+                    <Check size={20} color="#FFFFFF" />
+                    <Text style={[styles.modalButtonText, { marginLeft: 8 }]}>Add</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
@@ -693,8 +715,10 @@ export default function CollectionScreen() {
                 {editingSongs.length > 0 && (
                   <View style={styles.songsList}>
                     {editingSongs.map((song, index) => (
-                      <View key={index} style={styles.songItem}>
-                        <Music2 size={16} color="#666" />
+                      <View key={`edit-song-${index}`} style={styles.songItem}>
+                        <View style={styles.songItemIcon}>
+                          <Music2 size={16} color="#666" />
+                        </View>
                         <Text style={styles.songItemText} numberOfLines={1}>{song}</Text>
                         <TouchableOpacity
                           onPress={() => handleRemoveSongFromEditing(index)}
@@ -709,7 +733,7 @@ export default function CollectionScreen() {
 
                 <View style={styles.addSongContainer}>
                   <TextInput
-                    style={[styles.input, { flex: 1 }]}
+                    style={[styles.input, styles.addSongInput]}
                     value={newSongTitle}
                     onChangeText={setNewSongTitle}
                     placeholder="Add song title"
@@ -728,20 +752,24 @@ export default function CollectionScreen() {
               </View>
 
               <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.cancelButton]}
-                  onPress={closeEditModal}
-                >
-                  <Text style={styles.modalButtonText}>Cancel</Text>
-                </TouchableOpacity>
+                <View style={styles.modalButtonWrapper}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.cancelButton]}
+                    onPress={closeEditModal}
+                  >
+                    <Text style={styles.modalButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.saveButton]}
-                  onPress={handleEditAlbum}
-                >
-                  <Check size={20} color="#FFFFFF" />
-                  <Text style={[styles.modalButtonText, { marginLeft: 8 }]}>Save</Text>
-                </TouchableOpacity>
+                <View style={styles.modalButtonWrapper}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.saveButton]}
+                    onPress={handleEditAlbum}
+                  >
+                    <Check size={20} color="#FFFFFF" />
+                    <Text style={[styles.modalButtonText, { marginLeft: 8 }]}>Save</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
@@ -805,7 +833,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     borderWidth: 2,
     borderColor: '#FFFFFF',
-    gap: 8,
+  },
+  addButtonIcon: {
+    marginRight: 8,
   },
   addButtonText: {
     fontSize: 18,
@@ -830,7 +860,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   albumGrid: {
-    gap: 16,
     flexDirection: 'row' as const,
     flexWrap: 'wrap' as const,
     justifyContent: 'flex-start' as const,
@@ -971,11 +1000,13 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     flexDirection: 'row',
-    gap: 12,
     marginTop: 8,
   },
-  modalButton: {
+  modalButtonWrapper: {
     flex: 1,
+    marginHorizontal: 6,
+  },
+  modalButton: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -1008,7 +1039,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginBottom: 6,
-    gap: 8,
+  },
+  songItemIcon: {
+    marginRight: 8,
   },
   songItemText: {
     flex: 1,
@@ -1020,8 +1053,11 @@ const styles = StyleSheet.create({
   },
   addSongContainer: {
     flexDirection: 'row',
-    gap: 8,
     alignItems: 'center',
+  },
+  addSongInput: {
+    flex: 1,
+    marginRight: 8,
   },
   addSongButton: {
     backgroundColor: '#9C27B0',
@@ -1033,13 +1069,15 @@ const styles = StyleSheet.create({
   songSelectorButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
     marginTop: 8,
     paddingVertical: 4,
     paddingHorizontal: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 6,
     alignSelf: 'flex-start',
+  },
+  songSelectorButtonIcon: {
+    marginRight: 4,
   },
   songSelectorButtonText: {
     fontSize: 12,
@@ -1062,7 +1100,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#F5F5F5',
     marginBottom: 8,
-    gap: 12,
+  },
+  songSelectorItemIcon: {
+    marginRight: 12,
   },
   songSelectorItemActive: {
     backgroundColor: '#E8D4F1',
