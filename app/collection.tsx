@@ -15,13 +15,15 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plus, X, Check, Music, Trash2, Edit2, Music2, Play } from 'lucide-react-native';
+import { Plus, X, Check, Music, Trash2, Edit2, Music2, Play, ArrowLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import { useRecord } from './context/RecordContext';
 import type { SavedRecord } from './context/RecordContext';
 
 export default function CollectionScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const isLargeDevice = screenWidth >= 768;
@@ -271,6 +273,17 @@ export default function CollectionScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (Platform.OS !== 'web') {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              router.back();
+            }}
+          >
+            <ArrowLeft size={28} color="#FFFFFF" strokeWidth={2} />
+          </TouchableOpacity>
           <Text style={styles.title}>My Collection</Text>
           <Text style={styles.subtitle}>
             {userRecords.length}/85 albums
@@ -791,6 +804,13 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 20,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    padding: 8,
+    marginBottom: 12,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
   title: {
     fontSize: 32,
