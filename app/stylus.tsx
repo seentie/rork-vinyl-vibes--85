@@ -107,9 +107,10 @@ const decadeThemes = {
 };
 
 export default function StylusViewScreen() {
-  const { width: screenWidth } = useWindowDimensions();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const isLargeDevice = screenWidth >= 768;
-  const STYLUS_SIZE = isLargeDevice ? Math.min(screenWidth * 0.5, 500) : screenWidth * 0.8;
+  const isExtraLarge = screenWidth >= 1024;
+  const STYLUS_SIZE = isLargeDevice ? Math.min(screenWidth * 0.4, screenHeight * 0.45, 450) : Math.min(screenWidth * 0.8, screenHeight * 0.5);
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [isStopped, setIsStopped] = useState(true);
@@ -1509,18 +1510,20 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     gap: 10,
     flexWrap: 'wrap' as const,
+    justifyContent: 'center' as const,
   },
   menuButton: {
     flex: 1,
-    minWidth: 140,
+    minWidth: 145,
+    maxWidth: 280,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
     borderWidth: 1.5,
-    gap: 6,
+    gap: 8,
   },
   menuButtonText: {
     fontSize: 12,
@@ -1785,7 +1788,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '90%',
-    maxWidth: 400,
+    maxWidth: 500,
   },
   modalContent: {
     borderRadius: 20,
@@ -1840,8 +1843,8 @@ const styles = StyleSheet.create({
   },
   songListModalContainer: {
     width: '95%',
-    maxWidth: 500,
-    maxHeight: '85%',
+    maxWidth: 600,
+    maxHeight: '80%',
     flex: 1,
     marginVertical: 20,
   },

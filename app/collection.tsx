@@ -833,6 +833,7 @@ const styles = StyleSheet.create({
     gap: 16,
     flexDirection: 'row' as const,
     flexWrap: 'wrap' as const,
+    justifyContent: 'flex-start' as const,
   },
   albumCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
@@ -840,6 +841,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
+    width: '100%',
   },
   albumTouchable: {
     flexDirection: 'row',
@@ -902,7 +904,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: '90%',
-    maxWidth: 400,
+    maxWidth: 550,
   },
   modalContent: {
     backgroundColor: '#FFFFFF',

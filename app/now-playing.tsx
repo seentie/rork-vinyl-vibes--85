@@ -22,7 +22,7 @@ import { useRecord } from './context/RecordContext';
 export default function NowPlayingScreen() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const isLargeDevice = screenWidth >= 768;
-  const ALBUM_SIZE = isLargeDevice ? Math.min(screenWidth * 0.5, 500) : screenWidth * 0.7;
+  const ALBUM_SIZE = isLargeDevice ? Math.min(screenWidth * 0.4, screenHeight * 0.5, 450) : Math.min(screenWidth * 0.7, screenHeight * 0.5);
   
   const insets = useSafeAreaInsets();
   const { selectedRecord } = useRecord();
