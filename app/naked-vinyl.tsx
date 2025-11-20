@@ -288,7 +288,7 @@ export default function NakedVinylQuotesScreen() {
             </Animated.View>
           )}
           
-          <View style={styles.recordContainer}>
+          <View style={[styles.recordContainer, !isLandscape && { marginTop: 160 }]}>
             <Animated.View
               style={[
                 styles.record,
@@ -454,7 +454,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 20,
     elevation: 15,
-    marginTop: 160,
   },
   record: {
     backgroundColor: '#0A0A0A',
