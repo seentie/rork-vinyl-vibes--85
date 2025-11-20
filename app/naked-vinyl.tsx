@@ -123,7 +123,7 @@ export default function NakedVinylQuotesScreen() {
   const isLargeDevice = screenWidth >= 768;
   const isLandscape = screenWidth > screenHeight;
   const VINYL_SIZE = isLandscape 
-    ? Math.max(screenWidth, screenHeight) * 0.95
+    ? Math.min(screenWidth, screenHeight) * 1.5
     : isLargeDevice 
       ? Math.min(screenWidth * 0.5, screenHeight * 0.5) 
       : screenWidth * 0.85;
