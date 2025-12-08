@@ -8,6 +8,7 @@ import {
   Platform,
   useWindowDimensions,
   Image,
+  PanResponder,
 } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -140,6 +141,10 @@ export default function NakedVinylQuotesScreen() {
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   
+  const scale = useRef(new Animated.Value(1)).current;
+  const baseDistance = useRef(0);
+  const lastScale = useRef(1);
+  
   const { selectedRecord, currentTheme, aiTheme: contextAiTheme, youPickTheme: contextYouPickTheme } = useRecord();
   
   // Get theme based on currentTheme from context
@@ -246,12 +251,51 @@ export default function NakedVinylQuotesScreen() {
     extrapolate: 'extend',
   });
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => isLandscape,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return isLandscape && gestureState.numberActiveTouches === 2;
+      },
+      onPanResponderGrant: () => {
+        baseDistance.current = 0;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.numberActiveTouches === 2) {
+          const touches = (gestureState as any).touches;
+          if (touches && touches.length >= 2) {
+            const touch1 = touches[0];
+            const touch2 = touches[1];
+            const distance = Math.sqrt(
+              Math.pow(touch2.pageX - touch1.pageX, 2) +
+              Math.pow(touch2.pageY - touch1.pageY, 2)
+            );
+            
+            if (baseDistance.current === 0) {
+              baseDistance.current = distance;
+            } else {
+              const newScale = (distance / baseDistance.current) * lastScale.current;
+              const clampedScale = Math.max(0.5, Math.min(4, newScale));
+              scale.setValue(clampedScale);
+            }
+          }
+        }
+      },
+      onPanResponderRelease: () => {
+        lastScale.current = (scale as any)._value;
+        baseDistance.current = 0;
+      },
+    })
+  ).current;
+
   return (
-    <TouchableOpacity 
-      style={styles.container} 
-      activeOpacity={1}
-      onPress={handleScreenTap}
-    >
+    <View style={styles.container} {...(isLandscape ? panResponder.panHandlers : {})}>
+      <TouchableOpacity 
+        style={styles.fullTouch} 
+        activeOpacity={1}
+        onPress={handleScreenTap}
+        disabled={isLandscape}
+      >
       <LinearGradient
         colors={theme.background as [string, string, ...string[]]}
         style={styles.gradient}
@@ -299,7 +343,7 @@ export default function NakedVinylQuotesScreen() {
                   width: VINYL_SIZE,
                   height: VINYL_SIZE,
                   borderRadius: VINYL_SIZE / 2,
-                  transform: [{ rotate: spin }],
+                  transform: isLandscape ? [{ rotate: spin }, { scale }] : [{ rotate: spin }],
                 },
               ]}
             >
@@ -375,12 +419,16 @@ export default function NakedVinylQuotesScreen() {
           )}
         </View>
       </LinearGradient>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  fullTouch: {
     flex: 1,
   },
   gradient: {
