@@ -141,9 +141,9 @@ export default function NakedVinylQuotesScreen() {
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   
-  const scale = useRef(new Animated.Value(1)).current;
+  const scale = useRef(new Animated.Value(isLandscape ? 2.5 : 1)).current;
   const baseDistance = useRef(0);
-  const lastScale = useRef(1);
+  const lastScale = useRef(isLandscape ? 2.5 : 1);
   
   const { selectedRecord, currentTheme, aiTheme: contextAiTheme, youPickTheme: contextYouPickTheme } = useRecord();
   
@@ -253,24 +253,26 @@ export default function NakedVinylQuotesScreen() {
 
   const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
-        const shouldSet = isLandscape && evt.nativeEvent.touches.length >= 2;
-        console.log('onStartShouldSetPanResponder', { isLandscape, touches: evt.nativeEvent.touches.length, shouldSet });
-        return shouldSet;
+        return isLandscape && evt.nativeEvent.touches.length === 2;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        const shouldSet = isLandscape && evt.nativeEvent.touches.length >= 2;
-        console.log('onMoveShouldSetPanResponder', { shouldSet, touches: evt.nativeEvent.touches.length, isLandscape });
-        return shouldSet;
+        return isLandscape && evt.nativeEvent.touches.length === 2;
       },
       onPanResponderGrant: (evt) => {
-        console.log('onPanResponderGrant - touches:', evt.nativeEvent.touches.length);
-        baseDistance.current = 0;
+        if (evt.nativeEvent.touches.length === 2) {
+          const touch1 = evt.nativeEvent.touches[0];
+          const touch2 = evt.nativeEvent.touches[1];
+          const distance = Math.sqrt(
+            Math.pow(touch2.pageX - touch1.pageX, 2) +
+            Math.pow(touch2.pageY - touch1.pageY, 2)
+          );
+          baseDistance.current = distance;
+        }
       },
-      onPanResponderMove: (evt, gestureState) => {
+      onPanResponderMove: (evt) => {
         const touches = evt.nativeEvent.touches;
-        console.log('onPanResponderMove - touches:', touches.length);
         
-        if (touches.length >= 2) {
+        if (touches.length === 2 && baseDistance.current > 0) {
           const touch1 = touches[0];
           const touch2 = touches[1];
           const distance = Math.sqrt(
@@ -278,20 +280,13 @@ export default function NakedVinylQuotesScreen() {
             Math.pow(touch2.pageY - touch1.pageY, 2)
           );
           
-          if (baseDistance.current === 0) {
-            baseDistance.current = distance;
-            console.log('Base distance set:', baseDistance.current);
-          } else {
-            const newScale = (distance / baseDistance.current) * lastScale.current;
-            const clampedScale = Math.max(0.5, Math.min(4, newScale));
-            console.log('Scale update:', { distance, baseDistance: baseDistance.current, newScale, clampedScale });
-            scale.setValue(clampedScale);
-          }
+          const newScale = (distance / baseDistance.current) * lastScale.current;
+          const clampedScale = Math.max(0.5, Math.min(5, newScale));
+          scale.setValue(clampedScale);
         }
       },
       onPanResponderRelease: () => {
         lastScale.current = (scale as any)._value;
-        console.log('Released - lastScale:', lastScale.current);
         baseDistance.current = 0;
       },
     });
@@ -302,7 +297,6 @@ export default function NakedVinylQuotesScreen() {
         style={styles.fullTouch} 
         activeOpacity={1}
         onPress={handleScreenTap}
-        disabled={isLandscape}
       >
       <LinearGradient
         colors={theme.background as [string, string, ...string[]]}
