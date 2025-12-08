@@ -254,8 +254,8 @@ export default function NakedVinylQuotesScreen() {
 
   const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
-        const isTwoFingers = evt.nativeEvent.touches.length === 2;
-        console.log('onStartShouldSetPanResponder:', isTwoFingers, 'touches:', evt.nativeEvent.touches.length);
+        const isTwoFingers = evt.nativeEvent.touches.length >= 2;
+        console.log('onStartShouldSetPanResponder:', isTwoFingers, 'touches:', evt.nativeEvent.touches.length, 'landscape:', isLandscape);
         if (isTwoFingers) {
           setShowHeader(false);
           isPinching.current = true;
@@ -263,15 +263,19 @@ export default function NakedVinylQuotesScreen() {
         return isTwoFingers;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        const isTwoFingers = evt.nativeEvent.touches.length === 2;
-        if (isTwoFingers && !isPinching.current) {
-          isPinching.current = true;
+        const isTwoFingers = evt.nativeEvent.touches.length >= 2;
+        console.log('onMoveShouldSetPanResponder:', isTwoFingers, 'touches:', evt.nativeEvent.touches.length, 'gesture:', gestureState.dx, gestureState.dy);
+        if (isTwoFingers) {
+          if (!isPinching.current) {
+            isPinching.current = true;
+          }
           return true;
         }
-        return isTwoFingers && (Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5);
+        return false;
       },
       onPanResponderGrant: (evt) => {
-        if (evt.nativeEvent.touches.length === 2) {
+        console.log('onPanResponderGrant, touches:', evt.nativeEvent.touches.length);
+        if (evt.nativeEvent.touches.length >= 2) {
           const touch1 = evt.nativeEvent.touches[0];
           const touch2 = evt.nativeEvent.touches[1];
           const distance = Math.sqrt(
@@ -280,13 +284,14 @@ export default function NakedVinylQuotesScreen() {
           );
           baseDistance.current = distance;
           lastScale.current = (scale as any)._value || 1;
-          console.log('Pinch started, distance:', distance, 'lastScale:', lastScale.current);
+          console.log('Pinch started, distance:', distance, 'lastScale:', lastScale.current, 'landscape:', isLandscape);
         }
       },
       onPanResponderMove: (evt) => {
         const touches = evt.nativeEvent.touches;
+        console.log('onPanResponderMove, touches:', touches.length, 'baseDistance:', baseDistance.current);
         
-        if (touches.length === 2 && baseDistance.current > 0) {
+        if (touches.length >= 2 && baseDistance.current > 0) {
           const touch1 = touches[0];
           const touch2 = touches[1];
           const distance = Math.sqrt(
@@ -297,10 +302,11 @@ export default function NakedVinylQuotesScreen() {
           const newScale = (distance / baseDistance.current) * lastScale.current;
           const clampedScale = Math.max(0.5, Math.min(5, newScale));
           scale.setValue(clampedScale);
-          console.log('Pinch move, distance:', distance, 'scale:', clampedScale);
+          console.log('Pinch move, distance:', distance, 'scale:', clampedScale, 'landscape:', isLandscape);
         }
       },
       onPanResponderRelease: () => {
+        console.log('onPanResponderRelease, isPinching:', isPinching.current);
         if (isPinching.current) {
           lastScale.current = (scale as any)._value || 1;
           console.log('Pinch released, final scale:', lastScale.current);
@@ -309,6 +315,7 @@ export default function NakedVinylQuotesScreen() {
         baseDistance.current = 0;
       },
       onPanResponderTerminate: () => {
+        console.log('onPanResponderTerminate');
         if (isPinching.current) {
           lastScale.current = (scale as any)._value || 1;
         }
@@ -318,12 +325,12 @@ export default function NakedVinylQuotesScreen() {
     });
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
+    <View style={styles.container}>
       <LinearGradient
         colors={theme.background as [string, string, ...string[]]}
         style={styles.gradient}
       >
-      <View style={StyleSheet.absoluteFill}>
+      <View style={StyleSheet.absoluteFill} {...panResponder.panHandlers}>
         <TouchableOpacity
           style={styles.screenTouchArea}
           activeOpacity={1}
