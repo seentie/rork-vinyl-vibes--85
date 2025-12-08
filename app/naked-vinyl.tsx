@@ -254,10 +254,16 @@ export default function NakedVinylQuotesScreen() {
 
   const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
-        return evt.nativeEvent.touches.length === 2;
+        const isTwoFingers = evt.nativeEvent.touches.length === 2;
+        console.log('onStartShouldSetPanResponder:', isTwoFingers, 'touches:', evt.nativeEvent.touches.length);
+        if (isTwoFingers) {
+          setShowHeader(false);
+        }
+        return isTwoFingers;
       },
       onMoveShouldSetPanResponder: (evt) => {
-        return evt.nativeEvent.touches.length === 2;
+        const isTwoFingers = evt.nativeEvent.touches.length === 2;
+        return isTwoFingers;
       },
       onPanResponderGrant: (evt) => {
         if (evt.nativeEvent.touches.length === 2) {
@@ -307,21 +313,21 @@ export default function NakedVinylQuotesScreen() {
     });
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <LinearGradient
         colors={theme.background as [string, string, ...string[]]}
         style={styles.gradient}
       >
-      <TouchableOpacity
-        style={styles.fullTouch}
-        activeOpacity={1}
-        onPress={() => {
-          if (!isPinching.current) {
-            handleScreenTap();
-          }
-        }}
-      >
-      <View style={StyleSheet.absoluteFill} {...panResponder.panHandlers}>
+      <View style={StyleSheet.absoluteFill}>
+        <TouchableOpacity
+          style={styles.screenTouchArea}
+          activeOpacity={1}
+          onPress={() => {
+            if (!isPinching.current) {
+              handleScreenTap();
+            }
+          }}
+        />
         <Animated.View style={[styles.header, { paddingTop: insets.top, opacity: headerOpacity }]}>
           <TouchableOpacity 
             onPress={() => {
@@ -441,7 +447,6 @@ export default function NakedVinylQuotesScreen() {
           )}
         </View>
       </View>
-      </TouchableOpacity>
       </LinearGradient>
     </View>
   );
@@ -451,8 +456,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  fullTouch: {
-    flex: 1,
+  screenTouchArea: {
+    ...StyleSheet.absoluteFillObject,
     zIndex: 1,
   },
   gradient: {
