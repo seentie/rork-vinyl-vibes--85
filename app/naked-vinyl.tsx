@@ -253,11 +253,19 @@ export default function NakedVinylQuotesScreen() {
 
   const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
-        return evt.nativeEvent.touches.length === 2;
+        if (evt.nativeEvent.touches.length === 2) {
+          return true;
+        }
+        return false;
       },
       onMoveShouldSetPanResponder: (evt) => {
-        return evt.nativeEvent.touches.length === 2;
+        if (evt.nativeEvent.touches.length === 2) {
+          return true;
+        }
+        return false;
       },
+      onStartShouldSetPanResponderCapture: () => false,
+      onMoveShouldSetPanResponderCapture: () => false,
       onPanResponderGrant: (evt) => {
         if (evt.nativeEvent.touches.length === 2) {
           const touch1 = evt.nativeEvent.touches[0];
@@ -289,19 +297,24 @@ export default function NakedVinylQuotesScreen() {
         lastScale.current = (scale as any)._value;
         baseDistance.current = 0;
       },
+      onPanResponderTerminate: () => {
+        lastScale.current = (scale as any)._value;
+        baseDistance.current = 0;
+      },
+      onPanResponderEnd: (evt) => {
+        if (evt.nativeEvent.touches.length === 0) {
+          handleScreenTap();
+        }
+      },
     });
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
-      <TouchableOpacity 
-        style={styles.fullTouch} 
-        activeOpacity={1}
-        onPress={handleScreenTap}
-      >
+    <View style={styles.container}>
       <LinearGradient
         colors={theme.background as [string, string, ...string[]]}
         style={styles.gradient}
       >
+      <View style={styles.fullTouch} {...panResponder.panHandlers}>
         <Animated.View style={[styles.header, { paddingTop: insets.top, opacity: headerOpacity }]}>
           <TouchableOpacity 
             onPress={() => {
@@ -420,8 +433,8 @@ export default function NakedVinylQuotesScreen() {
             </Animated.View>
           )}
         </View>
+      </View>
       </LinearGradient>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -432,6 +445,7 @@ const styles = StyleSheet.create({
   },
   fullTouch: {
     flex: 1,
+    zIndex: 1,
   },
   gradient: {
     flex: 1,
