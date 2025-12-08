@@ -144,6 +144,7 @@ export default function NakedVinylQuotesScreen() {
   const scale = useRef(new Animated.Value(1)).current;
   const baseDistance = useRef(0);
   const lastScale = useRef(1);
+  const isPinching = useRef(false);
   
   const { selectedRecord, currentTheme, aiTheme: contextAiTheme, youPickTheme: contextYouPickTheme } = useRecord();
   
@@ -253,21 +254,14 @@ export default function NakedVinylQuotesScreen() {
 
   const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
-        if (evt.nativeEvent.touches.length === 2) {
-          return true;
-        }
-        return false;
+        return evt.nativeEvent.touches.length === 2;
       },
       onMoveShouldSetPanResponder: (evt) => {
-        if (evt.nativeEvent.touches.length === 2) {
-          return true;
-        }
-        return false;
+        return evt.nativeEvent.touches.length === 2;
       },
-      onStartShouldSetPanResponderCapture: () => false,
-      onMoveShouldSetPanResponderCapture: () => false,
       onPanResponderGrant: (evt) => {
         if (evt.nativeEvent.touches.length === 2) {
+          isPinching.current = true;
           const touch1 = evt.nativeEvent.touches[0];
           const touch2 = evt.nativeEvent.touches[1];
           const distance = Math.sqrt(
@@ -275,6 +269,7 @@ export default function NakedVinylQuotesScreen() {
             Math.pow(touch2.pageY - touch1.pageY, 2)
           );
           baseDistance.current = distance;
+          console.log('Pinch started, distance:', distance);
         }
       },
       onPanResponderMove: (evt) => {
@@ -291,20 +286,23 @@ export default function NakedVinylQuotesScreen() {
           const newScale = (distance / baseDistance.current) * lastScale.current;
           const clampedScale = Math.max(0.5, Math.min(5, newScale));
           scale.setValue(clampedScale);
+          console.log('Pinch move, scale:', clampedScale);
         }
       },
       onPanResponderRelease: () => {
-        lastScale.current = (scale as any)._value;
+        if (isPinching.current) {
+          lastScale.current = (scale as any)._value;
+          console.log('Pinch released, final scale:', lastScale.current);
+        }
+        isPinching.current = false;
         baseDistance.current = 0;
       },
       onPanResponderTerminate: () => {
-        lastScale.current = (scale as any)._value;
-        baseDistance.current = 0;
-      },
-      onPanResponderEnd: (evt) => {
-        if (evt.nativeEvent.touches.length === 0) {
-          handleScreenTap();
+        if (isPinching.current) {
+          lastScale.current = (scale as any)._value;
         }
+        isPinching.current = false;
+        baseDistance.current = 0;
       },
     });
 
@@ -314,7 +312,16 @@ export default function NakedVinylQuotesScreen() {
         colors={theme.background as [string, string, ...string[]]}
         style={styles.gradient}
       >
-      <View style={styles.fullTouch} {...panResponder.panHandlers}>
+      <TouchableOpacity
+        style={styles.fullTouch}
+        activeOpacity={1}
+        onPress={() => {
+          if (!isPinching.current) {
+            handleScreenTap();
+          }
+        }}
+      >
+      <View style={StyleSheet.absoluteFill} {...panResponder.panHandlers}>
         <Animated.View style={[styles.header, { paddingTop: insets.top, opacity: headerOpacity }]}>
           <TouchableOpacity 
             onPress={() => {
@@ -434,6 +441,7 @@ export default function NakedVinylQuotesScreen() {
           )}
         </View>
       </View>
+      </TouchableOpacity>
       </LinearGradient>
     </View>
   );
