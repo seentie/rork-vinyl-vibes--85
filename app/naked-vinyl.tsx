@@ -292,10 +292,9 @@ export default function NakedVinylQuotesScreen() {
     });
 
   return (
-    <View style={styles.container}>
-      <View style={styles.fullTouch} {...panResponder.panHandlers}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <TouchableOpacity 
-        style={StyleSheet.absoluteFill} 
+        style={styles.fullTouch} 
         activeOpacity={1}
         onPress={handleScreenTap}
       >
@@ -423,7 +422,6 @@ export default function NakedVinylQuotesScreen() {
         </View>
       </LinearGradient>
       </TouchableOpacity>
-      </View>
     </View>
   );
 }
