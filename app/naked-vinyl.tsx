@@ -259,14 +259,16 @@ export default function NakedVinylQuotesScreen() {
         if (isTwoFingers) {
           setShowHeader(false);
           isPinching.current = true;
+          return true;
         }
-        return isTwoFingers;
+        return false;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         const isTwoFingers = evt.nativeEvent.touches.length >= 2;
         console.log('onMoveShouldSetPanResponder:', isTwoFingers, 'touches:', evt.nativeEvent.touches.length, 'gesture:', gestureState.dx, gestureState.dy);
         if (isTwoFingers) {
           if (!isPinching.current) {
+            setShowHeader(false);
             isPinching.current = true;
           }
           return true;
@@ -334,11 +336,7 @@ export default function NakedVinylQuotesScreen() {
         <TouchableOpacity
           style={styles.screenTouchArea}
           activeOpacity={1}
-          onPress={() => {
-            if (!isPinching.current) {
-              handleScreenTap();
-            }
-          }}
+          onPress={handleScreenTap}
         />
         <Animated.View style={[styles.header, { paddingTop: insets.top, opacity: headerOpacity }]}>
           <TouchableOpacity 
