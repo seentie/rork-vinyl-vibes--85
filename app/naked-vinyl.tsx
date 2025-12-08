@@ -251,11 +251,11 @@ export default function NakedVinylQuotesScreen() {
     extrapolate: 'extend',
   });
 
-  const panResponder = useRef(
-    PanResponder.create({
+  const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
-        console.log('onStartShouldSetPanResponder', { isLandscape, touches: evt.nativeEvent.touches.length });
-        return isLandscape && evt.nativeEvent.touches.length >= 2;
+        const shouldSet = isLandscape && evt.nativeEvent.touches.length >= 2;
+        console.log('onStartShouldSetPanResponder', { isLandscape, touches: evt.nativeEvent.touches.length, shouldSet });
+        return shouldSet;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         const shouldSet = isLandscape && evt.nativeEvent.touches.length >= 2;
@@ -294,11 +294,10 @@ export default function NakedVinylQuotesScreen() {
         console.log('Released - lastScale:', lastScale.current);
         baseDistance.current = 0;
       },
-    })
-  ).current;
+    });
 
   return (
-    <View style={styles.container} {...(isLandscape ? panResponder.panHandlers : {})}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <TouchableOpacity 
         style={styles.fullTouch} 
         activeOpacity={1}
