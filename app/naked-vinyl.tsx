@@ -125,7 +125,7 @@ export default function NakedVinylQuotesScreen() {
   const isLandscape = screenWidth > screenHeight;
   
   const VINYL_SIZE = isLandscape 
-    ? Math.max(screenWidth, screenHeight) * 1.8
+    ? Math.min(screenWidth * 0.7, screenHeight * 0.9)
     : isLargeDevice 
       ? Math.min(screenWidth * 0.5, screenHeight * 0.5) 
       : screenWidth * 0.85;
@@ -258,16 +258,20 @@ export default function NakedVinylQuotesScreen() {
         console.log('onStartShouldSetPanResponder:', isTwoFingers, 'touches:', evt.nativeEvent.touches.length);
         if (isTwoFingers) {
           setShowHeader(false);
+          isPinching.current = true;
         }
         return isTwoFingers;
       },
-      onMoveShouldSetPanResponder: (evt) => {
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
         const isTwoFingers = evt.nativeEvent.touches.length === 2;
-        return isTwoFingers;
+        if (isTwoFingers && !isPinching.current) {
+          isPinching.current = true;
+          return true;
+        }
+        return isTwoFingers && (Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5);
       },
       onPanResponderGrant: (evt) => {
         if (evt.nativeEvent.touches.length === 2) {
-          isPinching.current = true;
           const touch1 = evt.nativeEvent.touches[0];
           const touch2 = evt.nativeEvent.touches[1];
           const distance = Math.sqrt(
@@ -275,7 +279,8 @@ export default function NakedVinylQuotesScreen() {
             Math.pow(touch2.pageY - touch1.pageY, 2)
           );
           baseDistance.current = distance;
-          console.log('Pinch started, distance:', distance);
+          lastScale.current = (scale as any)._value || 1;
+          console.log('Pinch started, distance:', distance, 'lastScale:', lastScale.current);
         }
       },
       onPanResponderMove: (evt) => {
@@ -292,12 +297,12 @@ export default function NakedVinylQuotesScreen() {
           const newScale = (distance / baseDistance.current) * lastScale.current;
           const clampedScale = Math.max(0.5, Math.min(5, newScale));
           scale.setValue(clampedScale);
-          console.log('Pinch move, scale:', clampedScale);
+          console.log('Pinch move, distance:', distance, 'scale:', clampedScale);
         }
       },
       onPanResponderRelease: () => {
         if (isPinching.current) {
-          lastScale.current = (scale as any)._value;
+          lastScale.current = (scale as any)._value || 1;
           console.log('Pinch released, final scale:', lastScale.current);
         }
         isPinching.current = false;
@@ -305,7 +310,7 @@ export default function NakedVinylQuotesScreen() {
       },
       onPanResponderTerminate: () => {
         if (isPinching.current) {
-          lastScale.current = (scale as any)._value;
+          lastScale.current = (scale as any)._value || 1;
         }
         isPinching.current = false;
         baseDistance.current = 0;
