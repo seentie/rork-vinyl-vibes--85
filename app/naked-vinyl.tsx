@@ -253,36 +253,45 @@ export default function NakedVinylQuotesScreen() {
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => isLandscape,
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        return isLandscape && gestureState.numberActiveTouches === 2;
+      onStartShouldSetPanResponder: (evt) => {
+        console.log('onStartShouldSetPanResponder', { isLandscape, touches: evt.nativeEvent.touches.length });
+        return isLandscape && evt.nativeEvent.touches.length >= 2;
       },
-      onPanResponderGrant: () => {
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        const shouldSet = isLandscape && evt.nativeEvent.touches.length >= 2;
+        console.log('onMoveShouldSetPanResponder', { shouldSet, touches: evt.nativeEvent.touches.length, isLandscape });
+        return shouldSet;
+      },
+      onPanResponderGrant: (evt) => {
+        console.log('onPanResponderGrant - touches:', evt.nativeEvent.touches.length);
         baseDistance.current = 0;
       },
-      onPanResponderMove: (_, gestureState) => {
-        if (gestureState.numberActiveTouches === 2) {
-          const touches = (gestureState as any).touches;
-          if (touches && touches.length >= 2) {
-            const touch1 = touches[0];
-            const touch2 = touches[1];
-            const distance = Math.sqrt(
-              Math.pow(touch2.pageX - touch1.pageX, 2) +
-              Math.pow(touch2.pageY - touch1.pageY, 2)
-            );
-            
-            if (baseDistance.current === 0) {
-              baseDistance.current = distance;
-            } else {
-              const newScale = (distance / baseDistance.current) * lastScale.current;
-              const clampedScale = Math.max(0.5, Math.min(4, newScale));
-              scale.setValue(clampedScale);
-            }
+      onPanResponderMove: (evt, gestureState) => {
+        const touches = evt.nativeEvent.touches;
+        console.log('onPanResponderMove - touches:', touches.length);
+        
+        if (touches.length >= 2) {
+          const touch1 = touches[0];
+          const touch2 = touches[1];
+          const distance = Math.sqrt(
+            Math.pow(touch2.pageX - touch1.pageX, 2) +
+            Math.pow(touch2.pageY - touch1.pageY, 2)
+          );
+          
+          if (baseDistance.current === 0) {
+            baseDistance.current = distance;
+            console.log('Base distance set:', baseDistance.current);
+          } else {
+            const newScale = (distance / baseDistance.current) * lastScale.current;
+            const clampedScale = Math.max(0.5, Math.min(4, newScale));
+            console.log('Scale update:', { distance, baseDistance: baseDistance.current, newScale, clampedScale });
+            scale.setValue(clampedScale);
           }
         }
       },
       onPanResponderRelease: () => {
         lastScale.current = (scale as any)._value;
+        console.log('Released - lastScale:', lastScale.current);
         baseDistance.current = 0;
       },
     })
