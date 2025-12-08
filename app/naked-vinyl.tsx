@@ -125,7 +125,7 @@ export default function NakedVinylQuotesScreen() {
   const isLandscape = screenWidth > screenHeight;
   
   const VINYL_SIZE = isLandscape 
-    ? Math.max(screenWidth, screenHeight) * 3.5
+    ? Math.max(screenWidth, screenHeight) * 1.8
     : isLargeDevice 
       ? Math.min(screenWidth * 0.5, screenHeight * 0.5) 
       : screenWidth * 0.85;
@@ -141,9 +141,9 @@ export default function NakedVinylQuotesScreen() {
   const spinValue = useRef(new Animated.Value(0)).current;
   const spinAnimation = useRef<Animated.CompositeAnimation | null>(null);
   
-  const scale = useRef(new Animated.Value(isLandscape ? 2.5 : 1)).current;
+  const scale = useRef(new Animated.Value(1)).current;
   const baseDistance = useRef(0);
-  const lastScale = useRef(isLandscape ? 2.5 : 1);
+  const lastScale = useRef(1);
   
   const { selectedRecord, currentTheme, aiTheme: contextAiTheme, youPickTheme: contextYouPickTheme } = useRecord();
   
@@ -253,10 +253,10 @@ export default function NakedVinylQuotesScreen() {
 
   const panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt) => {
-        return isLandscape && evt.nativeEvent.touches.length === 2;
+        return evt.nativeEvent.touches.length === 2;
       },
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return isLandscape && evt.nativeEvent.touches.length === 2;
+      onMoveShouldSetPanResponder: (evt) => {
+        return evt.nativeEvent.touches.length === 2;
       },
       onPanResponderGrant: (evt) => {
         if (evt.nativeEvent.touches.length === 2) {
@@ -292,9 +292,10 @@ export default function NakedVinylQuotesScreen() {
     });
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
+    <View style={styles.container}>
+      <View style={styles.fullTouch} {...panResponder.panHandlers}>
       <TouchableOpacity 
-        style={styles.fullTouch} 
+        style={StyleSheet.absoluteFill} 
         activeOpacity={1}
         onPress={handleScreenTap}
       >
@@ -345,7 +346,7 @@ export default function NakedVinylQuotesScreen() {
                   width: VINYL_SIZE,
                   height: VINYL_SIZE,
                   borderRadius: VINYL_SIZE / 2,
-                  transform: isLandscape ? [{ rotate: spin }, { scale }] : [{ rotate: spin }],
+                  transform: [{ rotate: spin }, { scale }],
                 },
               ]}
             >
@@ -422,6 +423,7 @@ export default function NakedVinylQuotesScreen() {
         </View>
       </LinearGradient>
       </TouchableOpacity>
+      </View>
     </View>
   );
 }
