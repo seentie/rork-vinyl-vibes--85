@@ -301,7 +301,13 @@ export default function NakedVinylQuotesScreen() {
             Math.pow(touch2.pageY - touch1.pageY, 2)
           );
           
-          const newScale = (distance / baseDistance.current) * lastScale.current;
+          let scaleFactor = distance / baseDistance.current;
+          
+          if (isLandscape) {
+            scaleFactor = 1 / scaleFactor;
+          }
+          
+          const newScale = scaleFactor * lastScale.current;
           const clampedScale = Math.max(0.5, Math.min(5, newScale));
           scale.setValue(clampedScale);
           console.log('Pinch move, distance:', distance, 'scale:', clampedScale, 'landscape:', isLandscape);
